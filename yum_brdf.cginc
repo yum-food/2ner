@@ -25,7 +25,8 @@ float DisneyDiffuse(float roughness,
   return f_d;
 }
 
-float3 diffuseLobe(float3 albedo, float roughness, float LoH, float NoL, float NoV, float f90)
+float3 diffuseLobe(float3 albedo, float roughness, float LoH, float NoL,
+    float NoV, float f90)
 {
   return albedo * DisneyDiffuse(roughness, LoH, NoL, NoV, f90);
 }
@@ -46,7 +47,14 @@ float3 specularLobe(YumPbr pbr, float f0,
 float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float3 h = normalize(light.view_dir + light.dir);
   const float LoH = saturate(dot(light.dir, h));
-  const float NoL = dot(pbr.normal, light.dir);
+  const float NoL = light.NoL;
+#if defined(_WRAPPED_LIGHTING)
+  const float NoL_wrapped_s = light.NoL_wrapped_s;
+  const float NoL_wrapped_d = light.NoL_wrapped_d;
+#else
+  const float NoL_wrapped_s = light.NoL;
+  const float NoL_wrapped_d = light.NoL;
+#endif
   const float NoV = max(1E-4, dot(pbr.normal, light.view_dir));
   const float NoH = saturate(dot(pbr.normal, h));
   const float VoL = saturate(dot(light.view_dir, light.dir));
@@ -67,13 +75,13 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
   float3 direct;
   {
+    float3 Fd = diffuseLobe(pbr.albedo, pbr.roughness_perceptual, LoH, NoL,
+        NoV, f90);
+    Fd *= (1.0 - pbr.metallic) * light.attenuation;
+    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s);
+    float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
 
-    float3 Fd = diffuseLobe(pbr.albedo, pbr.roughness_perceptual, LoH, NoL, NoV, f90);
-    Fd *= (1.0 - pbr.metallic);
-    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL);
-    float3 color = Fd + Fr * energy_compensation;
-
-    direct = color * light.direct * saturate(NoL);
+    direct = color * light.direct;
   }
 
   float3 indirect;
@@ -83,7 +91,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     indirect = Fr + Fd;
   }
 
-  return float4(direct + indirect, 1);
+  return float4(direct + indirect, pbr.albedo.a);
 }
 
 #endif  // __YUM_BRDF_INC

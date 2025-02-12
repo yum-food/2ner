@@ -14,6 +14,11 @@ struct YumLighting {
 	float3 diffuse;
   float3 specular;
 	float NoL;
+#if defined(_WRAPPED_LIGHTING)
+	float NoL_wrapped_s;  // specular
+	float NoL_wrapped_d;  // diffuse
+#endif
+  float attenuation;
 };
 
 float getShadowAttenuation(v2f i)
@@ -45,7 +50,7 @@ float getShadowAttenuation(v2f i)
 	float shadow = 1;
 	attenuation = 1;
 #endif
-	//attenuation *= lerp(1, shadow, _Shadow_Strength);
+	attenuation *= lerp(1, shadow, _Shadow_Strength);
 	return attenuation;
 }
 
@@ -119,6 +124,12 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.specular = getIndirectSpecular(i, pbr, light.view_dir);
 
 	light.NoL = saturate(dot(i.normal, light.dir));
+#if defined(_WRAPPED_LIGHTING)
+	light.NoL_wrapped_s = wrapNoL(light.NoL, _Wrap_NoL_Specular_Strength);
+	light.NoL_wrapped_d = wrapNoL(light.NoL, _Wrap_NoL_Diffuse_Strength);
+#endif
+
+  light.attenuation = getShadowAttenuation(i);
 
 	return light;
 }

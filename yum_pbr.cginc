@@ -17,7 +17,12 @@ struct YumPbr {
 YumPbr GetYumPbr(v2f i) {
   YumPbr result;
 
+#if defined(OUTLINE_PASS)
+  result.albedo = _Outline_Color;
+  result.albedo.a *= tex2D(_MainTex, i.uv).a;
+#else
   result.albedo = tex2D(_MainTex, i.uv) * _Color;
+#endif
 
   float3 normal_raw = UnpackScaleNormal(tex2D(_BumpMap, i.uv), _BumpScale);
   float3x3 tangentToWorld = float3x3(i.tangent, i.bitangent, i.normal);
