@@ -1,0 +1,3 @@
+[submodule "Scripts/ThryEditor"]
+	path = Scripts/ThryEditor
+	url = https://github.com/Thryrallo/ThryEditor

@@ -1,0 +1,7 @@
+# vim
+**/.*.sw[po]
+
+# unity
+**/*.meta
+**/.*.meta
+
