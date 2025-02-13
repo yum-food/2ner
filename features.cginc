@@ -7,9 +7,6 @@
 //ifex _Outline_Mask_Enabled==0
 #pragma shader_feature_local _OUTLINE_MASK
 //endex
-//ifex _Bump_Shadows_Enabled==0
-#pragma shader_feature_local _BUMP_SHADOWS
-//endex
 
 #endif  // __FEATURES_INC
 

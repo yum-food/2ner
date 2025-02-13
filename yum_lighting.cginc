@@ -132,11 +132,6 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 #endif
 
   light.attenuation = getShadowAttenuation(i);
-#if defined(_BUMP_SHADOWS)
-  float noise = noiseR2(i.pos.xy);
-  float nm_shade = NormalTangentShadow(i.uv01, i.lightDirTS, noise);
-  light.attenuation = min(light.attenuation, max(1-nm_shade, 0));
-#endif
 
 	return light;
 }

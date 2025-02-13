@@ -36,13 +36,6 @@ Shader "yum_food/2ner"
       _OcclusionMap("Ambient occlusion", 2D) = "white" {}
       _OcclusionStrength("Ambient occlusion", Range(0,1)) = 1
       _Clip("Alpha Cuttoff", Range(0, 1.001)) = 0.5
-        //ifex _Bump_Shadows_Enabled==0
-        [HideInInspector] m_start_BumpShadows("Normal shadows", Float) = 0
-        [ThryToggle(_BUMP_SHADOWS)]_Bump_Shadows_Enabled("Enable", Float) = 0
-        _BumpShadowHeightScale("Height", Range(0, 1)) = 0.2
-        _BumpShadowHardness("Hardness", Range(0, 100)) = 50
-        [HideInInspector] m_end_BumpShadows("Metallics", Float) = 0
-        //endex
 
       [HideInInspector] m_reflectionOptions("Reflections", Float) = 0
         [HideInInspector] m_start_Metallic("Metallics", Float) = 0
