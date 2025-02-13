@@ -8,7 +8,9 @@ float4 _MainTex_ST;
 fixed4 _Color;
 
 sampler2D _BumpMap;
-float _BumpScale;
+half _BumpScale;
+float _BumpShadowHeightScale;
+float _BumpShadowHardness;
 
 sampler2D _OcclusionMap;
 float _OcclusionStrength;

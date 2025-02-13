@@ -12,7 +12,7 @@
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
 
-v2f vert (appdata v) {
+v2f vert(appdata v) {
   v2f o;
 
   UNITY_SETUP_INSTANCE_ID(v);
@@ -22,7 +22,7 @@ v2f vert (appdata v) {
 
 #if defined(OUTLINE_PASS)
 #if defined(_OUTLINE_MASK)
-  float thickness = _Outline_Mask.SampleLevel(linear_repeat_s, v.uv, 0);
+  float thickness = _Outline_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
 #else
   float thickness = 1;
 #endif
@@ -31,14 +31,22 @@ v2f vert (appdata v) {
   v.tangent *= -1;
 #endif  // OUTLINE_PASS
   o.pos = UnityObjectToClipPos(v.vertex);
-  o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+  o.uv01.xy = TRANSFORM_TEX(v.uv01.xy, _MainTex);
+  o.uv01.zw = TRANSFORM_TEX(v.uv01.zw, _MainTex);
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
 
   // Calculate TBN matrix
   o.normal = UnityObjectToWorldNormal(v.normal);
   o.tangent = UnityObjectToWorldDir(v.tangent.xyz);
-  o.bitangent = cross(o.normal, o.tangent) * v.tangent.w;
+  o.binormal = cross(o.normal, o.tangent) * v.tangent.w * unity_WorldTransformParams.w;
+
+  // From filamented
+  float3 lightDirWS = normalize(_WorldSpaceLightPos0.xyz - o.worldPos * _WorldSpaceLightPos0.w);
+  o.lightDirTS = float3(
+    dot(o.tangent,  lightDirWS),
+    dot(o.binormal, lightDirWS),
+    dot(o.normal,   lightDirWS));
 
   UNITY_TRANSFER_LIGHTING(o, v.uv1);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
@@ -48,7 +56,7 @@ v2f vert (appdata v) {
   return o;
 }
 
-float4 frag (v2f i) : SV_Target {
+float4 frag(v2f i) : SV_Target {
   UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
   UNITY_SETUP_INSTANCE_ID(i);
   UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);

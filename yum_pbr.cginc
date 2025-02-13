@@ -19,13 +19,13 @@ YumPbr GetYumPbr(v2f i) {
 
 #if defined(OUTLINE_PASS)
   result.albedo = _Outline_Color;
-  result.albedo.a *= tex2D(_MainTex, i.uv).a;
+  result.albedo.a *= tex2D(_MainTex, i.uv01).a;
 #else
-  result.albedo = tex2D(_MainTex, i.uv) * _Color;
+  result.albedo = tex2D(_MainTex, i.uv01) * _Color;
 #endif
 
-  float3 normal_raw = UnpackScaleNormal(tex2D(_BumpMap, i.uv), _BumpScale);
-  float3x3 tangentToWorld = float3x3(i.tangent, i.bitangent, i.normal);
+  float3 normal_raw = UnpackScaleNormal(tex2D(_BumpMap, i.uv01), _BumpScale);
+  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   result.normal = normalize(mul(normal_raw, tangentToWorld));
 
   result.smoothness = _Smoothness;
@@ -35,7 +35,7 @@ YumPbr GetYumPbr(v2f i) {
 
   result.metallic = _Metallic;
 
-  result.ao = lerp(1, tex2D(_OcclusionMap, i.uv), _OcclusionStrength);
+  result.ao = lerp(1, tex2D(_OcclusionMap, i.uv01), _OcclusionStrength);
 
   return result;
 }

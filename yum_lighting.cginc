@@ -4,6 +4,7 @@
 #include "UnityCG.cginc"
 #include "AutoLight.cginc"
 #include "UnityPBSLighting.cginc"
+#include "UnityLightingCommon.cginc"
 
 #include "yum_pbr.cginc"
 
@@ -103,7 +104,8 @@ float4 getIndirectDiffuse(v2f i, float4 vertexLightColor) {
 YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	YumLighting light;
 
-	light.view_dir = normalize(_WorldSpaceCameraPos - i.worldPos);
+  // normalize has no visibile impact in test scene
+  light.view_dir = -i.eyeVec.xyz;
 
 #if defined(POINT) || defined(POINT_COOKIE) || defined(SPOT)
 	light.dir = normalize((_WorldSpaceLightPos0 - i.worldPos).xyz);
@@ -123,13 +125,18 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 
   light.specular = getIndirectSpecular(i, pbr, light.view_dir);
 
-	light.NoL = saturate(dot(i.normal, light.dir));
+	light.NoL = saturate(dot(pbr.normal, light.dir));
 #if defined(_WRAPPED_LIGHTING)
 	light.NoL_wrapped_s = wrapNoL(light.NoL, _Wrap_NoL_Specular_Strength);
 	light.NoL_wrapped_d = wrapNoL(light.NoL, _Wrap_NoL_Diffuse_Strength);
 #endif
 
   light.attenuation = getShadowAttenuation(i);
+#if defined(_BUMP_SHADOWS)
+  float noise = noiseR2(i.pos.xy);
+  float nm_shade = NormalTangentShadow(i.uv01, i.lightDirTS, noise);
+  light.attenuation = min(light.attenuation, max(1-nm_shade, 0));
+#endif
 
 	return light;
 }

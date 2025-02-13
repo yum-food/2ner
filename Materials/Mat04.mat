@@ -12,7 +12,8 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _RECEIVE_SHADOWS
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -67,6 +68,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Outline_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -77,12 +82,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddBlendOp: 4
+    - _AddBlendOpAlpha: 4
+    - _AddDstBlend: 1
+    - _AddDstBlendAlpha: 1
+    - _AddSrcBlend: 1
+    - _AddSrcBlendAlpha: 0
+    - _BlendOp: 0
+    - _BlendOpAlpha: 0
     - _BumpScale: 1
+    - _Cast_Shadows_Enabled: 1
     - _Clip: 0.5
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _DstBlendAlpha: 10
     - _EnableMetallic: 0
     - _ForgotToLockMaterial: 0
     - _GlossMapScale: 1
@@ -92,27 +107,66 @@ Material:
     - _Metallic: 1
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OutlineBlendOp: 0
+    - _OutlineBlendOpAlpha: 4
+    - _OutlineDstBlend: 0
+    - _OutlineDstBlendAlpha: 0
+    - _OutlineSrcBlend: 1
+    - _OutlineSrcBlendAlpha: 1
+    - _Outline_Mask_Enabled: 0
+    - _Outline_Width: 0
+    - _OutlinesEnabled: 0
     - _Parallax: 0.02
+    - _Receive_Shadows_Enabled: 1
     - _SampleWorld: 0
     - _Saturation: 0
     - _ShaderOptimizerEnabled: 0
+    - _Shadow_Strength: 0.25
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SphericalHarmonics: 1
     - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
     - _UVSec: 0
+    - _Wrap_NoL_Diffuse_Strength: 0.25
+    - _Wrap_NoL_Specular_Strength: 0.1
+    - _Wrapped_Lighting_Enabled: 0
     - _ZTest: 4
     - _ZWrite: 1
+    - _reflectance: 0.028
+    - _reflectance_help: 1
     - _specularAntiAliasingThreshold: 0.25
     - _specularAntiAliasingVariance: 0.15
     - footer_github: 0
     - footer_youtube: 0
+    - m_FilamentStuff: 0
     - m_LUTs: 1
     - m_end_Metallic: 0
+    - m_end_Outlines: 0
+    - m_end_OutlinesMask: 0
+    - m_end_Shadow_Casting: 0
+    - m_end_Shadow_Receiving: 0
+    - m_end_WrappedLighting: 0
+    - m_end_alphaBlending: 0
+    - m_end_blending: 0
+    - m_end_outlineAlphaBlending: 0
+    - m_end_outlineBlending: 0
+    - m_gimmicks: 1
+    - m_lightingOptions: 1
     - m_mainOptions: 1
     - m_reflectionOptions: 1
     - m_renderingOptions: 0
     - m_start_Metallic: 1
+    - m_start_Outlines: 1
+    - m_start_OutlinesMask: 0
+    - m_start_Shadow_Casting: 0
+    - m_start_Shadow_Receiving: 0
+    - m_start_WrappedLighting: 1
+    - m_start_alphaBlending: 0
+    - m_start_blending: 0
+    - m_start_outlineAlphaBlending: 0
+    - m_start_outlineBlending: 0
     - shader_is_using_thry_editor: 0
     - shader_master_label: 0
     - shader_presets: 0
@@ -121,4 +175,5 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MetalReflectionTint: {r: 1, g: 1, b: 1, a: 1}
+    - _Outline_Color: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
