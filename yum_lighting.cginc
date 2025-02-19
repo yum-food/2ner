@@ -6,6 +6,7 @@
 #include "UnityPBSLighting.cginc"
 #include "UnityLightingCommon.cginc"
 
+#include "features.cginc"
 #include "yum_pbr.cginc"
 
 struct YumLighting {
@@ -42,9 +43,11 @@ float getShadowAttenuation(v2f i)
 #elif defined(SPOT)
 	DECLARE_LIGHT_COORD(i, i.worldPos);
 	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
-	attenuation = (lightCoord.z > 0) * UnitySpotCookie(lightCoord) * UnitySpotAttenuate(lightCoord.xyz);
+	attenuation = (lightCoord.z > 0) * UnitySpotCookie(lightCoord) *
+    UnitySpotAttenuate(lightCoord.xyz);
 #elif defined(POINT)
-	unityShadowCoord3 lightCoord = mul(unity_WorldToLight, unityShadowCoord4(i.worldPos, 1)).xyz;
+	unityShadowCoord3 lightCoord =
+    mul(unity_WorldToLight, unityShadowCoord4(i.worldPos, 1)).xyz;
 	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
 	attenuation = tex2D(_LightTexture0, dot(lightCoord, lightCoord).rr).r;
 #else
@@ -86,7 +89,8 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir) {
   data.boxMin[1] = unity_SpecCube1_BoxMin;
   data.probePosition[1] = unity_SpecCube1_ProbePosition;
 #endif
-  return UnityGI_prefilteredRadiance(data, pbr.roughness_perceptual, reflect_dir);
+  return UnityGI_prefilteredRadiance(data, pbr.roughness_perceptual,
+      reflect_dir);
 }
 
 float4 getIndirectDiffuse(v2f i, float4 vertexLightColor) {
@@ -122,6 +126,9 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   //ifex _Spherical_Harmonics==1
 	light.diffuse = max(0, BetterSH9(float4(0, 0, 0, 1)));
   //endex
+#if defined(_MIN_BRIGHTNESS)
+  light.diffuse = max(_Min_Brightness, light.diffuse);
+#endif
 
   light.specular = getIndirectSpecular(i, pbr, light.view_dir);
 

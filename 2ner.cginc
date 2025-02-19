@@ -7,12 +7,19 @@
 #include "features.cginc"
 #include "globals.cginc"
 #include "interpolators.cginc"
+#include "matcaps.cginc"
 #include "poi.cginc"
 #include "yum_brdf.cginc"
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
 
 v2f vert(appdata v) {
+#if defined(OUTLINE_PASS) && !defined(_OUTLINES)
+  // The outline pass will be entirely elided when locked. This just lets us
+  // hide outlines when not locked.
+  return (v2f) (0.0/0.0);
+#endif
+
   v2f o;
 
   UNITY_SETUP_INSTANCE_ID(v);
@@ -30,23 +37,17 @@ v2f vert(appdata v) {
   v.normal *= -1;
   v.tangent *= -1;
 #endif  // OUTLINE_PASS
+
   o.pos = UnityObjectToClipPos(v.vertex);
-  o.uv01.xy = TRANSFORM_TEX(v.uv01.xy, _MainTex);
-  o.uv01.zw = TRANSFORM_TEX(v.uv01.zw, _MainTex);
+  o.uv01 = v.uv01;
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
 
-  // Calculate TBN matrix
+  // These are used to convert normals from tangent space to world space.
   o.normal = UnityObjectToWorldNormal(v.normal);
   o.tangent = UnityObjectToWorldDir(v.tangent.xyz);
-  o.binormal = cross(o.normal, o.tangent) * v.tangent.w * unity_WorldTransformParams.w;
-
-  // From filamented
-  float3 lightDirWS = normalize(_WorldSpaceLightPos0.xyz - o.worldPos * _WorldSpaceLightPos0.w);
-  o.lightDirTS = float3(
-    dot(o.tangent,  lightDirWS),
-    dot(o.binormal, lightDirWS),
-    dot(o.normal,   lightDirWS));
+  o.binormal = cross(o.normal, o.tangent) * v.tangent.w *
+    unity_WorldTransformParams.w;
 
   UNITY_TRANSFER_LIGHTING(o, v.uv1);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
@@ -61,6 +62,9 @@ float4 frag(v2f i) : SV_Target {
   UNITY_SETUP_INSTANCE_ID(i);
   UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 
+  // Not necessarily normalized after interpolation
+  i.normal = normalize(i.normal);
+
   YumPbr pbr = GetYumPbr(i);
 
   UNITY_BRANCH
@@ -68,6 +72,10 @@ float4 frag(v2f i) : SV_Target {
     clip(pbr.albedo.a - _Clip);
     pbr.albedo.a = 1;
   }
+
+#if defined(FORWARD_BASE_PASS)
+  applyMatcapsAndRimLighting(i, pbr);
+#endif
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS) || defined(OUTLINE_PASS)
   YumLighting l = GetYumLighting(i, pbr);

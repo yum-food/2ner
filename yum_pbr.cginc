@@ -1,8 +1,10 @@
 #ifndef __YUM_PBR
 #define __YUM_PBR
 
+#include "features.cginc"
 #include "filamented.cginc"
 #include "globals.cginc"
+#include "texture_utils.cginc"
 
 struct YumPbr {
   float4 albedo;
@@ -19,12 +21,16 @@ YumPbr GetYumPbr(v2f i) {
 
 #if defined(OUTLINE_PASS)
   result.albedo = _Outline_Color;
-  result.albedo.a *= tex2D(_MainTex, i.uv01).a;
+  result.albedo.a *= tex2D(_MainTex,
+      UV_SCOFF(i, _MainTex_ST, /*which_channel=*/0)).a;
 #else
-  result.albedo = tex2D(_MainTex, i.uv01) * _Color;
+  result.albedo = tex2D(_MainTex,
+      UV_SCOFF(i, _MainTex_ST, /*which_channel=*/0)) * _Color;
 #endif
 
-  float3 normal_raw = UnpackScaleNormal(tex2D(_BumpMap, i.uv01), _BumpScale);
+  float3 normal_raw = UnpackScaleNormal(
+      tex2D(_BumpMap, UV_SCOFF(i, _BumpMap_ST, /*which_channel=*/0)),
+      _BumpScale);
   float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   result.normal = normalize(mul(normal_raw, tangentToWorld));
 
@@ -35,7 +41,11 @@ YumPbr GetYumPbr(v2f i) {
 
   result.metallic = _Metallic;
 
+#if defined(_AMBIENT_OCCLUSION)
   result.ao = lerp(1, tex2D(_OcclusionMap, i.uv01), _OcclusionStrength);
+#else
+  result.ao = 1;
+#endif
 
   return result;
 }

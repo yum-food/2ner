@@ -1,7 +1,7 @@
 Shader "yum_food/2ner"
 {
-	Properties 
-  { 
+	Properties
+  {
       [HideInInspector] shader_master_label("<color=#de719bff>2ner</color>", Float) = 0
       [HideInInspector] shader_is_using_thry_editor("", Float) = 0
       [HideInInspector] shader_presets("ThryPresetsExample", Float) = 0
@@ -33,9 +33,14 @@ Shader "yum_food/2ner"
       _MainTex("Base color", 2D) = "white" {}
       [PanningTexture][Normal]_BumpMap("Normals", 2D) = "bump" {}
       _BumpScale("Normal Intensity", Range(0, 10)) = 1
-      _OcclusionMap("Ambient occlusion", 2D) = "white" {}
-      _OcclusionStrength("Ambient occlusion", Range(0,1)) = 1
       _Clip("Alpha Cuttoff", Range(0, 1.001)) = 0.5
+        //ifex _Ambient_Occlusion_Enabled==0
+        [HideInInspector] m_start_AO("Ambient occlusion", Float) = 0
+        [ThryToggle(_AMBIENT_OCCLUSION)]_Ambient_Occlusion_Enabled("Enable", Float) = 0
+        _OcclusionMap("Ambient occlusion", 2D) = "white" {}
+        _OcclusionStrength("Ambient occlusion", Range(0,1)) = 1
+        [HideInInspector] m_end_AO("Metallics", Float) = 0
+        //endex
 
       [HideInInspector] m_reflectionOptions("Reflections", Float) = 0
         [HideInInspector] m_start_Metallic("Metallics", Float) = 0
@@ -45,9 +50,9 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Metallic("Metallics", Float) = 0
 
       [HideInInspector] m_gimmicks("Gimmicks", Float) = 0
-        //ifex _OutlinesEnabled==0
+        //ifex _Outlines_Enabled==0
         [HideInInspector] m_start_Outlines("Outlines", Float) = 0
-        [ThryToggle(_)]_OutlinesEnabled("Enable", Float) = 0
+        [ThryToggle(_OUTLINES)]_Outlines_Enabled("Enable", Float) = 0
         _Outline_Color("Color", Color) = (0, 0, 0, 1)
         _Outline_Width("Width", Float) = 0.01
           [HideInInspector] m_start_OutlinesMask("Mask", Float) = 0
@@ -55,6 +60,52 @@ Shader "yum_food/2ner"
           _Outline_Mask("Thickness mask", 2D) = "white" {}
           [HideInInspector] m_end_OutlinesMask("Mask", Float) = 0
         [HideInInspector] m_end_Outlines("Outlines", Float) = 0
+        //endex
+        //ifex _Matcap0_Enabled==0
+        [HideInInspector] m_start_Matcaps("Matcaps", Float) = 0
+          [HideInInspector] m_start_Matcap0("Matcap 0", Float) = 0
+          [ThryToggle(_MATCAP0)]_Matcap0_Enabled("Enable", Float) = 0
+          _Matcap0("Matcap", 2D) = "white" {}
+          [Toggle(_)]_Matcap0_Invert("Invert", Float) = 0
+          [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
+          _Matcap0_Mode("Mode", Int) = 0
+          _Matcap0_Strength("Strength", Float) = 1
+            [HideInInspector] m_start_Matcap0_Mask("Mask", Float) = 0
+            [ThryToggle(_MATCAP0_MASK)]_Matcap0_Mask_Enabled("Enable", Float) = 0
+            _Matcap0_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Matcap0_Mask("Mask", Float) = 0
+          [HideInInspector] m_end_Matcap0("Matcaps", Float) = 0
+        [HideInInspector] m_end_Matcaps("Matcaps", Float) = 0
+        //endex
+        //ifex _Rim_Lighting0_Enabled==0
+        [HideInInspector] m_start_Rim_Lighting("Rim lighting", Float) = 0
+          [HideInInspector] m_start_Rim_Lighting0("Rim lighting 0", Float) = 0
+          [ThryToggle(_RIM_LIGHTING0)]_Rim_Lighting0_Enabled("Enable", Float) = 0
+          _Rim_Lighting0_Center("Center", Range(0, 0.5)) = 0.5
+          _Rim_Lighting0_Power("Power", Float) = 5
+          _Rim_Lighting0_Color("Color", Color) = (1, 1, 1, 1)
+          _Rim_Lighting0_Brightness("Brightness", Float) = 1
+          [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
+          _Rim_Lighting0_Mode("Mode", Int) = 0
+            [HideInInspector] m_start_Rim_Lighting0_Mask("Mask", Float) = 0
+            [ThryToggle(_RIM_LIGHTING0_MASK)]_Rim_Lighting0_Mask_Enabled("Enable", Float) = 0
+            _Rim_Lighting0_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Rim_Lighting0_Mask("Mask", Float) = 0
+          [HideInInspector] m_end_Rim_Lighting0("Rim lighting", Float) = 0
+          [HideInInspector] m_start_Rim_Lighting1("Rim lighting 1", Float) = 0
+          [ThryToggle(_RIM_LIGHTING1)]_Rim_Lighting1_Enabled("Enable", Float) = 0
+          _Rim_Lighting1_Center("Center", Range(0, 0.5)) = 0.5
+          _Rim_Lighting1_Power("Power", Float) = 5
+          _Rim_Lighting1_Color("Color", Color) = (1, 1, 1, 1)
+          _Rim_Lighting1_Brightness("Brightness", Float) = 1
+          [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
+          _Rim_Lighting1_Mode("Mode", Int) = 0
+            [HideInInspector] m_start_Rim_Lighting1_Mask("Mask", Float) = 0
+            [ThryToggle(_RIM_LIGHTINg1_MASK)]_Rim_Lighting1_Mask_Enabled("Enable", Float) = 0
+            _Rim_Lighting1_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Rim_Lighting1_Mask("Mask", Float) = 0
+          [HideInInspector] m_end_Rim_Lighting1("Rim lighting", Float) = 0
+        [HideInInspector] m_end_Rim_Lighting("Rim lighting", Float) = 0
         //endex
 
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
@@ -74,6 +125,12 @@ Shader "yum_food/2ner"
         _Wrap_NoL_Diffuse_Strength("Diffuse strength", Range(0, 1)) = 0.25
         _Wrap_NoL_Specular_Strength("Specular strength", Range(0, 1)) = 0.1
         [HideInInspector] m_end_WrappedLighting("Wrapped lighting", Float) = 0
+        //endex
+        //ifex _Min_Brightness_Enabled==0
+        [HideInInspector] m_start_Min_Brightness("Minimum brightness", Float) = 0
+        [ThryToggle(_MIN_BRIGHTNESS)] _Min_Brightness_Enabled("Enable", Float) = 0
+        _Min_Brightness("Value", Range(0, 1)) = 0
+        [HideInInspector] m_end_Min_Brightness("Minimum brightness", Float) = 0
         //endex
 
       [HideInInspector] m_renderingOptions("Rendering Options", Float) = 0
@@ -101,7 +158,7 @@ Shader "yum_food/2ner"
         [DoNotAnimate][Enum(UnityEngine.Rendering.BlendMode)] _AddDstBlendAlpha ("Alpha Destination Blend", Int) = 1
         [DoNotAnimate][HideInInspector] m_end_alphaBlending ("Advanced Alpha Blending", Float) = 0
       [HideInInspector] m_end_blending ("Blending", Float) = 0
-      //ifex _OutlinesEnabled==0
+      //ifex _Outlines_Enabled==0
       // Outline Blending Options
       [HideInInspector] m_start_outlineBlending ("Outline Blending", Float) = 0
       [Enum(Thry.BlendOp)]_OutlineBlendOp ("RGB Blend Op", Int) = 0
@@ -134,7 +191,7 @@ Shader "yum_food/2ner"
       Cull [_Cull]
       ZWrite [_ZWrite]
       ZTest [_ZTest]
-      
+
       CGPROGRAM
       #pragma target 5.0
       #pragma multi_compile_fwdbase
@@ -157,7 +214,7 @@ Shader "yum_food/2ner"
       ZTest [_ZTest]
 			BlendOp [_AddBlendOp], [_AddBlendOpAlpha]
 			Blend [_AddSrcBlend] [_AddDstBlend], [_AddSrcBlendAlpha] [_AddDstBlendAlpha]
-      
+
       CGPROGRAM
       #pragma target 5.0
       #pragma multi_compile_fwdadd_fullshadows
@@ -171,7 +228,7 @@ Shader "yum_food/2ner"
       #include "2ner.cginc"
       ENDCG
     }
-    //ifex _OutlinesEnabled==0
+    //ifex _Outlines_Enabled==0
     Pass {
       Name "OUTLINES"
       Name "FORWARD"
@@ -181,7 +238,7 @@ Shader "yum_food/2ner"
       ZTest [_ZTest]
 			BlendOp [_OutlineBlendOp], [_OutlineBlendOpAlpha]
 			Blend [_OutlineSrcBlend] [_OutlineDstBlend], [_OutlineSrcBlendAlpha] [_OutlineDstBlendAlpha]
-      
+
       CGPROGRAM
       #pragma target 5.0
       #pragma multi_compile_fwdbase
@@ -196,8 +253,6 @@ Shader "yum_food/2ner"
       ENDCG
     }
     //endex
-    // TODO I think this is unnecessary? I'm casting shadows just fine in
-    // testbed.
     Pass {
       Name "ShadowCaster"
       Tags { "LightMode" = "ShadowCaster" }
