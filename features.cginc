@@ -34,5 +34,9 @@
 #pragma shader_feature_local _RIM_LIGHTING1_MASK
 //endex
 
+//ifex _Vertex_Domain_Warping_Enabled==0
+#pragma shader_feature_local _VERTEX_DOMAIN_WARPING
+//endex
+
 #endif  // __FEATURES_INC
 

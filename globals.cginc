@@ -86,4 +86,12 @@ texture2D _Rim_Lighting1_Mask;
 #endif
 #endif
 
+#if defined(_VERTEX_DOMAIN_WARPING)
+float _Vertex_Domain_Warping_Spatial_Strength;
+float _Vertex_Domain_Warping_Spatial_Scale;
+float _Vertex_Domain_Warping_Spatial_Octaves;
+float _Vertex_Domain_Warping_Speed;
+float _Vertex_Domain_Warping_Temporal_Strength;
+#endif  // _VERTEX_DOMAIN_WARPING
+
 #endif  // __GLOBALS_INC

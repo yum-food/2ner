@@ -107,6 +107,16 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Rim_Lighting1("Rim lighting", Float) = 0
         [HideInInspector] m_end_Rim_Lighting("Rim lighting", Float) = 0
         //endex
+        //ifex _Vertex_Domain_Warping_Enabled==0
+        [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
+          [ThryToggle(_VERTEX_DOMAIN_WARPING)]_Vertex_Domain_Warping_Enabled("Enable", Float) = 0
+          _Vertex_Domain_Warping_Spatial_Strength("Spatial warping strength", Float) = 0.10
+          _Vertex_Domain_Warping_Spatial_Scale("Spatial warping scale", Float) = 1.0
+          _Vertex_Domain_Warping_Spatial_Octaves("Spatial warping octaves", Float) = 1.0
+          _Vertex_Domain_Warping_Speed("Speed", Float) = 1.0
+          _Vertex_Domain_Warping_Temporal_Strength("Temporal warping strength", Float) = 0.10
+          [HideInInspector] m_end_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
+        //endex
 
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
         //ifex _Receive_Shadows_Enabled==0

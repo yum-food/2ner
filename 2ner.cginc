@@ -38,6 +38,24 @@ v2f vert(appdata v) {
   v.tangent *= -1;
 #endif  // OUTLINE_PASS
 
+#if defined(_VERTEX_DOMAIN_WARPING)
+  float3 basePos = v.vertex.xyz;
+  float offset = sin(_Time[0] * _Vertex_Domain_Warping_Speed) *
+      _Vertex_Domain_Warping_Temporal_Strength;
+  v.vertex.xyz = domainWarp3(v.vertex,
+      _Vertex_Domain_Warping_Spatial_Octaves,
+      _Vertex_Domain_Warping_Spatial_Strength,
+      _Vertex_Domain_Warping_Spatial_Scale,
+      offset);
+  float3 tangent_tmp = v.tangent.xyz;
+  domainWarp3Normals(v.normal, tangent_tmp, basePos,
+      _Vertex_Domain_Warping_Spatial_Octaves,
+      _Vertex_Domain_Warping_Spatial_Strength,
+      _Vertex_Domain_Warping_Spatial_Scale,
+      offset);
+  v.tangent.xyz = tangent_tmp;
+#endif
+
   o.pos = UnityObjectToClipPos(v.vertex);
   o.uv01 = v.uv01;
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
