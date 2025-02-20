@@ -43,6 +43,13 @@ void applyMatcap(inout YumPbr pbr, float3 sample, uint mode, float mask)
 }
 #endif
 
+float getAngleAttenuation(float2 muv, float2 target_vector, float power) {
+  muv = muv * 2 - 1;
+  float NoL = dot(muv, target_vector);
+  NoL =  halfLambertianNoL(NoL);
+  return pow(NoL, power);
+}
+
 void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #if defined(_MATCAP0) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1)
   float2 muv = getMatcapUV(i, pbr);
@@ -69,6 +76,13 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #else
   float rl0_mask = 1;
 #endif
+#if defined(_RIM_LIGHTING0_ANGLE_LIMIT)
+  rl0 *= getAngleAttenuation(muv, _Rim_Lighting0_Angle_Limit_Target_Vector,
+      _Rim_Lighting0_Angle_Limit_Power);
+#endif
+#if defined(_RIM_LIGHTING0_QUANTIZATION)
+  rl0 = floor(rl0 * _Rim_Lighting0_Quantization_Steps) / _Rim_Lighting0_Quantization_Steps;
+#endif
   applyMatcap(pbr, rl0, _Rim_Lighting0_Mode, rl0_mask);
 #endif
 #if defined(_RIM_LIGHTING1)
@@ -78,6 +92,13 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
   float rl1_mask = _Rim_Lighting1_Mask.Sample(linear_repeat_s, i.uv01.xy);
 #else
   float rl1_mask = 1;
+#endif
+#if defined(_RIM_LIGHTING1_ANGLE_LIMIT)
+  rl1 *= getAngleAttenuation(muv, _Rim_Lighting1_Angle_Limit_Target_Vector,
+      _Rim_Lighting1_Angle_Limit_Power);
+#endif
+#if defined(_RIM_LIGHTING1_QUANTIZATION)
+  rl1 = floor(rl1 * _Rim_Lighting1_Quantization_Steps) / _Rim_Lighting1_Quantization_Steps;
 #endif
   applyMatcap(pbr, rl1, _Rim_Lighting1_Mode, rl1_mask);
 #endif

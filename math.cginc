@@ -17,6 +17,12 @@ float wrapNoL(float NoL, float factor) {
     return pow(max(1E-4, (NoL + factor) / (1 + factor)), 1 + factor);
 }
 
+float halfLambertianNoL(float NoL) {
+		// https://www.iro.umontreal.ca/~derek/files/jgt_wrap_final.pdf
+    float tmp = (NoL + 1)  * 0.5;
+    return tmp * tmp;
+}
+
 float rand1(float p)
 {
   return frac(sin(p) * 43758.5453123);

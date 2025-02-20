@@ -74,7 +74,15 @@ float _Rim_Lighting0_Brightness;
 #if defined(_RIM_LIGHTING0_MASK)
 texture2D _Rim_Lighting0_Mask;
 #endif
+#if defined(_RIM_LIGHTING0_ANGLE_LIMIT)
+float2 _Rim_Lighting0_Angle_Limit_Target_Vector;
+float _Rim_Lighting0_Angle_Limit_Power;
 #endif
+#if defined(_RIM_LIGHTING0_QUANTIZATION)
+float _Rim_Lighting0_Quantization_Steps;
+#endif
+#endif
+
 #if defined(_RIM_LIGHTING1)
 uint _Rim_Lighting1_Mode;
 float _Rim_Lighting1_Center;
@@ -83,6 +91,13 @@ float3 _Rim_Lighting1_Color;
 float _Rim_Lighting1_Brightness;
 #if defined(_RIM_LIGHTING1_MASK)
 texture2D _Rim_Lighting1_Mask;
+#endif
+#if defined(_RIM_LIGHTING1_ANGLE_LIMIT)
+float2 _Rim_Lighting1_Angle_Limit_Target_Vector;
+float _Rim_Lighting1_Angle_Limit_Power;
+#endif
+#if defined(_RIM_LIGHTING1_QUANTIZATION)
+float _Rim_Lighting1_Quantization_Steps;
 #endif
 #endif
 

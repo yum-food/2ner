@@ -28,10 +28,14 @@
 //ifex _Rim_Lighting0_Enabled==0
 #pragma shader_feature_local _RIM_LIGHTING0
 #pragma shader_feature_local _RIM_LIGHTING0_MASK
+#pragma shader_feature_local _RIM_LIGHTING0_ANGLE_LIMIT
+#pragma shader_feature_local _RIM_LIGHTING0_QUANTIZATION
 //endex
 //ifex _Rim_Lighting1_Enabled==0
 #pragma shader_feature_local _RIM_LIGHTING1
 #pragma shader_feature_local _RIM_LIGHTING1_MASK
+#pragma shader_feature_local _RIM_LIGHTING1_ANGLE_LIMIT
+#pragma shader_feature_local _RIM_LIGHTING1_QUANTIZATION
 //endex
 
 //ifex _Vertex_Domain_Warping_Enabled==0
