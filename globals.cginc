@@ -31,6 +31,10 @@ float _Wrap_NoL_Specular_Strength;
 float _Min_Brightness;
 #endif
 
+#if defined(_QUANTIZE_NOL)
+float _Quantize_NoL_Steps;
+#endif
+
 float _Clip;
 int _Mode;
 float _Smoothness;
@@ -98,6 +102,42 @@ float _Rim_Lighting1_Angle_Limit_Power;
 #endif
 #if defined(_RIM_LIGHTING1_QUANTIZATION)
 float _Rim_Lighting1_Quantization_Steps;
+#endif
+#endif
+
+#if defined(_RIM_LIGHTING2)
+uint _Rim_Lighting2_Mode;
+float _Rim_Lighting2_Center;
+float _Rim_Lighting2_Power;
+float3 _Rim_Lighting2_Color;
+float _Rim_Lighting2_Brightness;
+#if defined(_RIM_LIGHTING2_MASK)
+texture2D _Rim_Lighting2_Mask;
+#endif
+#if defined(_RIM_LIGHTING2_ANGLE_LIMIT)
+float2 _Rim_Lighting2_Angle_Limit_Target_Vector;
+float _Rim_Lighting2_Angle_Limit_Power;
+#endif
+#if defined(_RIM_LIGHTING2_QUANTIZATION)
+float _Rim_Lighting2_Quantization_Steps;
+#endif
+#endif
+
+#if defined(_RIM_LIGHTING3)
+uint _Rim_Lighting3_Mode;
+float _Rim_Lighting3_Center;
+float _Rim_Lighting3_Power;
+float3 _Rim_Lighting3_Color;
+float _Rim_Lighting3_Brightness;
+#if defined(_RIM_LIGHTING3_MASK)
+texture2D _Rim_Lighting3_Mask;
+#endif
+#if defined(_RIM_LIGHTING3_ANGLE_LIMIT)
+float2 _Rim_Lighting3_Angle_Limit_Target_Vector;
+float _Rim_Lighting3_Angle_Limit_Power;
+#endif
+#if defined(_RIM_LIGHTING3_QUANTIZATION)
+float _Rim_Lighting3_Quantization_Steps;
 #endif
 #endif
 
