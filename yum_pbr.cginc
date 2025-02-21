@@ -9,6 +9,9 @@
 struct YumPbr {
   float4 albedo;
   float3 normal;
+#if defined(_EMISSION)
+  float3 emission;
+#endif
   float smoothness;
   float roughness;
   float roughness_perceptual;
@@ -33,6 +36,10 @@ YumPbr GetYumPbr(v2f i) {
       _BumpScale);
   float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   result.normal = normalize(mul(normal_raw, tangentToWorld));
+
+#if defined(_EMISSION)
+  result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
+#endif
 
 #if defined(_METALLICS)
   float4 metallic_gloss = tex2D(_MetallicGlossMap, UV_SCOFF(i, _MetallicGlossMap_ST, /*which_channel=*/0));

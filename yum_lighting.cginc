@@ -141,14 +141,15 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.diffuse = light.diffuse * floor(diffuse_luminance * _Quantize_Diffuse_Steps) / _Quantize_Diffuse_Steps;
 #endif
 
-	light.NoL = saturate(dot(pbr.normal, light.dir));
+  light.NoL = dot(pbr.normal, light.dir);
 #if defined(_QUANTIZE_NOL)
   light.NoL = floor(light.NoL * _Quantize_NoL_Steps) / _Quantize_NoL_Steps;
 #endif
 #if defined(_WRAPPED_LIGHTING)
-	light.NoL_wrapped_s = wrapNoL(light.NoL, _Wrap_NoL_Specular_Strength);
-	light.NoL_wrapped_d = wrapNoL(light.NoL, _Wrap_NoL_Diffuse_Strength);
+  light.NoL_wrapped_s = saturate(wrapNoL(light.NoL, _Wrap_NoL_Specular_Strength));
+  light.NoL_wrapped_d = saturate(wrapNoL(light.NoL, _Wrap_NoL_Diffuse_Strength));
 #endif
+  light.NoL = saturate(light.NoL);
 
   light.attenuation = getShadowAttenuation(i);
 

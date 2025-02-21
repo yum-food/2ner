@@ -34,6 +34,14 @@ Shader "yum_food/2ner"
       [PanningTexture][Normal]_BumpMap("Normals", 2D) = "bump" {}
       _BumpScale("Normal Intensity", Range(0, 10)) = 1
       _Clip("Alpha Cuttoff", Range(0, 1.001)) = 0.5
+        //ifex _Emission_Enabled==0
+        [HideInInspector] m_start_Emission("Emission", Float) = 0
+          [ThryToggle(_EMISSION)]_Emission_Enabled("Enable", Float) = 0
+          _EmissionColor("Color", Color) = (1, 1, 1, 1)
+          _EmissionMap("Emission", 2D) = "white" {}
+          [HideInInspector] m_end_Emission("Emission", Float) = 0
+        //endex
+
         //ifex _Ambient_Occlusion_Enabled==0
         [HideInInspector] m_start_AO("Ambient occlusion", Float) = 0
         [ThryToggle(_AMBIENT_OCCLUSION)]_Ambient_Occlusion_Enabled("Enable", Float) = 0

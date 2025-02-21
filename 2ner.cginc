@@ -100,6 +100,10 @@ float4 frag(v2f i) : SV_Target {
 
   float4 lit = YumBRDF(i, l, pbr);
 
+#if defined(_EMISSION)
+  lit.rgb += pbr.emission;
+#endif
+
   UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
   UNITY_APPLY_FOG(_unity_fogCoord, lit.rgb);
   return lit;

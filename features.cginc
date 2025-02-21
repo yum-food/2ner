@@ -5,6 +5,10 @@
 #pragma shader_feature_local _AMBIENT_OCCLUSION
 //endex
 
+//ifex _Emission_Enabled==0
+#pragma shader_feature_local _EMISSION
+//endex
+
 //ifex _Wrapped_Lighting_Enabled==0
 #pragma shader_feature_local _WRAPPED_LIGHTING
 //endex

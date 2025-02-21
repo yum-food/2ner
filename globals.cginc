@@ -15,6 +15,12 @@ half _BumpScale;
 float _BumpShadowHeightScale;
 float _BumpShadowHardness;
 
+#if defined(_EMISSION)
+sampler2D _EmissionMap;
+float4 _EmissionMap_ST;
+float3 _EmissionColor;
+#endif
+
 #if defined(_AMBIENT_OCCLUSION)
 sampler2D _OcclusionMap;
 float _OcclusionStrength;
