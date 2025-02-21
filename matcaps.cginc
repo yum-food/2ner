@@ -55,7 +55,16 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
   float2 muv = getMatcapUV(i, pbr);
 #endif
 #if defined(_MATCAP0)
-  float3 m0 = _Matcap0.Sample(linear_repeat_s, muv);
+#if defined(_MATCAP0_QUANTIZATION)
+  float2 m0uv = muv * 2 - 1;
+  float m0uv_r = length(m0uv);
+  float m0uv_r_q = floor(m0uv_r * _Matcap0_Quantization_Steps) / _Matcap0_Quantization_Steps;
+  m0uv = m0uv_r_q * (m0uv / max(1E-4, m0uv_r));
+  m0uv = m0uv * 0.5 + 0.5;
+#else
+  float2 m0uv = muv;
+#endif
+  float3 m0 = _Matcap0.Sample(linear_repeat_s, m0uv);
   m0 = lerp(m0, 1 - m0, _Matcap0_Invert);
   m0 *= _Matcap0_Strength;
 #if defined(_MATCAP0_MASK)

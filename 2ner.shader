@@ -61,6 +61,7 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_OutlinesMask("Mask", Float) = 0
         [HideInInspector] m_end_Outlines("Outlines", Float) = 0
         //endex
+
         //ifex _Matcap0_Enabled==0
         [HideInInspector] m_start_Matcaps("Matcaps", Float) = 0
           [HideInInspector] m_start_Matcap0("Matcap 0", Float) = 0
@@ -70,13 +71,22 @@ Shader "yum_food/2ner"
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Matcap0_Mode("Mode", Int) = 0
           _Matcap0_Strength("Strength", Float) = 1
+            //ifex _Matcap0_Mask_Enabled==0
             [HideInInspector] m_start_Matcap0_Mask("Mask", Float) = 0
             [ThryToggle(_MATCAP0_MASK)]_Matcap0_Mask_Enabled("Enable", Float) = 0
             _Matcap0_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Matcap0_Mask("Mask", Float) = 0
+            //endex
+            //ifex _Matcap0_Quantization_Enabled==0
+            [HideInInspector] m_start_Matcap0_Quantization("Quantization", Float) = 0
+            [ThryToggle(_MATCAP0_QUANTIZATION)]_Matcap0_Quantization_Enabled("Enable", Float) = 0
+            _Matcap0_Quantization_Steps("Steps", Float) = 1
+            [HideInInspector] m_end_Matcap0_Quantization("Quantization", Float) = 0
+            //endex
           [HideInInspector] m_end_Matcap0("Matcaps", Float) = 0
         [HideInInspector] m_end_Matcaps("Matcaps", Float) = 0
         //endex
+
         [HideInInspector] m_start_Rim_Lighting("Rim lighting", Float) = 0
           //ifex _Rim_Lighting0_Enabled==0
           [HideInInspector] m_start_Rim_Lighting0("Rim lighting 0", Float) = 0
@@ -87,21 +97,25 @@ Shader "yum_food/2ner"
           _Rim_Lighting0_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting0_Mode("Mode", Int) = 0
+            //ifex _Rim_Lighting0_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting0_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTING0_MASK)]_Rim_Lighting0_Mask_Enabled("Enable", Float) = 0
             _Rim_Lighting0_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Rim_Lighting0_Mask("Mask", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting0_Angle_Limit_Enabled==0
             [HideInInspector] m_start_Rim_Lighting0_Angle_Limit("Angle limit", Float) = 0
             [ThryToggle(_RIM_LIGHTING0_ANGLE_LIMIT)]_Rim_Lighting0_Angle_Limit_Enabled("Enable", Float) = 0
             _Rim_Lighting0_Angle_Limit_Target_Vector("Target vector", Vector) = (0, -1, 0, 0)
             _Rim_Lighting0_Angle_Limit_Power("Power", Float) = 1
             [HideInInspector] m_end_Rim_Lighting0_Angle_Limit("Angle limit", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting0_Quantization_Enabled==0
             [HideInInspector] m_start_Rim_Lighting0_Quantization("Quantization", Float) = 0
             [ThryToggle(_RIM_LIGHTING0_QUANTIZATION)]_Rim_Lighting0_Quantization_Enabled("Enable", Float) = 0
             _Rim_Lighting0_Quantization_Steps("Steps", Float) = 1
             [HideInInspector] m_end_Rim_Lighting0_Quantization("Quantization", Float) = 0
+            //endex
           [HideInInspector] m_end_Rim_Lighting0("Rim lighting", Float) = 0
           //endex
 
@@ -114,21 +128,25 @@ Shader "yum_food/2ner"
           _Rim_Lighting1_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting1_Mode("Mode", Int) = 0
+            //ifex _Rim_Lighting1_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting1_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTINg1_MASK)]_Rim_Lighting1_Mask_Enabled("Enable", Float) = 0
             _Rim_Lighting1_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Rim_Lighting1_Mask("Mask", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting1_Angle_Limit_Enabled==0
             [HideInInspector] m_start_Rim_Lighting1_Angle_Limit("Angle limit", Float) = 0
             [ThryToggle(_RIM_LIGHTING1_ANGLE_LIMIT)]_Rim_Lighting1_Angle_Limit_Enabled("Enable", Float) = 0
             _Rim_Lighting1_Angle_Limit_Target_Vector("Target vector", Vector) = (0, -1, 0, 0)
             _Rim_Lighting1_Angle_Limit_Power("Power", Float) = 1
             [HideInInspector] m_end_Rim_Lighting1_Angle_Limit("Angle limit", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting1_Quantization_Enabled==0
             [HideInInspector] m_start_Rim_Lighting1_Quantization("Quantization", Float) = 0
             [ThryToggle(_RIM_LIGHTING1_QUANTIZATION)]_Rim_Lighting1_Quantization_Enabled("Enable", Float) = 0
             _Rim_Lighting1_Quantization_Steps("Steps", Float) = 1
             [HideInInspector] m_end_Rim_Lighting1_Quantization("Quantization", Float) = 0
+            //endex
           [HideInInspector] m_end_Rim_Lighting1("Rim lighting", Float) = 0
           //endex
 
@@ -141,21 +159,25 @@ Shader "yum_food/2ner"
           _Rim_Lighting2_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting2_Mode("Mode", Int) = 0
+            //ifex _Rim_Lighting2_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting2_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTING2_MASK)]_Rim_Lighting2_Mask_Enabled("Enable", Float) = 0
             _Rim_Lighting2_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Rim_Lighting2_Mask("Mask", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting2_Angle_Limit_Enabled==0
             [HideInInspector] m_start_Rim_Lighting2_Angle_Limit("Angle limit", Float) = 0
             [ThryToggle(_RIM_LIGHTING2_ANGLE_LIMIT)]_Rim_Lighting2_Angle_Limit_Enabled("Enable", Float) = 0
             _Rim_Lighting2_Angle_Limit_Target_Vector("Target vector", Vector) = (0, -1, 0, 0)
             _Rim_Lighting2_Angle_Limit_Power("Power", Float) = 1
             [HideInInspector] m_end_Rim_Lighting2_Angle_Limit("Angle limit", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting2_Quantization_Enabled==0
             [HideInInspector] m_start_Rim_Lighting2_Quantization("Quantization", Float) = 0
             [ThryToggle(_RIM_LIGHTING2_QUANTIZATION)]_Rim_Lighting2_Quantization_Enabled("Enable", Float) = 0
             _Rim_Lighting2_Quantization_Steps("Steps", Float) = 1
             [HideInInspector] m_end_Rim_Lighting2_Quantization("Quantization", Float) = 0
+            //endex
           [HideInInspector] m_end_Rim_Lighting2("Rim lighting", Float) = 0
           //endex
 
@@ -168,21 +190,25 @@ Shader "yum_food/2ner"
           _Rim_Lighting3_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting3_Mode("Mode", Int) = 0
+            //ifex _Rim_Lighting3_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting3_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTING3_MASK)]_Rim_Lighting3_Mask_Enabled("Enable", Float) = 0
             _Rim_Lighting3_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Rim_Lighting3_Mask("Mask", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting3_Angle_Limit_Enabled==0
             [HideInInspector] m_start_Rim_Lighting3_Angle_Limit("Angle limit", Float) = 0
             [ThryToggle(_RIM_LIGHTING3_ANGLE_LIMIT)]_Rim_Lighting3_Angle_Limit_Enabled("Enable", Float) = 0
             _Rim_Lighting3_Angle_Limit_Target_Vector("Target vector", Vector) = (0, -1, 0, 0)
             _Rim_Lighting3_Angle_Limit_Power("Power", Float) = 1
             [HideInInspector] m_end_Rim_Lighting3_Angle_Limit("Angle limit", Float) = 0
-
+            //endex
+            //ifex _Rim_Lighting3_Quantization_Enabled==0
             [HideInInspector] m_start_Rim_Lighting3_Quantization("Quantization", Float) = 0
             [ThryToggle(_RIM_LIGHTING3_QUANTIZATION)]_Rim_Lighting3_Quantization_Enabled("Enable", Float) = 0
             _Rim_Lighting3_Quantization_Steps("Steps", Float) = 1
             [HideInInspector] m_end_Rim_Lighting3_Quantization("Quantization", Float) = 0
+            //endex
           [HideInInspector] m_end_Rim_Lighting3("Rim lighting", Float) = 0
           //endex
 

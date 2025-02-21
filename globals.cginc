@@ -67,6 +67,9 @@ float _Matcap0_Strength;
 #if defined(_MATCAP0_MASK)
 texture2D _Matcap0_Mask;
 #endif
+#if defined(_MATCAP0_QUANTIZATION)
+float _Matcap0_Quantization_Steps;
+#endif
 #endif
 
 #if defined(_RIM_LIGHTING0)

@@ -27,6 +27,7 @@
 //ifex _Matcap0_Enabled==0
 #pragma shader_feature_local _MATCAP0
 #pragma shader_feature_local _MATCAP0_MASK
+#pragma shader_feature_local _MATCAP0_QUANTIZATION
 //endex
 
 //ifex _Rim_Lighting0_Enabled==0
