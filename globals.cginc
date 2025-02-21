@@ -35,6 +35,14 @@ float _Min_Brightness;
 float _Quantize_NoL_Steps;
 #endif
 
+#if defined(_QUANTIZE_SPECULAR)
+float _Quantize_Specular_Steps;
+#endif
+
+#if defined(_QUANTIZE_DIFFUSE)
+float _Quantize_Diffuse_Steps;
+#endif
+
 float _Clip;
 int _Mode;
 float _Smoothness;

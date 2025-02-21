@@ -17,6 +17,14 @@
 #pragma shader_feature_local _QUANTIZE_NOL
 //endex
 
+//ifex _Quantize_Specular_Enabled==0
+#pragma shader_feature_local _QUANTIZE_SPECULAR
+//endex
+
+//ifex _Quantize_Diffuse_Enabled==0
+#pragma shader_feature_local _QUANTIZE_DIFFUSE
+//endex
+
 //ifex _Outlines_Enabled==0
 #pragma shader_feature_local _OUTLINES
 //endex

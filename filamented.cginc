@@ -343,7 +343,12 @@ half3 Unity_GlossyEnvironment_local (UNITY_ARGS_TEXCUBE(tex), half4 hdr, Unity_G
 	half3 R = glossIn.reflUVW;
 	half4 rgbm = UNITY_SAMPLE_TEXCUBE_LOD(tex, R, mip);
 
-	return DecodeHDR(rgbm, hdr);
+	half3 color = DecodeHDR(rgbm, hdr);
+#if defined(_QUANTIZE_SPECULAR)
+  float luminance = dot(color, float3(0.2126, 0.7152, 0.0722));  // convert to luminance
+  color = color * floor(luminance * _Quantize_Specular_Steps) / _Quantize_Specular_Steps;
+#endif
+  return color;
 }
 
 inline half3 UnityGI_prefilteredRadiance(const UnityGIInput data,

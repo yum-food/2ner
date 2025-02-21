@@ -255,6 +255,12 @@ Shader "yum_food/2ner"
           _Quantize_NoL_Steps("Steps", Float) = 1
         [HideInInspector] m_end_Quantize_NoL("Quantize NoL", Float) = 0
         //endex
+        //ifex _Quantize_Specular_Enabled==0
+        [HideInInspector] m_start_Quantize_Specular("Quantize Specular", Float) = 0
+          [ThryToggle(_QUANTIZE_SPECULAR)] _Quantize_Specular_Enabled("Enable", Float) = 0
+          _Quantize_Specular_Steps("Steps", Float) = 1
+        [HideInInspector] m_end_Quantize_Specular("Quantize Specular", Float) = 0
+        //endex
 
       [HideInInspector] m_renderingOptions("Rendering Options", Float) = 0
       [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2

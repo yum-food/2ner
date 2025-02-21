@@ -132,6 +132,15 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 
   light.specular = getIndirectSpecular(i, pbr, light.view_dir);
 
+#if defined(_QUANTIZE_SPECULAR)
+  float specular_luminance = dot(light.specular, float3(0.2126, 0.7152, 0.0722));  // convert to luminance
+  light.specular = light.specular * floor(specular_luminance * _Quantize_Specular_Steps) / _Quantize_Specular_Steps;
+#endif
+#if defined(_QUANTIZE_DIFFUSE)
+  float diffuse_luminance = dot(light.diffuse, float3(0.2126, 0.7152, 0.0722));  // convert to luminance
+  light.diffuse = light.diffuse * floor(diffuse_luminance * _Quantize_Diffuse_Steps) / _Quantize_Diffuse_Steps;
+#endif
+
 	light.NoL = saturate(dot(pbr.normal, light.dir));
 #if defined(_QUANTIZE_NOL)
   light.NoL = floor(light.NoL * _Quantize_NoL_Steps) / _Quantize_NoL_Steps;
