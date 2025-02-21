@@ -21,8 +21,8 @@
 #pragma shader_feature_local _QUANTIZE_SPECULAR
 //endex
 
-//ifex _Quantize_Diffuse_Enabled==0
-#pragma shader_feature_local _QUANTIZE_DIFFUSE
+//ifex _Metallics_Enabled==0
+#pragma shader_feature_local _METALLICS
 //endex
 
 //ifex _Outlines_Enabled==0

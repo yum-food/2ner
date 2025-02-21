@@ -42,12 +42,16 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_AO("Metallics", Float) = 0
         //endex
 
+      //ifex _Metallics_Enabled==0
       [HideInInspector] m_reflectionOptions("Reflections", Float) = 0
-        [HideInInspector] m_start_Metallic("Metallics", Float) = 0
+      [HideInInspector] m_start_Metallic("Metallics", Float) = 0
+        [ThryToggle(_METALLICS)]_Metallics_Enabled("Enable", Float) = 0
         _MetallicMask("Metallic Mask", 2D) = "white" {}
         _Metallic("Metallic", Range(0, 1)) = 0
         _Smoothness("Smoothness", Range(0, 1)) = 0
-        [HideInInspector] m_end_Metallic("Metallics", Float) = 0
+        _MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+      [HideInInspector] m_end_Metallic("Metallics", Float) = 0
+      //endex
 
       [HideInInspector] m_gimmicks("Gimmicks", Float) = 0
         //ifex _Outlines_Enabled==0

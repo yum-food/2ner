@@ -45,13 +45,18 @@ float _Quantize_Diffuse_Steps;
 
 float _Clip;
 int _Mode;
-float _Smoothness;
-float _Metallic;
 float _Spherical_Harmonics;
 
 float _reflectance;
 float _specularAntiAliasingVariance;
 float _specularAntiAliasingThreshold;
+
+#if defined(_METALLICS)
+float _Smoothness;
+float _Metallic;
+sampler2D _MetallicGlossMap;
+float4 _MetallicGlossMap_ST;
+#endif
 
 #if defined(OUTLINE_PASS)
 float4 _Outline_Color;
