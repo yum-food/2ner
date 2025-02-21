@@ -71,5 +71,9 @@
 #pragma shader_feature_local _VERTEX_DOMAIN_WARPING
 //endex
 
+//ifex _Eye_Effect_00_Enabled==0
+#pragma shader_feature_local _EYE_EFFECT_00
+//endex
+
 #endif  // __FEATURES_INC
 

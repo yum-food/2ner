@@ -4,6 +4,7 @@
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 
+#include "eyes.cginc"
 #include "features.cginc"
 #include "globals.cginc"
 #include "interpolators.cginc"
@@ -59,6 +60,7 @@ v2f vert(appdata v) {
   o.pos = UnityObjectToClipPos(v.vertex);
   o.uv01 = v.uv01;
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+  o.objPos = v.vertex;
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
 
   // These are used to convert normals from tangent space to world space.
@@ -83,7 +85,16 @@ float4 frag(v2f i) : SV_Target {
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
 
+#if defined(_EYE_EFFECT_00)
+  EyeEffectOutput eye_effect_00 = EyeEffect_00(i);
+  i.uv01.xy = eye_effect_00.uv;
+#endif
+
   YumPbr pbr = GetYumPbr(i);
+
+#if defined(_EYE_EFFECT_00)
+  pbr.normal = eye_effect_00.normal;
+#endif
 
   UNITY_BRANCH
   if (_Mode == 1) {

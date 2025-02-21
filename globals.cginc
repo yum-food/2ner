@@ -171,4 +171,15 @@ float _Vertex_Domain_Warping_Speed;
 float _Vertex_Domain_Warping_Temporal_Strength;
 #endif  // _VERTEX_DOMAIN_WARPING
 
+#if defined(_EYE_EFFECT_00)
+float _Gimmick_Eye_Effect_00_Edge_Length;
+float3 _Gimmick_Eye_Effect_00_Period;
+float3 _Gimmick_Eye_Effect_00_Count;
+texture2D _Gimmick_Eye_Effect_00_Noise;
+float _Gimmick_Eye_Effect_00_Domain_Warping_Octaves;
+float _Gimmick_Eye_Effect_00_Domain_Warping_Scale;
+float _Gimmick_Eye_Effect_00_Domain_Warping_Speed;
+float _Gimmick_Eye_Effect_00_Domain_Warping_Strength;
+#endif  // _EYE_EFFECT_00
+
 #endif  // __GLOBALS_INC

@@ -237,6 +237,20 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
         //endex
 
+        //ifex _Eye_Effect_00_Enabled==0
+        [HideInInspector] m_start_Eye_Effect_00("Eye effect 00", Float) = 0
+          [ThryToggle(_EYE_EFFECT_00)]_Eye_Effect_00_Enabled("Enable", Float) = 0
+          _Gimmick_Eye_Effect_00_Edge_Length("Edge length", Float) = 0.1
+          _Gimmick_Eye_Effect_00_Period("Period", Vector) = (1.0, 1.0, 1.0)
+          _Gimmick_Eye_Effect_00_Count("Count", Vector) = (1.0, 1.0, 1.0)
+          _Gimmick_Eye_Effect_00_Noise("Noise", 2D) = "white" {}
+          _Gimmick_Eye_Effect_00_Domain_Warping_Octaves("Domain warping octaves", Float) = 1.0
+          _Gimmick_Eye_Effect_00_Domain_Warping_Scale("Domain warping scale", Float) = 1.0
+          _Gimmick_Eye_Effect_00_Domain_Warping_Speed("Domain warping speed", Float) = 1.0
+          _Gimmick_Eye_Effect_00_Domain_Warping_Strength("Domain warping strength", Float) = 0.1
+          [HideInInspector] m_end_Eye_Effect_00("Eye effect 00", Float) = 0
+        //endex
+
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
         //ifex _Receive_Shadows_Enabled==0
         [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
