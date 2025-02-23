@@ -15,6 +15,10 @@ half _BumpScale;
 float _BumpShadowHeightScale;
 float _BumpShadowHardness;
 
+#if defined(_ALPHA_MULTIPLIER)
+float _Alpha_Multiplier;
+#endif
+
 #if defined(_EMISSION)
 sampler2D _EmissionMap;
 float4 _EmissionMap_ST;
@@ -189,5 +193,11 @@ texture3D _SSFD_Noise;
 float _SSFD_Size_Factor;
 float _SSFD_Threshold;
 #endif  // _SSFD
+
+#if defined(_LTCGI)
+float _LTCGI_Strength;
+float4 _LTCGI_SpecularColor;
+float4 _LTCGI_DiffuseColor;
+#endif  // _LTCGI
 
 #endif  // __GLOBALS_INC

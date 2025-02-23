@@ -1,6 +1,10 @@
 #ifndef __FEATURES_INC
 #define __FEATURES_INC
 
+//ifex _Alpha_Multiplier_Enabled==0
+#pragma shader_feature_local _ALPHA_MULTIPLIER
+//endex
+
 //ifex _Ambient_Occlusion_Enabled==0
 #pragma shader_feature_local _AMBIENT_OCCLUSION
 //endex
@@ -77,6 +81,10 @@
 
 //ifex _SSFD_Enabled==0
 #pragma shader_feature_local _SSFD
+//endex
+
+//ifex _LTCGI_Enabled==0
+#pragma shader_feature_local _LTCGI
 //endex
 
 #endif  // __FEATURES_INC

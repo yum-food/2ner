@@ -9,6 +9,38 @@
 #include "features.cginc"
 #include "yum_pbr.cginc"
 
+// fucking kill me
+#ifndef __LTCGI_INC
+#define __LTCGI_INC
+
+#include "features.cginc"
+
+#if defined(_LTCGI)
+struct ltcgi_acc {
+  float3 diffuse;
+  float3 specular;
+};
+
+#include "Third_Party/at.pimaker.ltcgi/Shaders/LTCGI_structs.cginc"
+
+void ltcgi_cb_diffuse(inout ltcgi_acc acc, in ltcgi_output output);
+void ltcgi_cb_specular(inout ltcgi_acc acc, in ltcgi_output output);
+
+#define LTCGI_V2_CUSTOM_INPUT ltcgi_acc
+#define LTCGI_V2_DIFFUSE_CALLBACK ltcgi_cb_diffuse
+#define LTCGI_V2_SPECULAR_CALLBACK ltcgi_cb_specular
+
+#include "Third_Party/at.pimaker.ltcgi/Shaders/LTCGI.cginc"
+void ltcgi_cb_diffuse(inout ltcgi_acc acc, in ltcgi_output output) {
+	acc.diffuse += output.intensity * output.color * _LTCGI_DiffuseColor;
+}
+void ltcgi_cb_specular(inout ltcgi_acc acc, in ltcgi_output output) {
+	acc.specular += output.intensity * output.color * _LTCGI_SpecularColor;
+}
+#endif  // _LTCGI
+
+#endif  // __LTCGI_INC
+
 struct YumLighting {
 	float3 view_dir;
 	float3 dir;
@@ -131,6 +163,19 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 #endif
 
   light.specular = getIndirectSpecular(i, pbr, light.view_dir);
+
+#if defined(_LTCGI)
+  ltcgi_acc acc = (ltcgi_acc) 0;
+  LTCGI_Contribution(
+      acc,
+      i.worldPos,
+      pbr.normal,
+      light.view_dir,
+      pbr.roughness_perceptual,
+      0);
+  light.diffuse += acc.diffuse * _LTCGI_Strength;
+  light.specular += acc.specular * _LTCGI_Strength;
+#endif
 
 #if defined(_QUANTIZE_SPECULAR)
   float specular_luminance = dot(light.specular, float3(0.2126, 0.7152, 0.0722));  // convert to luminance

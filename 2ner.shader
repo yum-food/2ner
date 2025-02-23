@@ -34,6 +34,13 @@ Shader "yum_food/2ner"
       [PanningTexture][Normal]_BumpMap("Normals", 2D) = "bump" {}
       _BumpScale("Normal Intensity", Range(0, 10)) = 1
       _Clip("Alpha Cuttoff", Range(0, 1.001)) = 0.5
+        //ifex _Alpha_Multiplier_Enabled==0
+        [HideInInspector] m_start_Alpha_Multiplier("Alpha multiplier", Float) = 0
+          [ThryToggle(_ALPHA_MULTIPLIER)]_Alpha_Multiplier_Enabled("Enable", Float) = 0
+          _Alpha_Multiplier("Multiplier", Float) = 1
+        [HideInInspector] m_end_Alpha_Multiplier("Alpha multiplier", Float) = 0
+        //endex
+
         //ifex _Emission_Enabled==0
         [HideInInspector] m_start_Emission("Emission", Float) = 0
           [ThryToggle(_EMISSION)]_Emission_Enabled("Enable", Float) = 0
@@ -302,6 +309,8 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_LTCGI("LTCGI", Float) = 0
           [ThryToggle(_LTCGI)] _LTCGI_Enabled("Enable", Float) = 0
           _LTCGI_Strength("Strength", Range(0, 1)) = 1.0
+          _LTCGI_SpecularColor("Specular color", Color) = (1, 1, 1, 1)
+          _LTCGI_DiffuseColor("Diffuse color", Color) = (1, 1, 1, 1)
         [HideInInspector] m_end_LTCGI("LTCGI", Float) = 0
         //endex
 

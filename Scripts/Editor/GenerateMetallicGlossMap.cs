@@ -27,7 +27,7 @@ public class GenerateMetallicGlossMap : EditorWindow
         
         invertSmoothness = EditorGUILayout.Toggle("Invert Smoothness", invertSmoothness);
 
-        if (GUILayout.Button("Generate Metallic Gloss Map") && metallicMap != null && smoothnessMap != null)
+        if (GUILayout.Button("Generate Metallic Gloss Map") && smoothnessMap != null)
         {
             GenerateMap();
         }
@@ -35,44 +35,46 @@ public class GenerateMetallicGlossMap : EditorWindow
 
     private void GenerateMap()
     {
-        // Get path of metallic map
-        string path = AssetDatabase.GetAssetPath(metallicMap);
-        string directory = Path.GetDirectoryName(path);
-        string newPath = Path.Combine(directory, metallicMap.name + "_metallicgloss.png");
+        // Get path and determine output location
+        string directory = metallicMap != null 
+            ? Path.GetDirectoryName(AssetDatabase.GetAssetPath(metallicMap))
+            : Path.GetDirectoryName(AssetDatabase.GetAssetPath(smoothnessMap));
+        string filename = metallicMap != null ? metallicMap.name : "black";
+        string newPath = Path.Combine(directory, filename + "_metallicgloss.png");
 
         // Create new texture
-        int width = metallicMap.width;
-        int height = metallicMap.height;
+        int width = metallicMap != null ? metallicMap.width : smoothnessMap.width;
+        int height = metallicMap != null ? metallicMap.height : smoothnessMap.height;
         Texture2D combinedTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
 
-        // Make the texture readable
-        TextureImporter metallicImporter = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(metallicMap)) as TextureImporter;
+        // Make the smoothness texture readable
         TextureImporter smoothnessImporter = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(smoothnessMap)) as TextureImporter;
-
-        bool metallicReadable = metallicImporter.isReadable;
         bool smoothnessReadable = smoothnessImporter.isReadable;
-
-        metallicImporter.isReadable = true;
         smoothnessImporter.isReadable = true;
-
-        AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(metallicMap));
         AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(smoothnessMap));
 
-        // Get pixels
-        Color[] metallicPixels = metallicMap.GetPixels();
-        Color[] smoothnessPixels = smoothnessMap.GetPixels();
-        Color[] newPixels = new Color[metallicPixels.Length];
-
-        // Combine channels (R from metallic, A from smoothness)
-        for (int i = 0; i < metallicPixels.Length; i++)
+        // Handle metallic texture if it exists
+        TextureImporter metallicImporter = null;
+        bool metallicReadable = false;
+        if (metallicMap != null)
         {
+            metallicImporter = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(metallicMap)) as TextureImporter;
+            metallicReadable = metallicImporter.isReadable;
+            metallicImporter.isReadable = true;
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(metallicMap));
+        }
+
+        // Get pixels
+        Color[] smoothnessPixels = smoothnessMap.GetPixels();
+        Color[] metallicPixels = metallicMap != null ? metallicMap.GetPixels() : new Color[smoothnessPixels.Length];
+        Color[] newPixels = new Color[smoothnessPixels.Length];
+
+        // Combine channels (R from metallic or black, A from smoothness)
+        for (int i = 0; i < smoothnessPixels.Length; i++)
+        {
+            float metallic = metallicMap != null ? metallicPixels[i].r : 0f;  // Use 0 (black) if no metallic map
             float smoothness = invertSmoothness ? 1 - smoothnessPixels[i].r : smoothnessPixels[i].r;
-            newPixels[i] = new Color(
-                metallicPixels[i].r,    // Metallic in R
-                0,                      // Empty G
-                0,                      // Empty B
-                smoothness              // Smoothness in A (inverted if flag is set)
-            );
+            newPixels[i] = new Color(metallic, 0, 0, smoothness);
         }
 
         // Apply pixels and save
@@ -84,10 +86,12 @@ public class GenerateMetallicGlossMap : EditorWindow
         File.WriteAllBytes(newPath, bytes);
 
         // Restore original import settings
-        metallicImporter.isReadable = metallicReadable;
+        if (metallicMap != null)
+        {
+            metallicImporter.isReadable = metallicReadable;
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(metallicMap));
+        }
         smoothnessImporter.isReadable = smoothnessReadable;
-
-        AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(metallicMap));
         AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(smoothnessMap));
         AssetDatabase.ImportAsset(newPath);
 

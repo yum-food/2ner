@@ -31,6 +31,10 @@ YumPbr GetYumPbr(v2f i) {
       UV_SCOFF(i, _MainTex_ST, /*which_channel=*/0)) * _Color;
 #endif
 
+#if defined(_ALPHA_MULTIPLIER)
+  result.albedo.a = saturate(result.albedo.a * _Alpha_Multiplier);
+#endif
+
   float3 normal_raw = UnpackScaleNormal(
       tex2D(_BumpMap, UV_SCOFF(i, _BumpMap_ST, /*which_channel=*/0)),
       _BumpScale);
