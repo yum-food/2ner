@@ -10,6 +10,7 @@
 #include "interpolators.cginc"
 #include "matcaps.cginc"
 #include "poi.cginc"
+#include "ssfd.cginc"
 #include "yum_brdf.cginc"
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
@@ -91,6 +92,18 @@ float4 frag(v2f i) : SV_Target {
 #endif
 
   YumPbr pbr = GetYumPbr(i);
+
+#if defined(_SSFD)
+  float ssfd_mask = ssfd(i.uv01.xy, _SSFD_Scale, _SSFD_Max_Fwidth, 0, _SSFD_Noise);
+  pbr.albedo *= (ssfd_mask > _SSFD_Threshold);
+#endif
+
+#if defined(OUTLINE_PASS)
+  pbr.smoothness = 0;
+  pbr.roughness = 1;
+  pbr.roughness_perceptual = 1;
+  pbr.metallic = 0;
+#endif
 
 #if defined(_EYE_EFFECT_00)
   pbr.normal = eye_effect_00.normal;

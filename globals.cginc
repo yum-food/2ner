@@ -182,4 +182,12 @@ float _Gimmick_Eye_Effect_00_Domain_Warping_Speed;
 float _Gimmick_Eye_Effect_00_Domain_Warping_Strength;
 #endif  // _EYE_EFFECT_00
 
+#if defined(_SSFD)
+float _SSFD_Scale;
+float _SSFD_Max_Fwidth;
+texture3D _SSFD_Noise;
+float _SSFD_Size_Factor;
+float _SSFD_Threshold;
+#endif  // _SSFD
+
 #endif  // __GLOBALS_INC

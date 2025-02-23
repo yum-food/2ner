@@ -75,5 +75,9 @@
 #pragma shader_feature_local _EYE_EFFECT_00
 //endex
 
+//ifex _SSFD_Enabled==0
+#pragma shader_feature_local _SSFD
+//endex
+
 #endif  // __FEATURES_INC
 

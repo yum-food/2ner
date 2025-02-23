@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -92,3 +94,5 @@ public class GenerateMetallicGlossMap : EditorWindow
         Debug.Log("Generated metallic gloss map at: " + newPath);
     }
 }
+
+#endif  // UNITY_EDITOR

@@ -251,6 +251,17 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Eye_Effect_00("Eye effect 00", Float) = 0
         //endex
 
+        //ifex _SSFD_Enabled==0
+        [HideInInspector] m_start_SSFD("SSFD", Float) = 0
+          [ThryToggle(_SSFD)] _SSFD_Enabled("Enable", Float) = 0
+          _SSFD_Scale("Scale", Float) = 1.0
+          _SSFD_Max_Fwidth("Max fwidth", Float) = 1.0
+          _SSFD_Noise("Noise", 3D) = "black" {}
+          _SSFD_Size_Factor("Size factor", Float) = 1.0
+          _SSFD_Threshold("Threshold", Range(0, 1)) = 0.5
+        [HideInInspector] m_end_SSFD("SSFD", Float) = 0
+        //endex
+
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
         //ifex _Receive_Shadows_Enabled==0
         [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
@@ -286,6 +297,12 @@ Shader "yum_food/2ner"
           [ThryToggle(_QUANTIZE_SPECULAR)] _Quantize_Specular_Enabled("Enable", Float) = 0
           _Quantize_Specular_Steps("Steps", Float) = 1
         [HideInInspector] m_end_Quantize_Specular("Quantize Specular", Float) = 0
+        //endex
+        //ifex _LTCGI_Enabled==0
+        [HideInInspector] m_start_LTCGI("LTCGI", Float) = 0
+          [ThryToggle(_LTCGI)] _LTCGI_Enabled("Enable", Float) = 0
+          _LTCGI_Strength("Strength", Range(0, 1)) = 1.0
+        [HideInInspector] m_end_LTCGI("LTCGI", Float) = 0
         //endex
 
       [HideInInspector] m_renderingOptions("Rendering Options", Float) = 0
