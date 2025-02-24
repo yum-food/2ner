@@ -175,6 +175,12 @@ float _Vertex_Domain_Warping_Speed;
 float _Vertex_Domain_Warping_Temporal_Strength;
 #endif  // _VERTEX_DOMAIN_WARPING
 
+#if defined(_UV_DOMAIN_WARPING)
+float _UV_Domain_Warping_Spatial_Strength;
+float _UV_Domain_Warping_Spatial_Scale;
+float _UV_Domain_Warping_Spatial_Octaves;
+#endif
+
 #if defined(_EYE_EFFECT_00)
 float _Gimmick_Eye_Effect_00_Edge_Length;
 float3 _Gimmick_Eye_Effect_00_Period;

@@ -53,7 +53,7 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_AO("Ambient occlusion", Float) = 0
         [ThryToggle(_AMBIENT_OCCLUSION)]_Ambient_Occlusion_Enabled("Enable", Float) = 0
         _OcclusionMap("Ambient occlusion", 2D) = "white" {}
-        _OcclusionStrength("Ambient occlusion", Range(0,1)) = 1
+        _OcclusionStrength("Ambient occlusion", Float) = 1
         [HideInInspector] m_end_AO("Metallics", Float) = 0
         //endex
 
@@ -242,6 +242,15 @@ Shader "yum_food/2ner"
           _Vertex_Domain_Warping_Speed("Speed", Float) = 1.0
           _Vertex_Domain_Warping_Temporal_Strength("Temporal warping strength", Float) = 0.10
           [HideInInspector] m_end_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
+        //endex
+
+        //ifex _UV_Domain_Warping_Enabled==0
+        [HideInInspector] m_start_UV_Domain_Warping("UV domain warping", Float) = 0
+          [ThryToggle(_UV_DOMAIN_WARPING)]_UV_Domain_Warping_Enabled("Enable", Float) = 0
+          _UV_Domain_Warping_Spatial_Strength("Spatial warping strength", Float) = 0.10
+          _UV_Domain_Warping_Spatial_Scale("Spatial warping scale", Float) = 0.10
+          _UV_Domain_Warping_Spatial_Octaves("Spatial warping octaves", Float) = 1.0
+          [HideInInspector] m_end_UV_Domain_Warping("UV domain warping", Float) = 0
         //endex
 
         //ifex _Eye_Effect_00_Enabled==0
