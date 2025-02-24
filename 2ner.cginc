@@ -114,15 +114,16 @@ float4 frag(v2f i) : SV_Target {
 #if defined(_EYE_EFFECT_00)
   pbr.normal = eye_effect_00.normal;
 #endif
-#if defined(EXTRA_STENCIL_COLOR_PASS)
-  pbr.albedo = _ExtraStencilColor;
-#endif
 
   UNITY_BRANCH
   if (_Mode == 1) {
     clip(pbr.albedo.a - _Clip);
     pbr.albedo.a = 1;
   }
+
+#if defined(EXTRA_STENCIL_COLOR_PASS)
+  pbr.albedo = _ExtraStencilColor;
+#endif
 
 #if defined(FORWARD_BASE_PASS)
   applyMatcapsAndRimLighting(i, pbr);
