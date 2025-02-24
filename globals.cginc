@@ -206,4 +206,19 @@ float4 _LTCGI_SpecularColor;
 float4 _LTCGI_DiffuseColor;
 #endif  // _LTCGI
 
+#if defined(MASKED_STENCIL_PASS)
+texture2D _Masked_Stencil_Mask;
+float _Masked_Stencil_Ref;
+float _Masked_Stencil_Read_Mask;
+float _Masked_Stencil_Write_Mask;
+float _Masked_Stencil_Compare_Function;
+float _Masked_Stencil_Pass_Op;
+float _Masked_Stencil_Fail_Op;
+float _Masked_Stencil_Z_Fail_Op;
+#endif  // MASKED_STENCIL_PASS
+
+#if defined(EXTRA_STENCIL_COLOR_PASS)
+float4 _ExtraStencilColor;
+#endif  // EXTRA_STENCIL_COLOR_PASS
+
 #endif  // __GLOBALS_INC

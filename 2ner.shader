@@ -1,5 +1,8 @@
 Shader "yum_food/2ner"
 {
+  // Certain parts of the Properties below are derived from Poiyomi's toon
+  // shader. The license is available in this repository at the top of
+  // poi.cginc.
 	Properties
   {
       [HideInInspector] shader_master_label("<color=#de719bff>2ner</color>", Float) = 0
@@ -278,6 +281,120 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_SSFD("SSFD", Float) = 0
         //endex
 
+        //ifex _Masked_Stencil_Enabled==0
+        [HideInInspector] m_start_Masked_Stencil("Masked stencil", Float) = 0
+          [ThryToggle(_)] _Masked_Stencil_Enabled("Enable", Float) = 0
+          [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _MaskedStencilType ("Stencil Type", Float) = 0
+          _Masked_Stencil_Mask("Mask", 2D) = "white" {}
+          [IntRange] _MaskedStencilRef ("Stencil Reference Value", Range(0, 255)) = 0
+          [IntRange] _MaskedStencilReadMask ("Stencil ReadMask Value", Range(0, 255)) = 255
+          [IntRange] _MaskedStencilWriteMask ("Stencil WriteMask Value", Range(0, 255)) = 255
+          [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilPassOp ("Stencil Pass Op--{condition_showS:(_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilFailOp ("Stencil Fail Op--{condition_showS:(_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilZFailOp ("Stencil ZFail Op--{condition_showS:(_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.CompareFunction)] _MaskedStencilCompareFunction ("Stencil Compare Function--{condition_showS:(_StencilType==0)}", Float) = 8
+          [HideInInspector] m_start_MaskedStencilPassBackOptions("Back--{condition_showS:(_MaskedStencilType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp0 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilBackPassOp ("Back Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilBackFailOp ("Back Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilBackZFailOp ("Back ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _MaskedStencilBackCompareFunction ("Back Compare Function", Float) = 8
+          [HideInInspector] m_end_MaskedStencilPassBackOptions("Back", Float) = 0
+          [HideInInspector] m_start_MaskedStencilPassFrontOptions("Front--{condition_showS:(_MaskedStencilType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp1 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilFrontPassOp ("Front Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilFrontFailOp ("Front Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _MaskedStencilFrontZFailOp ("Front ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _MaskedStencilFrontCompareFunction ("Front Compare Function", Float) = 8
+          [HideInInspector] m_end_MaskedStencilPassFrontOptions("Front", Float) = 0
+        [HideInInspector] m_end_Masked_Stencil("Masked stencil", Float) = 0
+        //endex
+
+        //ifex _Stencil_Enabled==0
+        [HideInInspector] m_start_Stencil("Stencil", Float) = 0
+          [ThryToggle(_)] _Stencil_Enabled("Enable", Float) = 0
+          [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _StencilType ("Stencil Type", Float) = 0
+          [IntRange] _StencilRef ("Stencil Reference Value", Range(0, 255)) = 0
+          [IntRange] _StencilReadMask ("Stencil ReadMask Value", Range(0, 255)) = 255
+          [IntRange] _StencilWriteMask ("Stencil WriteMask Value", Range(0, 255)) = 255
+          [Enum(UnityEngine.Rendering.StencilOp)] _StencilPassOp ("Stencil Pass Op--{condition_showS:(_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _StencilFailOp ("Stencil Fail Op--{condition_showS:(_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _StencilZFailOp ("Stencil ZFail Op--{condition_showS:(_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.CompareFunction)] _StencilCompareFunction ("Stencil Compare Function--{condition_showS:(_StencilType==0)}", Float) = 8
+          [HideInInspector] m_start_StencilPassBackOptions("Back--{condition_showS:(_StencilType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp0 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _StencilBackPassOp ("Back Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _StencilBackFailOp ("Back Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _StencilBackZFailOp ("Back ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _StencilBackCompareFunction ("Back Compare Function", Float) = 8
+          [HideInInspector] m_end_StencilPassBackOptions("Back", Float) = 0
+          [HideInInspector] m_start_StencilPassFrontOptions("Front--{condition_showS:(_StencilType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp1 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _StencilFrontPassOp ("Front Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _StencilFrontFailOp ("Front Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _StencilFrontZFailOp ("Front ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _StencilFrontCompareFunction ("Front Compare Function", Float) = 8
+          [HideInInspector] m_end_StencilPassFrontOptions("Front", Float) = 0
+        [HideInInspector] m_end_Stencil("Stencil", Float) = 0
+        //endex
+
+        //ifex _ExtraStencilColorPass_Enabled==0
+        [HideInInspector] m_start_ExtraStencilColorPass("Extra stencil color pass", Float) = 0
+          [ThryToggle(_)] _ExtraStencilColorPass_Enabled("Enable", Float) = 0
+          _ExtraStencilColor("Color", Color) = (1, 1, 1, 1)
+          [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _ExtraStencilColorType ("Stencil Type", Float) = 0
+          [IntRange] _ExtraStencilColorRef ("Stencil Reference Value", Range(0, 255)) = 0
+          [IntRange] _ExtraStencilColorReadMask ("Stencil ReadMask Value", Range(0, 255)) = 255
+          [IntRange] _ExtraStencilColorWriteMask ("Stencil WriteMask Value", Range(0, 255)) = 255
+          [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorPassOp ("Stencil Pass Op--{condition_showS:(_ExtraStencilColorType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorFailOp ("Stencil Fail Op--{condition_showS:(_ExtraStencilColorType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorZFailOp ("Stencil ZFail Op--{condition_showS:(_ExtraStencilColorType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.CompareFunction)] _ExtraStencilColorCompareFunction ("Stencil Compare Function--{condition_showS:(_ExtraStencilColorType==0)}", Float) = 8
+          [HideInInspector] m_start_ExtraStencilColorPassBackOptions("Back--{condition_showS:(_ExtraStencilColorType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp0 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorBackPassOp ("Back Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorBackFailOp ("Back Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorBackZFailOp ("Back ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _ExtraStencilColorBackCompareFunction ("Back Compare Function", Float) = 8
+          [HideInInspector] m_end_ExtraStencilColorPassBackOptions("Back", Float) = 0
+          [HideInInspector] m_start_ExtraStencilColorPassFrontOptions("Front--{condition_showS:(_ExtraStencilColorType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp1 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorFrontPassOp ("Front Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorFrontFailOp ("Front Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _ExtraStencilColorFrontZFailOp ("Front ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _ExtraStencilColorFrontCompareFunction ("Front Compare Function", Float) = 8
+          [HideInInspector] m_end_ExtraStencilColorPassFrontOptions("Front", Float) = 0
+        [HideInInspector] m_end_ExtraStencilColorPass("Extra Stencil Color", Float) = 0
+        //endex
+
+        //ifex _Outline_Stencil_Enabled==0
+        [HideInInspector] m_start_Outline_Stencil("Outline Stencil", Float) = 0
+          [ThryToggle(_)] _Outline_Stencil_Enabled("Enable", Float) = 0
+          [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _Outline_StencilType ("Stencil Type", Float) = 0
+          [IntRange] _Outline_StencilRef ("Stencil Reference Value", Range(0, 255)) = 0
+          [IntRange] _Outline_StencilReadMask ("Stencil ReadMask Value", Range(0, 255)) = 255
+          [IntRange] _Outline_StencilWriteMask ("Stencil WriteMask Value", Range(0, 255)) = 255
+          [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilPassOp ("Stencil Pass Op--{condition_showS:(_Outline_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilFailOp ("Stencil Fail Op--{condition_showS:(_Outline_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilZFailOp ("Stencil ZFail Op--{condition_showS:(_Outline_StencilType==0)}", Float) = 0
+          [Enum(UnityEngine.Rendering.CompareFunction)] _Outline_StencilCompareFunction ("Stencil Compare Function--{condition_showS:(_Outline_StencilType==0)}", Float) = 8
+          [HideInInspector] m_start_Outline_StencilPassBackOptions("Back--{condition_showS:(_Outline_StencilType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp0 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilBackPassOp ("Back Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilBackFailOp ("Back Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilBackZFailOp ("Back ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _Outline_StencilBackCompareFunction ("Back Compare Function", Float) = 8
+          [HideInInspector] m_end_Outline_StencilPassBackOptions("Back", Float) = 0
+          [HideInInspector] m_start_Outline_StencilPassFrontOptions("Front--{condition_showS:(_Outline_StencilType==1)}", Float) = 0
+            [Helpbox(1)] _FFBFStencilHelp1 ("Front Face and Back Face Stencils only work when locked in due to Unity's Stencil managment", Int) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilFrontPassOp ("Front Pass Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilFrontFailOp ("Front Fail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.StencilOp)] _Outline_StencilFrontZFailOp ("Front ZFail Op", Float) = 0
+            [Enum(UnityEngine.Rendering.CompareFunction)] _Outline_StencilFrontCompareFunction ("Front Compare Function", Float) = 8
+          [HideInInspector] m_end_Outline_StencilPassFrontOptions("Front", Float) = 0
+        [HideInInspector] m_end_Outline_Stencil("Outline Stencil", Float) = 0
+        //endex
+
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
         //ifex _Receive_Shadows_Enabled==0
         [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
@@ -373,6 +490,53 @@ Shader "yum_food/2ner"
   SubShader {
 		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "VRCFallback" = "Standard" }
 
+    //ifex _Masked_Stencil_Enabled==0
+    Pass {
+      Name "MASKEDSTENCIL"
+      Tags { "LightMode" = "ForwardBase" }
+      //BlendOp [_BlendOp], [_BlendOpAlpha]
+      //Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
+      //Cull [_Cull]
+      ZWrite Off
+      ZTest LEqual
+
+			Stencil
+			{
+				Ref [_MaskedStencilRef]
+				ReadMask [_MaskedStencilReadMask]
+				WriteMask [_MaskedStencilWriteMask]
+				//ifex _MaskedStencilType==1
+				Comp [_MaskedStencilCompareFunction]
+				Pass [_MaskedStencilPassOp]
+				Fail [_MaskedStencilFailOp]
+				ZFail [_MaskedStencilZFailOp]
+				//endex
+
+				//ifex _MaskedStencilType==0
+				CompBack [_MaskedStencilBackCompareFunction]
+				PassBack [_MaskedStencilBackPassOp]
+				FailBack [_MaskedStencilBackFailOp]
+				ZFailBack [_MaskedStencilBackZFailOp]
+
+				CompFront [_MaskedStencilFrontCompareFunction]
+				PassFront [_MaskedStencilFrontPassOp]
+				FailFront [_MaskedStencilFrontFailOp]
+				ZFailFront [_MaskedStencilFrontZFailOp]
+				//endex
+			}
+
+      CGPROGRAM
+      #pragma target 5.0
+      #pragma multi_compile_instancing
+      #pragma vertex vert
+      #pragma fragment frag
+
+      #define MASKED_STENCIL_PASS
+
+      #include "2ner.cginc"
+      ENDCG
+    }
+    //endex
     Pass {
       Name "FORWARD"
       Tags { "LightMode" = "ForwardBase" }
@@ -381,6 +545,33 @@ Shader "yum_food/2ner"
       Cull [_Cull]
       ZWrite [_ZWrite]
       ZTest [_ZTest]
+
+      //ifex _Stencil_Enabled==0
+			Stencil
+			{
+				Ref [_StencilRef]
+				ReadMask [_StencilReadMask]
+				WriteMask [_StencilWriteMask]
+				//ifex _StencilType==1
+				Comp [_StencilCompareFunction]
+				Pass [_StencilPassOp]
+				Fail [_StencilFailOp]
+				ZFail [_StencilZFailOp]
+				//endex
+
+				//ifex _StencilType==0
+				CompBack [_StencilBackCompareFunction]
+				PassBack [_StencilBackPassOp]
+				FailBack [_StencilBackFailOp]
+				ZFailBack [_StencilBackZFailOp]
+
+				CompFront [_StencilFrontCompareFunction]
+				PassFront [_StencilFrontPassOp]
+				FailFront [_StencilFrontFailOp]
+				ZFailFront [_StencilFrontZFailOp]
+				//endex
+			}
+      //endex
 
       CGPROGRAM
       #pragma target 5.0
@@ -405,6 +596,33 @@ Shader "yum_food/2ner"
 			BlendOp [_AddBlendOp], [_AddBlendOpAlpha]
 			Blend [_AddSrcBlend] [_AddDstBlend], [_AddSrcBlendAlpha] [_AddDstBlendAlpha]
 
+      //ifex _Stencil_Enabled==0
+			Stencil
+			{
+				Ref [_StencilRef]
+				ReadMask [_StencilReadMask]
+				WriteMask [_StencilWriteMask]
+				//ifex _StencilType==1
+				Comp [_StencilCompareFunction]
+				Pass [_StencilPassOp]
+				Fail [_StencilFailOp]
+				ZFail [_StencilZFailOp]
+				//endex
+
+				//ifex _StencilType==0
+				CompBack [_StencilBackCompareFunction]
+				PassBack [_StencilBackPassOp]
+				FailBack [_StencilBackFailOp]
+				ZFailBack [_StencilBackZFailOp]
+
+				CompFront [_StencilFrontCompareFunction]
+				PassFront [_StencilFrontPassOp]
+				FailFront [_StencilFrontFailOp]
+				ZFailFront [_StencilFrontZFailOp]
+				//endex
+			}
+      //endex
+
       CGPROGRAM
       #pragma target 5.0
       #pragma multi_compile_fwdadd_fullshadows
@@ -418,16 +636,89 @@ Shader "yum_food/2ner"
       #include "2ner.cginc"
       ENDCG
     }
+    //ifex _ExtraStencilColorPass_Enabled==0
+    Pass {
+      Name "EXTRASTENCILCOLOR"
+      Tags { "LightMode" = "ForwardBase" }
+      BlendOp [_BlendOp], [_BlendOpAlpha]
+      Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
+      Cull [_Cull]
+      ZWrite [_ZWrite]
+      ZTest [_ZTest]
+
+			Stencil
+			{
+				Ref [_ExtraStencilColorRef]
+				ReadMask [_ExtraStencilColorReadMask]
+				WriteMask [_ExtraStencilColorWriteMask]
+				//ifex _ExtraStencilColorType==1
+				Comp [_ExtraStencilColorCompareFunction]
+				Pass [_ExtraStencilColorPassOp]
+				Fail [_ExtraStencilColorFailOp]
+				ZFail [_ExtraStencilColorZFailOp]
+				//endex
+
+				//ifex _ExtraStencilColorType==0
+				CompBack [_ExtraStencilColorBackCompareFunction]
+				PassBack [_ExtraStencilColorBackPassOp]
+				FailBack [_ExtraStencilColorBackFailOp]
+				ZFailBack [_ExtraStencilColorBackZFailOp]
+
+				CompFront [_MaskedStencilFrontCompareFunction]
+				PassFront [_ExtraStencilColorFrontPassOp]
+				FailFront [_ExtraStencilColorFrontFailOp]
+				ZFailFront [_ExtraStencilColorFrontZFailOp]
+				//endex
+			}
+
+      CGPROGRAM
+      #pragma target 5.0
+      #pragma multi_compile_instancing
+      #pragma vertex vert
+      #pragma fragment frag
+
+      #define EXTRA_STENCIL_COLOR_PASS
+
+      #include "2ner.cginc"
+      ENDCG
+    }
+    //endex
     //ifex _Outlines_Enabled==0
     Pass {
       Name "OUTLINES"
-      Name "FORWARD"
       Tags { "LightMode" = "ForwardBase" }
       Cull Front
       ZWrite [_ZWrite]
       ZTest [_ZTest]
 			BlendOp [_OutlineBlendOp], [_OutlineBlendOpAlpha]
 			Blend [_OutlineSrcBlend] [_OutlineDstBlend], [_OutlineSrcBlendAlpha] [_OutlineDstBlendAlpha]
+
+      //ifex _Outline_Stencil_Enabled==0
+			Stencil
+			{
+				Ref [_Outline_StencilRef]
+				ReadMask [_Outline_StencilReadMask]
+				WriteMask [_Outline_StencilWriteMask]
+				//ifex _Outline_StencilType==1
+				Comp [_Outline_StencilCompareFunction]
+				Pass [_Outline_StencilPassOp]
+				Fail [_Outline_StencilFailOp]
+				ZFail [_Outline_StencilZFailOp]
+				//endex
+
+				//ifex _Outline_StencilType==0
+				CompBack [_Outline_StencilBackCompareFunction]
+				PassBack [_Outline_StencilBackPassOp]
+				FailBack [_Outline_StencilBackFailOp]
+				ZFailBack [_Outline_StencilBackZFailOp]
+
+				CompFront [_Outline_StencilFrontCompareFunction]
+				PassFront [_Outline_StencilFrontPassOp]
+				FailFront [_Outline_StencilFrontFailOp]
+				ZFailFront [_Outline_StencilFrontZFailOp]
+				//endex
+			}
+      //endex
 
       CGPROGRAM
       #pragma target 5.0
@@ -449,6 +740,33 @@ Shader "yum_food/2ner"
 
       ZWrite [_ZWrite]
       ZTest [_ZTest]
+
+      //ifex _Stencil_Enabled==0
+			Stencil
+			{
+				Ref [_StencilRef]
+				ReadMask [_StencilReadMask]
+				WriteMask [_StencilWriteMask]
+				//ifex _StencilType==1
+				Comp [_StencilCompareFunction]
+				Pass [_StencilPassOp]
+				Fail [_StencilFailOp]
+				ZFail [_StencilZFailOp]
+				//endex
+
+				//ifex _StencilType==0
+				CompBack [_StencilBackCompareFunction]
+				PassBack [_StencilBackPassOp]
+				FailBack [_StencilBackFailOp]
+				ZFailBack [_StencilBackZFailOp]
+
+				CompFront [_StencilFrontCompareFunction]
+				PassFront [_StencilFrontPassOp]
+				FailFront [_StencilFrontFailOp]
+				ZFailFront [_StencilFrontZFailOp]
+				//endex
+			}
+      //endex
 
       CGPROGRAM
       #pragma target 5.0
