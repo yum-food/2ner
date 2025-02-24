@@ -121,7 +121,7 @@ float4 frag(v2f i) : SV_Target {
     pbr.albedo.a = 1;
   }
 
-#if defined(EXTRA_STENCIL_COLOR_PASS)
+#if defined(EXTRA_STENCIL_COLOR_PASS) && defined(_EXTRA_STENCIL_COLOR_PASS)
   pbr.albedo = _ExtraStencilColor;
 #endif
 

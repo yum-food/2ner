@@ -91,5 +91,9 @@
 #pragma shader_feature_local _LTCGI
 //endex
 
+//ifex _ExtraStencilColorPass_Enabled==0
+#pragma shader_feature_local _EXTRA_STENCIL_COLOR_PASS
+//endex
+
 #endif  // __FEATURES_INC
 

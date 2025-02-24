@@ -340,7 +340,7 @@ Shader "yum_food/2ner"
 
         //ifex _ExtraStencilColorPass_Enabled==0
         [HideInInspector] m_start_ExtraStencilColorPass("Extra stencil color pass", Float) = 0
-          [ThryToggle(_)] _ExtraStencilColorPass_Enabled("Enable", Float) = 0
+          [ThryToggle(_EXTRA_STENCIL_COLOR_PASS)] _ExtraStencilColorPass_Enabled("Enable", Float) = 0
           _ExtraStencilColor("Color", Color) = (1, 1, 1, 1)
           [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _ExtraStencilColorType ("Stencil Type", Float) = 0
           [IntRange] _ExtraStencilColorRef ("Stencil Reference Value", Range(0, 255)) = 0
