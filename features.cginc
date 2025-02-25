@@ -95,5 +95,9 @@
 #pragma shader_feature_local _EXTRA_STENCIL_COLOR_PASS
 //endex
 
+//ifex _Focal_Length_Control_Enabled==0
+#pragma shader_feature_local _FOCAL_LENGTH_CONTROL
+//endex
+
 #endif  // __FEATURES_INC
 

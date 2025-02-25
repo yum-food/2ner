@@ -221,4 +221,9 @@ float _Masked_Stencil_Z_Fail_Op;
 float4 _ExtraStencilColor;
 #endif  // EXTRA_STENCIL_COLOR_PASS
 
+#if defined(_FOCAL_LENGTH_CONTROL)
+float _Focal_Length_Enabled_Dynamic;
+float _Focal_Length_Multiplier;
+#endif  // _FOCAL_LENGTH_CONTROL
+
 #endif  // __GLOBALS_INC

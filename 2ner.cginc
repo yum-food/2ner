@@ -64,7 +64,28 @@ v2f vert(appdata v) {
   v.tangent.xyz = tangent_tmp;
 #endif
 
+#if defined(_FOCAL_LENGTH_CONTROL)
+  UNITY_BRANCH
+  if (_Focal_Length_Enabled_Dynamic) {
+    float4 fl_worldPos_unscaled = mul(unity_ObjectToWorld, v.vertex);
+    float4 fl_viewPos_unscaled = mul(UNITY_MATRIX_V, fl_worldPos_unscaled);
+
+    float4 fl_objPos = float4(v.vertex.xyz * _Focal_Length_Multiplier, v.vertex.w);
+    float4 fl_worldPos = mul(unity_ObjectToWorld, fl_objPos);
+    float4 fl_viewPos = mul(UNITY_MATRIX_V, fl_worldPos);
+    fl_viewPos.xy /= _Focal_Length_Multiplier;
+
+    float2 fl_compensation = fl_viewPos_unscaled.xy - fl_viewPos.xy;
+    fl_viewPos.xy += fl_compensation;
+
+    o.pos = mul(UNITY_MATRIX_P, fl_viewPos);
+  } else {
+    o.pos = UnityObjectToClipPos(v.vertex);
+  }
+#else
   o.pos = UnityObjectToClipPos(v.vertex);
+#endif
+
   o.uv01 = v.uv01;
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;

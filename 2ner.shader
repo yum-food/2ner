@@ -395,6 +395,14 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Outline_Stencil("Outline Stencil", Float) = 0
         //endex
 
+        //ifex _Focal_Length_Control_Enabled==0
+        [HideInInspector] m_start_Focal_Length_Control("Focal Length Control", Float) = 0
+          [ThryToggle(_FOCAL_LENGTH_CONTROL)] _Focal_Length_Control_Enabled("Enable", Float) = 0
+          [MaterialToggle] _Focal_Length_Enabled_Dynamic("Enable (dynamic)", Float) = 0
+          _Focal_Length_Multiplier("Focal length multiplier", Float) = 1.0
+        [HideInInspector] m_end_Focal_Length_Control("Focal Length Control", Float) = 0
+        //endex
+
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
         //ifex _Receive_Shadows_Enabled==0
         [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
