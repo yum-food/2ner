@@ -83,9 +83,14 @@ float _Outline_Mask_Invert;
 #define MATCAP_MODE_SUBTRACT    3
 #define MATCAP_MODE_ADD_PRODUCT 4
 
+#define MATCAP_TARGET_ALBEDO     (1)
+#define MATCAP_TARGET_DIFFUSE    (2)
+#define MATCAP_TARGET_SPECULAR   (4)
+
 #if defined(_MATCAP0)
 texture2D _Matcap0;
 uint _Matcap0_Mode;
+uint _Matcap0_Target_Mask;
 float _Matcap0_Invert;
 float _Matcap0_Strength;
 #if defined(_MATCAP0_MASK)
@@ -102,6 +107,7 @@ float _Rim_Lighting0_Center;
 float _Rim_Lighting0_Power;
 float3 _Rim_Lighting0_Color;
 float _Rim_Lighting0_Brightness;
+uint _Rim_Lighting0_Target_Mask;
 #if defined(_RIM_LIGHTING0_MASK)
 texture2D _Rim_Lighting0_Mask;
 #endif
@@ -120,6 +126,7 @@ float _Rim_Lighting1_Center;
 float _Rim_Lighting1_Power;
 float3 _Rim_Lighting1_Color;
 float _Rim_Lighting1_Brightness;
+uint _Rim_Lighting1_Target_Mask;
 #if defined(_RIM_LIGHTING1_MASK)
 texture2D _Rim_Lighting1_Mask;
 #endif
@@ -138,6 +145,7 @@ float _Rim_Lighting2_Center;
 float _Rim_Lighting2_Power;
 float3 _Rim_Lighting2_Color;
 float _Rim_Lighting2_Brightness;
+uint _Rim_Lighting2_Target_Mask;
 #if defined(_RIM_LIGHTING2_MASK)
 texture2D _Rim_Lighting2_Mask;
 #endif
@@ -156,6 +164,7 @@ float _Rim_Lighting3_Center;
 float _Rim_Lighting3_Power;
 float3 _Rim_Lighting3_Color;
 float _Rim_Lighting3_Brightness;
+uint _Rim_Lighting3_Target_Mask;
 #if defined(_RIM_LIGHTING3_MASK)
 texture2D _Rim_Lighting3_Mask;
 #endif

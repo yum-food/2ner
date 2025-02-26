@@ -173,8 +173,10 @@ float4 frag(v2f i) : SV_Target {
   YumLighting l = GetYumLighting(i, pbr);
 
 #if defined(FORWARD_BASE_PASS)
-  applyMatcapsAndRimLighting(i, l, pbr);
+  applyMatcapsAndRimLighting(i, pbr, l);
   pbr.albedo.rgb = max(0, pbr.albedo.rgb);
+  l.diffuse = max(0, l.diffuse);
+  l.specular = max(0, l.specular);
 #endif
 
   float4 lit = YumBRDF(i, l, pbr);

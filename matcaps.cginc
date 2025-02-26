@@ -4,9 +4,10 @@
 #include "features.cginc"
 #include "globals.cginc"
 #include "interpolators.cginc"
+#include "yum_lighting.cginc"
 #include "yum_pbr.cginc"
 
-#if defined(_MATCAP0) || defined(_RIM_LIGHTING0)
+#if defined(_MATCAP0) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
 float2 getMatcapUV(v2f i, inout YumPbr pbr) {
   const float3 cam_normal = normalize(mul(UNITY_MATRIX_V, float4(pbr.normal, 0)));
   const float3 cam_view_dir = normalize(mul(UNITY_MATRIX_V, float4(-i.eyeVec.xyz, 0)));
@@ -18,30 +19,47 @@ float2 getMatcapUV(v2f i, inout YumPbr pbr) {
   return cam_refl.xy / m + 0.5;
 }
 
-void applyMatcap(inout YumPbr pbr, float3 sample, uint mode, float mask)
+void applyMatcapImpl(inout float3 color, float3 sample, uint mode, float mask)
 {
   [forcecase]
   switch(mode) {
     case MATCAP_MODE_REPLACE:
-      pbr.albedo.rgb = lerp(pbr.albedo.rgb, sample, mask);
+      color.rgb = lerp(color.rgb, sample, mask);
       break;
     case MATCAP_MODE_ADD:
-      pbr.albedo.rgb += lerp(0, sample, mask);
+      color.rgb += lerp(0, sample, mask);
       break;
     case MATCAP_MODE_MULTIPLY:
-      pbr.albedo.rgb *= lerp(1, sample, mask);
+      color.rgb *= lerp(1, sample, mask);
       break;
     case MATCAP_MODE_SUBTRACT:
-      pbr.albedo.rgb -= lerp(0, sample, mask);
+      color.rgb -= lerp(0, sample, mask);
       break;
     case MATCAP_MODE_ADD_PRODUCT:
-      pbr.albedo.rgb += lerp(0, sample * pbr.albedo.rgb, mask);
+      color.rgb += lerp(0, sample * color.rgb, mask);
       break;
     default:
       break;
   }
 }
-#endif
+
+void applyMatcap(inout YumPbr pbr, inout YumLighting l, float3 sample,
+    uint mode, uint target_mask, float mask)
+{
+  [branch]
+  if (target_mask & MATCAP_TARGET_ALBEDO) {
+    applyMatcapImpl(pbr.albedo.rgb, sample, mode, mask);
+  }
+  [branch]
+  if (target_mask & MATCAP_TARGET_DIFFUSE) {
+    applyMatcapImpl(l.diffuse, sample, mode, mask);
+  }
+  [branch]
+  if (target_mask & MATCAP_TARGET_SPECULAR) {
+    applyMatcapImpl(l.specular, sample, mode, mask);
+  }
+}
+#endif  // _MATCAP0 || _RIM_LIGHTING0 || _RIM_LIGHTING1 || _RIM_LIGHTING2 || _RIM_LIGHTING3
 
 float getAngleAttenuation(float2 muv, float2 target_vector, float power) {
   muv = muv * 2 - 1;
@@ -50,7 +68,7 @@ float getAngleAttenuation(float2 muv, float2 target_vector, float power) {
   return pow(NoL, power);
 }
 
-void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
+void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #if defined(_MATCAP0) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1)
   float2 muv = getMatcapUV(i, pbr);
 #endif
@@ -72,9 +90,10 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #else
   float m0_mask = 1;
 #endif
-  applyMatcap(pbr, m0, _Matcap0_Mode, m0_mask);
-#endif
-#if defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1)
+  applyMatcap(pbr, l, m0, _Matcap0_Mode, _Matcap0_Target_Mask, m0_mask);
+#endif  // _MATCAP0
+
+#if defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
   float rl_radius = length(muv - 0.5);
 #endif
 
@@ -93,8 +112,8 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #else
   float rl0_mask = 1;
 #endif
-  applyMatcap(pbr, rl0, _Rim_Lighting0_Mode, rl0_mask);
-#endif
+  applyMatcap(pbr, l, rl0, _Rim_Lighting0_Mode, _Rim_Lighting0_Target_Mask, rl0_mask);
+#endif  // _RIM_LIGHTING0
 
 #if defined(_RIM_LIGHTING1)
   float rl1_dist = exp2(-_Rim_Lighting1_Power * abs(rl_radius - _Rim_Lighting1_Center));
@@ -111,8 +130,8 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #else
   float rl1_mask = 1;
 #endif
-  applyMatcap(pbr, rl1, _Rim_Lighting1_Mode, rl1_mask);
-#endif
+  applyMatcap(pbr, l, rl1, _Rim_Lighting1_Mode, _Rim_Lighting1_Target_Mask, rl1_mask);
+#endif  // _RIM_LIGHTING1
 
 #if defined(_RIM_LIGHTING2)
   float rl2_dist = exp2(-_Rim_Lighting2_Power * abs(rl_radius - _Rim_Lighting2_Center));
@@ -129,8 +148,8 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #else
   float rl2_mask = 1;
 #endif
-  applyMatcap(pbr, rl2, _Rim_Lighting2_Mode, rl2_mask);
-#endif
+  applyMatcap(pbr, l, rl2, _Rim_Lighting2_Mode, _Rim_Lighting2_Target_Mask, rl2_mask);
+#endif  // _RIM_LIGHTING2
 
 #if defined(_RIM_LIGHTING3)
   float rl3_dist = exp2(-_Rim_Lighting3_Power * abs(rl_radius - _Rim_Lighting3_Center));
@@ -147,8 +166,8 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr) {
 #else
   float rl3_mask = 1;
 #endif
-  applyMatcap(pbr, rl3, _Rim_Lighting3_Mode, rl3_mask);
-#endif
+  applyMatcap(pbr, l, rl3, _Rim_Lighting3_Mode, _Rim_Lighting3_Target_Mask, rl3_mask);
+#endif  // _RIM_LIGHTING3
 }
 
 #endif

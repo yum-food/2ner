@@ -93,6 +93,8 @@ Shader "yum_food/2ner"
           [Toggle(_)]_Matcap0_Invert("Invert", Float) = 0
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Matcap0_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Matcap0_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
           _Matcap0_Strength("Strength", Float) = 1
             //ifex _Matcap0_Mask_Enabled==0
             [HideInInspector] m_start_Matcap0_Mask("Mask", Float) = 0
@@ -120,6 +122,8 @@ Shader "yum_food/2ner"
           _Rim_Lighting0_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting0_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Rim_Lighting0_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
             //ifex _Rim_Lighting0_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting0_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTING0_MASK)]_Rim_Lighting0_Mask_Enabled("Enable", Float) = 0
@@ -151,6 +155,8 @@ Shader "yum_food/2ner"
           _Rim_Lighting1_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting1_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Rim_Lighting1_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
             //ifex _Rim_Lighting1_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting1_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTINg1_MASK)]_Rim_Lighting1_Mask_Enabled("Enable", Float) = 0
@@ -182,6 +188,8 @@ Shader "yum_food/2ner"
           _Rim_Lighting2_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting2_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Rim_Lighting2_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
             //ifex _Rim_Lighting2_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting2_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTING2_MASK)]_Rim_Lighting2_Mask_Enabled("Enable", Float) = 0
@@ -213,6 +221,8 @@ Shader "yum_food/2ner"
           _Rim_Lighting3_Brightness("Brightness", Float) = 1
           [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
           _Rim_Lighting3_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Rim_Lighting3_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
             //ifex _Rim_Lighting3_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting3_Mask("Mask", Float) = 0
             [ThryToggle(_RIM_LIGHTING3_MASK)]_Rim_Lighting3_Mask_Enabled("Enable", Float) = 0

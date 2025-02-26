@@ -7,6 +7,7 @@
 #include "UnityLightingCommon.cginc"
 
 #include "features.cginc"
+#include "poi.cginc"
 #include "yum_pbr.cginc"
 
 // fucking kill me
