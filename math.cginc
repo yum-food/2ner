@@ -5,7 +5,9 @@
 
 #define PI 3.14159265358979323846264
 #define TAU (2 * PI)
+#define HALF_PI (PI * 0.5)
 #define PHI 1.618033989
+#define SQRT_2_RCP 0.707106781
 
 float pow5(float x)
 {
@@ -173,6 +175,13 @@ void domainWarp3Normals(inout float3 normal, inout float3 tangent, float3 basePo
     
     // Transform the tangent via the forward total Jacobian.
     tangent = normalize(mul(J, tangent));
+}
+
+// Alpha blend `dst` onto `src`.
+// Imagine two transparent planes. We're rendering a situation where you're
+// looking through `front` at `behind`.
+float4 alphaBlend(float4 behind, float4 front) {
+  return float4(front.rgb * front.a + behind.rgb * (1 - front.a), front.a + behind.a * (1 - front.a));
 }
 
 #endif  // __MATH_INC

@@ -73,6 +73,7 @@ float4 _Outline_Color;
 float _Outline_Width;
 #if defined(_OUTLINE_MASK)
 texture2D _Outline_Mask;
+float _Outline_Mask_Invert;
 #endif
 #endif
 
@@ -206,16 +207,21 @@ float4 _LTCGI_SpecularColor;
 float4 _LTCGI_DiffuseColor;
 #endif  // _LTCGI
 
-#if defined(MASKED_STENCIL_PASS)
-texture2D _Masked_Stencil_Mask;
-float _Masked_Stencil_Ref;
-float _Masked_Stencil_Read_Mask;
-float _Masked_Stencil_Write_Mask;
-float _Masked_Stencil_Compare_Function;
-float _Masked_Stencil_Pass_Op;
-float _Masked_Stencil_Fail_Op;
-float _Masked_Stencil_Z_Fail_Op;
-#endif  // MASKED_STENCIL_PASS
+#if defined(MASKED_STENCIL1_PASS)
+texture2D _Masked_Stencil1_Mask;
+#endif  // MASKED_STENCIL1_PASS
+
+#if defined(MASKED_STENCIL2_PASS)
+texture2D _Masked_Stencil2_Mask;
+#endif  // MASKED_STENCIL2_PASS
+
+#if defined(MASKED_STENCIL3_PASS)
+texture2D _Masked_Stencil3_Mask;
+#endif  // MASKED_STENCIL3_PASS
+
+#if defined(MASKED_STENCIL4_PASS)
+texture2D _Masked_Stencil4_Mask;
+#endif  // MASKED_STENCIL4_PASS
 
 #if defined(EXTRA_STENCIL_COLOR_PASS)
 float4 _ExtraStencilColor;
@@ -225,5 +231,25 @@ float4 _ExtraStencilColor;
 float _Focal_Length_Enabled_Dynamic;
 float _Focal_Length_Multiplier;
 #endif  // _FOCAL_LENGTH_CONTROL
+
+#if defined(_GLITTER)
+float4 _Glitter_Color;
+float3 _Glitter_Emission;
+float _Glitter_Layers;
+float _Glitter_Grid_Size;
+float _Glitter_Size;
+float _Glitter_Major_Minor_Ratio;
+float _Glitter_Angle_Randomization_Range;
+float _Glitter_Center_Randomization_Range;
+float _Glitter_Size_Randomization_Range;
+float _Glitter_Existence_Chance;
+#if defined(_GLITTER_ANGLE_LIMIT)
+float _Glitter_Angle_Limit;
+float _Glitter_Angle_Limit_Transition_Width;
+#endif  // _GLITTER_ANGLE_LIMIT
+#if defined(_GLITTER_MASK)
+texture2D _Glitter_Mask;
+#endif  // _GLITTER_MASK
+#endif  // _GLITTER
 
 #endif  // __GLOBALS_INC

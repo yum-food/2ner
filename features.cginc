@@ -99,5 +99,21 @@
 #pragma shader_feature_local _FOCAL_LENGTH_CONTROL
 //endex
 
+//ifex _Glitter_Enabled==0
+#pragma shader_feature_local _GLITTER
+//endex
+
+//ifex _Glitter_Emission_Enabled==0
+#pragma shader_feature_local _GLITTER_EMISSION
+//endex
+
+//ifex _Glitter_Angle_Limit_Enabled==0
+#pragma shader_feature_local _GLITTER_ANGLE_LIMIT
+//endex
+
+//ifex _Glitter_Mask_Enabled==0
+#pragma shader_feature_local _GLITTER_MASK
+//endex
+
 #endif  // __FEATURES_INC
 

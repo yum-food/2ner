@@ -3,6 +3,7 @@
 
 #include "features.cginc"
 #include "filamented.cginc"
+#include "glitter.cginc"
 #include "globals.cginc"
 #include "math.cginc"
 #include "texture_utils.cginc"
@@ -10,7 +11,7 @@
 struct YumPbr {
   float4 albedo;
   float3 normal;
-#if defined(_EMISSION)
+#if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS))
   float3 emission;
 #endif
   float smoothness;
@@ -38,18 +39,49 @@ YumPbr GetYumPbr(v2f i) {
       UV_SCOFF(i, _MainTex_ST, /*which_channel=*/0)) * _Color;
 #endif
 
-#if defined(_ALPHA_MULTIPLIER)
-  result.albedo.a = saturate(result.albedo.a * _Alpha_Multiplier);
-#endif
-
   float3 normal_raw = UnpackScaleNormal(
       tex2D(_BumpMap, UV_SCOFF(i, _BumpMap_ST, /*which_channel=*/0)),
       _BumpScale);
   float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   result.normal = normalize(mul(normal_raw, tangentToWorld));
 
+#if defined(FORWARD_BASE_PASS) && defined(_GLITTER)
+  GlitterParams glitter_p;
+  glitter_p.color = _Glitter_Color;
+  glitter_p.layers = _Glitter_Layers;
+  glitter_p.cell_size = _Glitter_Grid_Size;
+  glitter_p.size = _Glitter_Size;
+  glitter_p.major_minor_ratio = _Glitter_Major_Minor_Ratio;
+  glitter_p.angle_randomization_range = _Glitter_Angle_Randomization_Range;
+  glitter_p.center_randomization_range = _Glitter_Center_Randomization_Range;
+  glitter_p.size_randomization_range = _Glitter_Size_Randomization_Range;
+  glitter_p.existence_chance = _Glitter_Existence_Chance;
+#if defined(_GLITTER_ANGLE_LIMIT)
+  glitter_p.angle_limit = _Glitter_Angle_Limit;
+  glitter_p.angle_limit_transition_width = _Glitter_Angle_Limit_Transition_Width;
+#endif
+#if defined(_GLITTER_MASK)
+  glitter_p.mask = _Glitter_Mask.SampleLevel(linear_repeat_s, i.uv01.xy, 0);
+#endif
+  float4 glitter_albedo = getGlitter(i, glitter_p, result.normal);
+  result.albedo = alphaBlend(result.albedo, glitter_albedo);
+#endif
+
+#if defined(_ALPHA_MULTIPLIER)
+  result.albedo.a = saturate(result.albedo.a * _Alpha_Multiplier);
+#endif
+
 #if defined(_EMISSION)
   result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
+#endif
+
+#if defined(FORWARD_BASE_PASS) && defined(_GLITTER)
+  float3 gitter_emission = glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;
+#if defined(_EMISSION)
+  result.emission += gitter_emission;
+#else
+  result.emission = gitter_emission;
+#endif
 #endif
 
 #if defined(_METALLICS)

@@ -147,6 +147,14 @@ float distance_from_capsule(float3 p, float3 a, float3 b, float r)
   return length( pa - ba*h ) - r;
 }
 
+// https://iquilezles.org/articles/ellipsoids/
+float distance_from_ellipsoid(float3 p, float3 r)
+{
+    float k1 = length(p/r);
+    float k2 = length(p/(r*r));
+    return k1*(k1-1.0)/k2;
+}
+
 /*
 float sdHexPrism( vec3 p, vec2 h )
 {

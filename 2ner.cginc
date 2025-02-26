@@ -21,11 +21,32 @@ v2f vert(appdata v) {
   // hide outlines when not locked.
   return (v2f) (0.0/0.0);
 #endif
-#if defined(MASKED_STENCIL_PASS)
-  float masked_stencil_mask = _Masked_Stencil_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
-  if (masked_stencil_mask < 0.5) {
+#if defined(MASKED_STENCIL1_PASS)
+  float masked_stencil1_mask = _Masked_Stencil1_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  if (masked_stencil1_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
+#endif
+#if defined(MASKED_STENCIL2_PASS)
+  float masked_stencil2_mask = _Masked_Stencil2_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  if (masked_stencil2_mask < 0.5) {
+    return (v2f) (0.0/0.0);
+  }
+#endif
+#if defined(MASKED_STENCIL3_PASS)
+  float masked_stencil3_mask = _Masked_Stencil3_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  if (masked_stencil3_mask < 0.5) {
+    return (v2f) (0.0/0.0);
+  }
+#endif
+#if defined(MASKED_STENCIL4_PASS)
+  float masked_stencil4_mask = _Masked_Stencil4_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  if (masked_stencil4_mask < 0.5) {
+    return (v2f) (0.0/0.0);
+  }
+#endif
+#if defined(EXTRA_STENCIL_COLOR_PASS) && !defined(_EXTRA_STENCIL_COLOR_PASS)
+	return (v2f) (0.0/0.0);
 #endif
 
   v2f o;
@@ -38,6 +59,7 @@ v2f vert(appdata v) {
 #if defined(OUTLINE_PASS)
 #if defined(_OUTLINE_MASK)
   float thickness = _Outline_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  thickness = (_Outline_Mask_Invert == 0 ? thickness : 1 - thickness);
 #else
   float thickness = 1;
 #endif
@@ -65,7 +87,7 @@ v2f vert(appdata v) {
 #endif
 
 #if defined(_FOCAL_LENGTH_CONTROL)
-  UNITY_BRANCH
+  [branch]
   if (_Focal_Length_Enabled_Dynamic) {
     float4 fl_worldPos_unscaled = mul(unity_ObjectToWorld, v.vertex);
     float4 fl_viewPos_unscaled = mul(UNITY_MATRIX_V, fl_worldPos_unscaled);
@@ -90,6 +112,7 @@ v2f vert(appdata v) {
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
+  o.eyeVec.w = 1;
 
   // These are used to convert normals from tangent space to world space.
   o.normal = UnityObjectToWorldNormal(v.normal);
@@ -136,7 +159,7 @@ float4 frag(v2f i) : SV_Target {
   pbr.normal = eye_effect_00.normal;
 #endif
 
-  UNITY_BRANCH
+  [branch]
   if (_Mode == 1) {
     clip(pbr.albedo.a - _Clip);
     pbr.albedo.a = 1;
@@ -146,23 +169,24 @@ float4 frag(v2f i) : SV_Target {
   pbr.albedo = _ExtraStencilColor;
 #endif
 
-#if defined(FORWARD_BASE_PASS)
-  applyMatcapsAndRimLighting(i, pbr);
-#endif
-
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS) || defined(OUTLINE_PASS) || defined(EXTRA_STENCIL_COLOR_PASS)
   YumLighting l = GetYumLighting(i, pbr);
 
+#if defined(FORWARD_BASE_PASS)
+  applyMatcapsAndRimLighting(i, l, pbr);
+  pbr.albedo.rgb = max(0, pbr.albedo.rgb);
+#endif
+
   float4 lit = YumBRDF(i, l, pbr);
 
-#if defined(_EMISSION)
+#if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS))
   lit.rgb += pbr.emission;
 #endif
 
   UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
   UNITY_APPLY_FOG(_unity_fogCoord, lit.rgb);
   return lit;
-#elif defined(SHADOW_CASTER_PASS) || defined(MASKED_STENCIL_PASS)
+#elif defined(SHADOW_CASTER_PASS) || defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS)
   return 0;
 #endif
 }
