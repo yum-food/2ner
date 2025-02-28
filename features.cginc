@@ -21,6 +21,10 @@
 #pragma shader_feature_local _WRAPPED_LIGHTING
 //endex
 
+//ifex _Brightness_Control_Enabled==0
+#pragma shader_feature_local _BRIGHTNESS_CONTROL
+//endex
+
 //ifex _Min_Brightness_Enabled==0
 #pragma shader_feature_local _MIN_BRIGHTNESS
 //endex

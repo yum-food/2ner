@@ -46,6 +46,10 @@ float _Wrap_NoL_Diffuse_Strength;
 float _Wrap_NoL_Specular_Strength;
 #endif
 
+#if defined(_BRIGHTNESS_CONTROL)
+float _Brightness_Multiplier;
+#endif
+
 #if defined(_MIN_BRIGHTNESS)
 float _Min_Brightness;
 #endif

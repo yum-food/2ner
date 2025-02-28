@@ -187,6 +187,12 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.diffuse = light.diffuse * floor(diffuse_luminance * _Quantize_Diffuse_Steps) / _Quantize_Diffuse_Steps;
 #endif
 
+#if defined(_BRIGHTNESS_CONTROL)
+  light.direct *= _Brightness_Multiplier;
+  light.diffuse *= _Brightness_Multiplier;
+  light.specular *= _Brightness_Multiplier;
+#endif
+
   light.NoL = dot(pbr.normal, light.dir);
 #if defined(_QUANTIZE_NOL)
   light.NoL = floor(light.NoL * _Quantize_NoL_Steps) / _Quantize_NoL_Steps;

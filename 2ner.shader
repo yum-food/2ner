@@ -558,6 +558,12 @@ Shader "yum_food/2ner"
         _Wrap_NoL_Specular_Strength("Specular strength", Range(0, 1)) = 0.1
         [HideInInspector] m_end_WrappedLighting("Wrapped lighting", Float) = 0
         //endex
+        //ifex _Brightness_Control_Enabled==0
+        [HideInInspector] m_start_Brightness_Control("Brightness", Float) = 0
+          [ThryToggle(_BRIGHTNESS_CONTROL)] _Brightness_Control_Enabled("Enable", Float) = 0
+          _Brightness_Multiplier("Brightness multiplier", Float) = 1.0
+        [HideInInspector] m_end_Brightness_Control("Brightness", Float) = 0
+        //endex
         //ifex _Min_Brightness_Enabled==0
         [HideInInspector] m_start_Min_Brightness("Minimum brightness", Float) = 0
         [ThryToggle(_MIN_BRIGHTNESS)] _Min_Brightness_Enabled("Enable", Float) = 0
