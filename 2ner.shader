@@ -81,6 +81,14 @@ Shader "yum_food/2ner"
       [HideInInspector] m_end_Metallic("Metallics", Float) = 0
       //endex
 
+      //ifex _Clearcoat_Enabled==0
+      [HideInInspector] m_start_Clearcoat("Clearcoat", Float) = 0
+        [ThryToggle(_CLEARCOAT)]_Clearcoat_Enabled("Enable", Float) = 0
+        _Clearcoat_Strength("Strength", Range(0, 1)) = 1
+        _Clearcoat_Roughness("Roughness", Range(0.089, 1)) = 0.089
+      [HideInInspector] m_end_Clearcoat("Clearcoat", Float) = 0
+      //endex
+
       [HideInInspector] m_gimmicks("Gimmicks", Float) = 0
         //ifex _Outlines_Enabled==0
         [HideInInspector] m_start_Outlines("Outlines", Float) = 0

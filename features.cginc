@@ -37,6 +37,10 @@
 #pragma shader_feature_local _QUANTIZE_SPECULAR
 //endex
 
+//ifex _Clearcoat_Enabled==0
+#pragma shader_feature_local _CLEARCOAT
+//endex
+
 //ifex _Metallics_Enabled==0
 #pragma shader_feature_local _METALLICS
 //endex

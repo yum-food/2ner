@@ -81,6 +81,11 @@ sampler2D _MetallicGlossMap;
 float4 _MetallicGlossMap_ST;
 #endif
 
+#if defined(_CLEARCOAT)
+float _Clearcoat_Strength;
+float _Clearcoat_Roughness;
+#endif
+
 #if defined(OUTLINE_PASS)
 float _Outlines_Enabled_Dynamic;
 float4 _Outline_Color;
