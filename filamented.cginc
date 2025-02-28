@@ -355,6 +355,7 @@ inline half3 UnityGI_prefilteredRadiance(const UnityGIInput data,
   glossIn.reflUVW = r;
 
 #ifdef UNITY_SPECCUBE_BOX_PROJECTION
+  // we will tweak reflUVW in glossIn directly (as we pass it to Unity_GlossyEnvironment twice for probe0 and pr            obe1), so keep original to pass into BoxProjectedCubemapDirection
 	half3 originalReflUVW = glossIn.reflUVW;
 	glossIn.reflUVW = BoxProjectedCubemapDirection(originalReflUVW,
 			data.worldPos, data.probePosition[0], data.boxMin[0], data.boxMax[0]);
