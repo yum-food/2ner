@@ -85,6 +85,7 @@ Shader "yum_food/2ner"
         //ifex _Outlines_Enabled==0
         [HideInInspector] m_start_Outlines("Outlines", Float) = 0
         [ThryToggle(_OUTLINES)]_Outlines_Enabled("Enable", Float) = 0
+        _Outlines_Enabled_Dynamic("Enable (dynamic)", Float) = 1
         _Outline_Color("Color", Color) = (0, 0, 0, 1)
         _Outline_Width("Width", Float) = 0.01
           [HideInInspector] m_start_OutlinesMask("Mask", Float) = 0

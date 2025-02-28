@@ -57,6 +57,9 @@ v2f vert(appdata v) {
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
 #if defined(OUTLINE_PASS)
+  if (!_Outlines_Enabled_Dynamic) {
+    return (v2f) (0.0/0.0);
+  }
 #if defined(_OUTLINE_MASK)
   float thickness = _Outline_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
   thickness = (_Outline_Mask_Invert == 0 ? thickness : 1 - thickness);

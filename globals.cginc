@@ -82,6 +82,7 @@ float4 _MetallicGlossMap_ST;
 #endif
 
 #if defined(OUTLINE_PASS)
+float _Outlines_Enabled_Dynamic;
 float4 _Outline_Color;
 float _Outline_Width;
 #if defined(_OUTLINE_MASK)
