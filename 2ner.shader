@@ -60,6 +60,16 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_AO("Metallics", Float) = 0
         //endex
 
+        //ifex _Detail_Maps_Enabled==0
+        [HideInInspector] m_start_Detail_Maps("Detail maps", Float) = 0
+          [ThryToggle(_DETAIL_MAPS)]_Detail_Maps_Enabled("Enable", Float) = 0
+          _DetailMask("Mask", 2D) = "white" {}
+          _DetailAlbedoMap("Base color", 2D) = "white" {}
+          [Normal]_DetailNormalMap("Normals", 2D) = "bump" {}
+          _DetailNormalMapScale("Normal intensity", Range(0, 10)) = 1
+          [HideInInspector] m_end_Detail_Maps("Detail maps", Float) = 0
+        //endex
+
       //ifex _Metallics_Enabled==0
       [HideInInspector] m_reflectionOptions("Reflections", Float) = 0
       [HideInInspector] m_start_Metallic("Metallics", Float) = 0
@@ -159,7 +169,7 @@ Shader "yum_food/2ner"
           _Rim_Lighting1_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
             //ifex _Rim_Lighting1_Mask_Enabled==0
             [HideInInspector] m_start_Rim_Lighting1_Mask("Mask", Float) = 0
-            [ThryToggle(_RIM_LIGHTINg1_MASK)]_Rim_Lighting1_Mask_Enabled("Enable", Float) = 0
+            [ThryToggle(_RIM_LIGHTING1_MASK)]_Rim_Lighting1_Mask_Enabled("Enable", Float) = 0
             _Rim_Lighting1_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Rim_Lighting1_Mask("Mask", Float) = 0
             //endex

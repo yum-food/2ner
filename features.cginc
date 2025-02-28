@@ -9,6 +9,10 @@
 #pragma shader_feature_local _AMBIENT_OCCLUSION
 //endex
 
+//ifex _Detail_Maps_Enabled==0
+#pragma shader_feature_local _DETAIL_MAPS
+//endex
+
 //ifex _Emission_Enabled==0
 #pragma shader_feature_local _EMISSION
 //endex

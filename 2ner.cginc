@@ -172,7 +172,7 @@ float4 frag(v2f i) : SV_Target {
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS) || defined(OUTLINE_PASS) || defined(EXTRA_STENCIL_COLOR_PASS)
   YumLighting l = GetYumLighting(i, pbr);
 
-#if defined(FORWARD_BASE_PASS)
+#if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)
   applyMatcapsAndRimLighting(i, pbr, l);
   pbr.albedo.rgb = max(0, pbr.albedo.rgb);
   l.diffuse = max(0, l.diffuse);

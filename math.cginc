@@ -184,6 +184,16 @@ float4 alphaBlend(float4 behind, float4 front) {
   return float4(front.rgb * front.a + behind.rgb * (1 - front.a), front.a + behind.a * (1 - front.a));
 }
 
+// Reoriented normal mapping
+// https://blog.selfshadow.com/publications/blending-in-detail/
+// Inputs are in tangent space.
+float3 blendNormalsHill12(float3 n0, float3 n1) {
+  n0.z += 1.0;
+  n1.xy = -n1.xy;
+  
+  return normalize(n0 * dot(n0, n1) - n1 * n0.z);
+}
+
 #endif  // __MATH_INC
 
 

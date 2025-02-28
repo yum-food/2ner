@@ -30,6 +30,15 @@ sampler2D _OcclusionMap;
 float _OcclusionStrength;
 #endif
 
+#if defined(_DETAIL_MAPS)
+texture2D _DetailMask;
+sampler2D _DetailAlbedoMap;
+float4 _DetailAlbedoMap_ST;
+sampler2D _DetailNormalMap;
+float4 _DetailNormalMap_ST;
+float _DetailNormalMapScale;
+#endif
+
 float _Shadow_Strength;
 
 #if defined(_WRAPPED_LIGHTING)

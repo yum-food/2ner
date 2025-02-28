@@ -11,7 +11,7 @@
 struct YumPbr {
   float4 albedo;
   float3 normal;
-#if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS))
+#if defined(_EMISSION) || (defined(_GLITTER) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)))
   float3 emission;
 #endif
   float smoothness;
@@ -39,13 +39,26 @@ YumPbr GetYumPbr(v2f i) {
       UV_SCOFF(i, _MainTex_ST, /*which_channel=*/0)) * _Color;
 #endif
 
-  float3 normal_raw = UnpackScaleNormal(
+  float3 normal_tangent = UnpackScaleNormal(
       tex2D(_BumpMap, UV_SCOFF(i, _BumpMap_ST, /*which_channel=*/0)),
       _BumpScale);
-  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
-  result.normal = normalize(mul(normal_raw, tangentToWorld));
 
-#if defined(FORWARD_BASE_PASS) && defined(_GLITTER)
+#if defined(_DETAIL_MAPS)
+  float detail_mask = _DetailMask.SampleLevel(linear_repeat_s, i.uv01.xy, 0);
+  float4 detail_albedo = tex2D(_DetailAlbedoMap,
+      UV_SCOFF(i, _DetailAlbedoMap_ST, /*which_channel=*/0));
+  float3 detail_normal = UnpackScaleNormal(
+      tex2D(_DetailNormalMap,
+          UV_SCOFF(i, _DetailNormalMap_ST, /*which_channel=*/0)),
+      _DetailNormalMapScale);
+  result.albedo = lerp(result.albedo, result.albedo * detail_albedo, detail_mask);
+  normal_tangent = lerp(normal_tangent, blendNormalsHill12(normal_tangent, detail_normal), detail_mask);
+#endif
+
+  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
+  result.normal = normalize(mul(normal_tangent, tangentToWorld));
+
+#if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)
   GlitterParams glitter_p;
   glitter_p.color = _Glitter_Color;
   glitter_p.layers = _Glitter_Layers;
@@ -75,7 +88,7 @@ YumPbr GetYumPbr(v2f i) {
   result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
 #endif
 
-#if defined(FORWARD_BASE_PASS) && defined(_GLITTER)
+#if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)
   float3 gitter_emission = glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;
 #if defined(_EMISSION)
   result.emission += gitter_emission;
