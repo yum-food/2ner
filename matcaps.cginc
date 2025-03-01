@@ -86,7 +86,7 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
   m0 = lerp(m0, 1 - m0, _Matcap0_Invert);
   m0 *= _Matcap0_Strength;
 #if defined(_MATCAP0_MASK)
-  float m0_mask = _Matcap0_Mask.Sample(linear_repeat_s, i.uv01.xy);
+  float m0_mask = _Matcap0_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Matcap0_Mask_ST, /*which_channel=*/0));
 #else
   float m0_mask = 1;
 #endif
@@ -108,7 +108,7 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #endif
   float3 rl0 = _Rim_Lighting0_Color * _Rim_Lighting0_Brightness * rl0_dist;
 #if defined(_RIM_LIGHTING0_MASK)
-  float rl0_mask = _Rim_Lighting0_Mask.Sample(linear_repeat_s, i.uv01.xy);
+  float rl0_mask = _Rim_Lighting0_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Rim_Lighting0_Mask_ST, /*which_channel=*/0));
 #else
   float rl0_mask = 1;
 #endif
@@ -126,7 +126,7 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #endif
   float3 rl1 = _Rim_Lighting1_Color * _Rim_Lighting1_Brightness * rl1_dist;
 #if defined(_RIM_LIGHTING1_MASK)
-  float rl1_mask = _Rim_Lighting1_Mask.Sample(linear_repeat_s, i.uv01.xy);
+  float rl1_mask = _Rim_Lighting1_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Rim_Lighting1_Mask_ST, /*which_channel=*/0));
 #else
   float rl1_mask = 1;
 #endif
@@ -144,7 +144,7 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #endif
   float3 rl2 = _Rim_Lighting2_Color * _Rim_Lighting2_Brightness * rl2_dist;
 #if defined(_RIM_LIGHTING2_MASK)
-  float rl2_mask = _Rim_Lighting2_Mask.Sample(linear_repeat_s, i.uv01.xy);
+  float rl2_mask = _Rim_Lighting2_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Rim_Lighting2_Mask_ST, /*which_channel=*/0));
 #else
   float rl2_mask = 1;
 #endif
@@ -162,7 +162,7 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #endif
   float3 rl3 = _Rim_Lighting3_Color * _Rim_Lighting3_Brightness * rl3_dist;
 #if defined(_RIM_LIGHTING3_MASK)
-  float rl3_mask = _Rim_Lighting3_Mask.Sample(linear_repeat_s, i.uv01.xy);
+  float rl3_mask = _Rim_Lighting3_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Rim_Lighting3_Mask_ST, /*which_channel=*/0));
 #else
   float rl3_mask = 1;
 #endif

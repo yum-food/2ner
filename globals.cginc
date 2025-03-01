@@ -114,6 +114,7 @@ float _Matcap0_Invert;
 float _Matcap0_Strength;
 #if defined(_MATCAP0_MASK)
 texture2D _Matcap0_Mask;
+float4 _Matcap0_Mask_ST;
 #endif
 #if defined(_MATCAP0_QUANTIZATION)
 float _Matcap0_Quantization_Steps;
@@ -129,6 +130,7 @@ float _Rim_Lighting0_Brightness;
 uint _Rim_Lighting0_Target_Mask;
 #if defined(_RIM_LIGHTING0_MASK)
 texture2D _Rim_Lighting0_Mask;
+float4 _Rim_Lighting0_Mask_ST;
 #endif
 #if defined(_RIM_LIGHTING0_ANGLE_LIMIT)
 float2 _Rim_Lighting0_Angle_Limit_Target_Vector;
@@ -148,6 +150,7 @@ float _Rim_Lighting1_Brightness;
 uint _Rim_Lighting1_Target_Mask;
 #if defined(_RIM_LIGHTING1_MASK)
 texture2D _Rim_Lighting1_Mask;
+float4 _Rim_Lighting1_Mask_ST;
 #endif
 #if defined(_RIM_LIGHTING1_ANGLE_LIMIT)
 float2 _Rim_Lighting1_Angle_Limit_Target_Vector;
@@ -167,6 +170,7 @@ float _Rim_Lighting2_Brightness;
 uint _Rim_Lighting2_Target_Mask;
 #if defined(_RIM_LIGHTING2_MASK)
 texture2D _Rim_Lighting2_Mask;
+float4 _Rim_Lighting2_Mask_ST;
 #endif
 #if defined(_RIM_LIGHTING2_ANGLE_LIMIT)
 float2 _Rim_Lighting2_Angle_Limit_Target_Vector;
@@ -186,6 +190,7 @@ float _Rim_Lighting3_Brightness;
 uint _Rim_Lighting3_Target_Mask;
 #if defined(_RIM_LIGHTING3_MASK)
 texture2D _Rim_Lighting3_Mask;
+float4 _Rim_Lighting3_Mask_ST;
 #endif
 #if defined(_RIM_LIGHTING3_ANGLE_LIMIT)
 float2 _Rim_Lighting3_Angle_Limit_Target_Vector;

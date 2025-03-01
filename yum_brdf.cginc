@@ -58,7 +58,7 @@ float3 clearcoatLobe(float roughness, float f0,
 
   return (D * V) * F * PI;
 }
-#endif  // _CLEARCOAT
+#endif
 
 float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float3 h = normalize(light.view_dir + light.dir);
@@ -104,16 +104,18 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float NoH_cc = saturate(dot(cc_normal, h));
   const float NoL_cc = saturate(dot(cc_normal, light.dir));
 #if defined(_WRAPPED_LIGHTING)
-  const float NoL_cc_wrapped = saturate((NoL_cc + light.wrapped) / (1.0 + light.wrapped));
+  const float NoL_cc_wrapped_s = saturate(wrapNoL(NoL_cc, _Wrap_NoL_Specular_Strength));
+  const float NoL_cc_wrapped_d = saturate(wrapNoL(NoL_cc, _Wrap_NoL_Diffuse_Strength));
 #else
-  const float NoL_cc_wrapped = NoL_cc;
+  const float NoL_cc_wrapped_s = NoL_cc;
+  const float NoL_cc_wrapped_d = NoL_cc;
 #endif
   
   // Calculate clearcoat DFG terms with cc normal
   const float3 clearcoat_dfg = PrefilteredDFG_LUT(clearcoat_perceptual_roughness, NoV_cc);
   const float clearcoat_E = specularDFG(clearcoat_dfg, clearcoat_f0);
   const float clearcoat_energy_compensation = energyCompensation(clearcoat_dfg, clearcoat_f0);
-#endif  // _CLEARCOAT
+#endif
 
   float3 direct;
   {
@@ -124,14 +126,14 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s);
     
 #if defined(_CLEARCOAT)
-    float Fcr = clearcoatLobe(clearcoat_roughness, clearcoat_f0, h, LoH, NoH_cc, NoV_cc, NoL_cc_wrapped);
+    float Fcr = clearcoatLobe(clearcoat_roughness, clearcoat_f0, h, LoH, NoH_cc, NoV_cc, NoL_cc_wrapped_s);
     Fcr *= clearcoat_strength * clearcoat_energy_compensation; 
     float clearcoat_factor = 1.0 - clearcoat_strength * F_Schlick(clearcoat_f0, NoV_cc);
     float3 color = (Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s) * clearcoat_factor + 
-                    Fcr * NoL_cc_wrapped;
+                    Fcr * NoL_cc_wrapped_s;
 #else
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
-#endif  // _CLEARCOAT
+#endif
 
     direct = color * light.direct;
   }
@@ -147,7 +149,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     indirect = (Fr + Fd) * clearcoat_factor + Fcr;
 #else
     indirect = Fr + Fd;
-#endif  // _CLEARCOAT
+#endif
   }
 
   return float4(direct + indirect, pbr.albedo.a);
