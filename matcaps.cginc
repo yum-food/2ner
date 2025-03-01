@@ -7,7 +7,7 @@
 #include "yum_lighting.cginc"
 #include "yum_pbr.cginc"
 
-#if defined(_MATCAP0) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
+#if defined(_MATCAP0) || defined(_MATCAP1) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
 float2 getMatcapUV(v2f i, inout YumPbr pbr) {
   const float3 cam_normal = normalize(mul(UNITY_MATRIX_V, float4(pbr.normal, 0)));
   const float3 cam_view_dir = normalize(mul(UNITY_MATRIX_V, float4(-i.eyeVec.xyz, 0)));
@@ -69,7 +69,7 @@ float getAngleAttenuation(float2 muv, float2 target_vector, float power) {
 }
 
 void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
-#if defined(_MATCAP0) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1)
+#if defined(_MATCAP0) || defined(_MATCAP1) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
   float2 muv = getMatcapUV(i, pbr);
 #endif
 #if defined(_MATCAP0)
@@ -92,6 +92,26 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #endif
   applyMatcap(pbr, l, m0, _Matcap0_Mode, _Matcap0_Target_Mask, m0_mask);
 #endif  // _MATCAP0
+#if defined(_MATCAP1)
+#if defined(_MATCAP1_QUANTIZATION)
+  float2 m1uv = muv * 2 - 1;
+  float m1uv_r = length(m1uv);
+  float m1uv_r_q = floor(m1uv_r * _Matcap1_Quantization_Steps) / _Matcap1_Quantization_Steps;
+  m1uv = m1uv_r_q * (m1uv / max(1E-4, m1uv_r));
+  m1uv = m1uv * 0.5 + 0.5;
+#else
+  float2 m1uv = muv;
+#endif  // _MATCAP1_QUANTIZATION
+  float3 m1 = _Matcap1.Sample(linear_repeat_s, m1uv);
+  m1 = lerp(m1, 1 - m1, _Matcap1_Invert);
+  m1 *= _Matcap1_Strength;
+#if defined(_MATCAP1_MASK)
+  float m1_mask = _Matcap1_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Matcap1_Mask_ST, /*which_channel=*/0));
+#else
+  float m1_mask = 1;
+#endif
+  applyMatcap(pbr, l, m1, _Matcap1_Mode, _Matcap1_Target_Mask, m1_mask);
+#endif  // _MATCAP1
 
 #if defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
   float rl_radius = length(muv - 0.5);

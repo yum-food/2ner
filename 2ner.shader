@@ -104,8 +104,8 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Outlines("Outlines", Float) = 0
         //endex
 
-        //ifex _Matcap0_Enabled==0
         [HideInInspector] m_start_Matcaps("Matcaps", Float) = 0
+          //ifex _Matcap0_Enabled==0
           [HideInInspector] m_start_Matcap0("Matcap 0", Float) = 0
           [ThryToggle(_MATCAP0)]_Matcap0_Enabled("Enable", Float) = 0
           _Matcap0("Matcap", 2D) = "white" {}
@@ -127,9 +127,33 @@ Shader "yum_food/2ner"
             _Matcap0_Quantization_Steps("Steps", Float) = 1
             [HideInInspector] m_end_Matcap0_Quantization("Quantization", Float) = 0
             //endex
-          [HideInInspector] m_end_Matcap0("Matcaps", Float) = 0
+          [HideInInspector] m_end_Matcap0("Matcap 0", Float) = 0
+          //endex
+          //ifex _Matcap1_Enabled==0
+          [HideInInspector] m_start_Matcap1("Matcap 1", Float) = 0
+          [ThryToggle(_MATCAP1)]_Matcap1_Enabled("Enable", Float) = 0
+          _Matcap1("Matcap", 2D) = "white" {}
+          [Toggle(_)]_Matcap1_Invert("Invert", Float) = 0
+          [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
+          _Matcap1_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Matcap1_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
+          _Matcap1_Strength("Strength", Float) = 1
+            //ifex _Matcap1_Mask_Enabled==0
+            [HideInInspector] m_start_Matcap1_Mask("Mask", Float) = 0
+            [ThryToggle(_MATCAP1_MASK)]_Matcap1_Mask_Enabled("Enable", Float) = 0
+            _Matcap1_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Matcap1_Mask("Mask", Float) = 0
+            //endex
+            //ifex _Matcap1_Quantization_Enabled==0
+            [HideInInspector] m_start_Matcap1_Quantization("Quantization", Float) = 0
+            [ThryToggle(_MATCAP1_QUANTIZATION)]_Matcap1_Quantization_Enabled("Enable", Float) = 0
+            _Matcap1_Quantization_Steps("Steps", Float) = 1
+            [HideInInspector] m_end_Matcap1_Quantization("Quantization", Float) = 0
+            //endex
+          [HideInInspector] m_end_Matcap1("Matcap 1", Float) = 0
+          //endex
         [HideInInspector] m_end_Matcaps("Matcaps", Float) = 0
-        //endex
 
         [HideInInspector] m_start_Rim_Lighting("Rim lighting", Float) = 0
           //ifex _Rim_Lighting0_Enabled==0

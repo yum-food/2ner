@@ -58,6 +58,12 @@
 #pragma shader_feature_local _MATCAP0_QUANTIZATION
 //endex
 
+//ifex _Matcap1_Enabled==0
+#pragma shader_feature_local _MATCAP1
+#pragma shader_feature_local _MATCAP1_MASK
+#pragma shader_feature_local _MATCAP1_QUANTIZATION
+//endex
+
 //ifex _Rim_Lighting0_Enabled==0
 #pragma shader_feature_local _RIM_LIGHTING0
 #pragma shader_feature_local _RIM_LIGHTING0_MASK

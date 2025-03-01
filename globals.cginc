@@ -121,6 +121,21 @@ float _Matcap0_Quantization_Steps;
 #endif
 #endif
 
+#if defined(_MATCAP1)
+texture2D _Matcap1;
+uint _Matcap1_Mode;
+uint _Matcap1_Target_Mask;
+float _Matcap1_Invert;
+float _Matcap1_Strength;
+#if defined(_MATCAP1_MASK)
+texture2D _Matcap1_Mask;
+float4 _Matcap1_Mask_ST;
+#endif
+#if defined(_MATCAP1_QUANTIZATION)
+float _Matcap1_Quantization_Steps;
+#endif
+#endif
+
 #if defined(_RIM_LIGHTING0)
 uint _Rim_Lighting0_Mode;
 float _Rim_Lighting0_Center;
