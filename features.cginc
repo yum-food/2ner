@@ -89,6 +89,12 @@
 #pragma shader_feature_local _RIM_LIGHTING3_QUANTIZATION
 //endex
 
+//ifex _Decal0_Enabled==0
+#pragma shader_feature_local _DECAL0
+#pragma shader_feature_local _DECAL0_NORMAL
+#pragma shader_feature_local _DECAL0_REFLECTIONS
+//endex
+
 //ifex _Vertex_Domain_Warping_Enabled==0
 #pragma shader_feature_local _VERTEX_DOMAIN_WARPING
 //endex

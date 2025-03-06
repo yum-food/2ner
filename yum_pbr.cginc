@@ -1,6 +1,7 @@
 #ifndef __YUM_PBR
 #define __YUM_PBR
 
+#include "decals.cginc"
 #include "features.cginc"
 #include "filamented.cginc"
 #include "glitter.cginc"
@@ -20,6 +21,11 @@ struct YumPbr {
   float metallic;
   float ao;
 };
+
+void propagateRoughness(in float smoothness, out float roughness_perceptual, out float roughness) {
+  roughness_perceptual = normalFiltering(1.0 - smoothness, float3(0, 0, 1));
+  roughness = roughness_perceptual * roughness_perceptual;
+}
 
 YumPbr GetYumPbr(v2f i) {
   YumPbr result;
@@ -55,6 +61,35 @@ YumPbr GetYumPbr(v2f i) {
   normal_tangent = lerp(normal_tangent, blendNormalsHill12(normal_tangent, detail_normal), detail_mask);
 #endif
 
+#if defined(_ALPHA_MULTIPLIER)
+  result.albedo.a = saturate(result.albedo.a * _Alpha_Multiplier);
+#endif
+
+#if defined(_EMISSION)
+  result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
+#endif
+
+#if defined(_METALLICS)
+  float4 metallic_gloss = tex2D(_MetallicGlossMap, UV_SCOFF(i, _MetallicGlossMap_ST, /*which_channel=*/0));
+  float metallic = metallic_gloss.r * _Metallic;
+  float smoothness = metallic_gloss.a * _Smoothness;
+
+  result.smoothness = smoothness;
+  result.metallic = metallic;
+#else
+  result.smoothness = 0.2;
+  result.metallic = 0;
+#endif
+
+#if defined(_AMBIENT_OCCLUSION)
+  result.ao = lerp(1, tex2D(_OcclusionMap, i.uv01), _OcclusionStrength);
+#else
+  result.ao = 1;
+#endif
+
+  applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness);
+  propagateRoughness(result.smoothness, result.roughness_perceptual, result.roughness);
+
   float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   result.normal = normalize(mul(normal_tangent, tangentToWorld));
 
@@ -78,47 +113,13 @@ YumPbr GetYumPbr(v2f i) {
 #endif
   float4 glitter_albedo = getGlitter(i, glitter_p, result.normal);
   result.albedo = alphaBlend(result.albedo, glitter_albedo);
-#endif
 
-#if defined(_ALPHA_MULTIPLIER)
-  result.albedo.a = saturate(result.albedo.a * _Alpha_Multiplier);
-#endif
-
-#if defined(_EMISSION)
-  result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
-#endif
-
-#if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)
   float3 gitter_emission = glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;
 #if defined(_EMISSION)
   result.emission += gitter_emission;
 #else
   result.emission = gitter_emission;
 #endif
-#endif
-
-#if defined(_METALLICS)
-  float4 metallic_gloss = tex2D(_MetallicGlossMap, UV_SCOFF(i, _MetallicGlossMap_ST, /*which_channel=*/0));
-  float metallic = metallic_gloss.r * _Metallic;
-  float smoothness = metallic_gloss.a * _Smoothness;
-
-  result.smoothness = smoothness;
-  result.roughness_perceptual =
-    normalFiltering(1.0 - result.smoothness, result.normal);
-  result.roughness = result.roughness_perceptual * result.roughness_perceptual;
-  result.metallic = metallic;
-#else
-  result.smoothness = 0.2;
-  result.roughness_perceptual =
-    normalFiltering(1.0 - result.smoothness, result.normal);
-  result.roughness = result.roughness_perceptual * result.roughness_perceptual;
-  result.metallic = 0;
-#endif
-
-#if defined(_AMBIENT_OCCLUSION)
-  result.ao = lerp(1, tex2D(_OcclusionMap, i.uv01), _OcclusionStrength);
-#else
-  result.ao = 1;
 #endif
 
   return result;

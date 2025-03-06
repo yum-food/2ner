@@ -4,6 +4,7 @@
 #include "features.cginc"
 
 SamplerState linear_repeat_s;
+SamplerState linear_clamp_s;
 
 sampler2D _MainTex;
 float4 _MainTex_ST;
@@ -213,6 +214,29 @@ float _Rim_Lighting3_Angle_Limit_Power;
 #endif
 #if defined(_RIM_LIGHTING3_QUANTIZATION)
 float _Rim_Lighting3_Quantization_Steps;
+#endif
+#endif
+
+#define DECAL_TILING_MODE_CLAMP 0
+#define DECAL_TILING_MODE_TILE  1
+
+#if defined(_DECAL0)
+texture2D _Decal0_MainTex;
+float4 _Decal0_MainTex_ST;
+float4 _Decal0_Color;
+float _Decal0_Opacity;
+float _Decal0_Angle;
+float _Decal0_Tiling_Mode;
+#if defined(_DECAL0_NORMAL)
+texture2D _Decal0_Normal;
+float4 _Decal0_Normal_ST;
+float _Decal0_Normal_Scale;
+#endif
+#if defined(_DECAL0_REFLECTIONS)
+texture2D _Decal0_MetallicGlossMap;
+float4 _Decal0_MetallicGlossMap_ST;
+float _Decal0_Smoothness;
+float _Decal0_Metallic;
 #endif
 #endif
 

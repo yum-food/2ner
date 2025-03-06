@@ -287,8 +287,35 @@ Shader "yum_food/2ner"
             //endex
           [HideInInspector] m_end_Rim_Lighting3("Rim lighting", Float) = 0
           //endex
-
         [HideInInspector] m_end_Rim_Lighting("Rim lighting", Float) = 0
+
+        [HideInInspector] m_start_Decals("Decals", Float) = 0
+          //ifex _Decal0_Enabled==0
+          [HideInInspector] m_start_Decal0("Decal 0", Float) = 0
+            [ThryToggle(_DECAL0)] _Decal0_Enabled("Enable", Float) = 0
+            _Decal0_Color("Tint", Color) = (1, 1, 1, 1)
+            _Decal0_MainTex("Base color", 2D) = "white" {}
+            _Decal0_Opacity("Opacity", Range(0, 1)) = 1.0
+            _Decal0_Angle("Angle", Range(0, 1)) = 0.0
+            [ThryWideEnum(Clamp, 0, Tiling, 1)]_Decal0_Tiling_Mode("Tiling mode", Int) = 0
+            //ifex _Decal0_Normal_Enabled==0
+            [HideInInspector] m_start_Decal0_Normal("Normal", Float) = 0
+              [ThryToggle(_DECAL0_NORMAL)] _Decal0_Normal_Enabled("Enable", Float) = 0
+              _Decal0_Normal("Normal", 2D) = "bump" {}
+              _Decal0_Normal_Scale("Normal scale", Float) = 1.0
+            [HideInInspector] m_end_Decal0_Normal("Normal", Float) = 0
+            //endex
+            //ifex _Decal0_Reflections_Enabled==0
+            [HideInInspector] m_start_Decal0_Reflections("Reflections", Float) = 0
+              [ThryToggle(_DECAL0_REFLECTIONS)] _Decal0_Reflections_Enabled("Enable", Float) = 0
+              _Decal0_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+              _Decal0_Smoothness("Smoothness", Range(0, 1)) = 0.5
+              _Decal0_Metallic("Metallic", Range(0, 1)) = 0.0
+            [HideInInspector] m_end_Decal0_Reflections("Reflections", Float) = 0
+            //endex
+          [HideInInspector] m_end_Decal0("Decal 0", Float) = 0
+          //endex
+        [HideInInspector] m_end_Decals("Decals", Float) = 0
 
         //ifex _Vertex_Domain_Warping_Enabled==0
         [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
