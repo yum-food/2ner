@@ -324,4 +324,14 @@ texture2D _Glitter_Mask;
 #endif  // _GLITTER_MASK
 #endif  // _GLITTER
 
+#if defined(_MATERIAL_TYPE_CLOTH)
+texture2D _Cloth_Mask;
+float3 _Cloth_Sheen_Color;
+float _Cloth_Direct_Multiplier;
+float _Cloth_Indirect_Multiplier;
+#if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
+float3 _Cloth_Subsurface_Color;
+#endif  // _MATERIAL_TYPE_CLOTH_SUBSURFACE
+#endif  // _MATERIAL_TYPE_CLOTH
+
 #endif  // __GLOBALS_INC

@@ -1,6 +1,11 @@
 #ifndef __FEATURES_INC
 #define __FEATURES_INC
 
+//ifex _Material_Type_Cloth_Enabled==0  
+#pragma shader_feature_local _MATERIAL_TYPE_CLOTH
+#pragma shader_feature_local _MATERIAL_TYPE_CLOTH_SUBSURFACE
+//endex
+
 //ifex _Alpha_Multiplier_Enabled==0
 #pragma shader_feature_local _ALPHA_MULTIPLIER
 //endex

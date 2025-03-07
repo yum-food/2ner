@@ -10,55 +10,39 @@
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
 
-// See "Physically Based Shading at Disney" by Burley et. al.
-// This is from page 14.
-// From that paper, we have:
-//  * theta_v (aka arccos(NoV)): angle between view and normal
-//  * theta_h (aka arccos(NoH)): angle between normal and half vector
-//  * theta_l (aka arccos(NoL)): angle between light and normal
-//  * theta_d (aka arccos(LoH)): angle between light and half vector
-float DisneyDiffuse(float roughness,
-    float LoH, float NoL, float NoV, float f90) {
-  const float f_d =
-    (1 + (f90 - 1) * pow5(1 - NoL)) *
-    (1 + (f90 - 1) * pow5(1 - NoV));
-  return f_d;
+#if defined(_MATERIAL_TYPE_CLOTH)
+float D_Charlie(float roughness, float NoH) {
+  // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
+  float invAlpha = 1.0 / roughness;
+  float cos2h = NoH * NoH;
+  float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+  return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
 }
+#endif
 
-float3 diffuseLobe(float3 albedo, float roughness, float LoH, float NoL,
-    float NoV, float f90)
-{
-  return albedo * DisneyDiffuse(roughness, LoH, NoL, NoV, f90);
+// Cloth visibility term from Neubelt and Pettineo
+float V_Cloth(float NoV, float NoL) {
+  return 1.0 / (4.0 * (NoL + NoV - NoL * NoV));
 }
 
 float3 specularLobe(YumPbr pbr, float f0,
     float3 h, float LoH, float NoH, float NoV, float NoL)
 {
+#if defined(_MATERIAL_TYPE_CLOTH)
+  float D = D_Charlie(pbr.roughness, NoH);
+  float V = V_Cloth(NoV, NoL);
+  float3 F = _Cloth_Sheen_Color;
+  return (D * V) * F;
+#else
+  // Fresnel
   const float3 F = F_Schlick(f0, LoH);
-
   // Normal distribution function
   float D = D_GGX(pbr.roughness, NoH, h);
   // Geometric shadowing
   float V = V_SmithGGXCorrelated_Fast(pbr.roughness, NoV, NoL);
-
-  return (D * V) * F * PI;
-}
-
-#if defined(_CLEARCOAT)
-// Add a clearcoat specular lobe function
-float3 clearcoatLobe(float roughness, float f0,
-    float3 h, float LoH, float NoH_mesh, float NoV_mesh, float NoL_mesh)
-{
-  const float F = F_Schlick(f0, LoH);
-
-  // Normal distribution function with clearcoat roughness
-  float D = D_GGX(roughness, NoH_mesh, h);
-  // Geometric shadowing
-  float V = V_SmithGGXCorrelated_Fast(roughness, NoV_mesh, NoL_mesh);
-
-  return (D * V) * F * PI;
-}
+  return (D * V) * F;
 #endif
+}
 
 float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float3 h = normalize(light.view_dir + light.dir);
@@ -76,81 +60,97 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float VoL = saturate(dot(light.view_dir, light.dir));
   const float f90 = 0.5 + 2 * pbr.roughness * LoH * LoH;
 
-  // Typical values for different materials listed here:
-  //   https://google.github.io/filament/Filament.html#toc4.8.3.2
-  // TODO expose an enum for different types of materials
-  const float reflectance = _reflectance;
-  // f0 = amount of light reflected back when viewing surface at a right angle
-  // I think the way that f0 is calculated in the comment below is correct, but
-  // the other way is how filamented works, so I'm going with that for now.
-  //const float3 f0 = lerp(0.16 * reflectance * reflectance, pbr.albedo, pbr.metallic);
-  const float3 f0 = reflectance * (1.0 - pbr.metallic) + pbr.albedo * pbr.metallic;
-  const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
-  const float3 E = specularDFG(dfg, f0);
-  const float3 energy_compensation = energyCompensation(dfg, f0);
-
-#if defined(_CLEARCOAT)
-  // Clearcoat parameters
-  const float clearcoat_strength = _Clearcoat_Strength;
-  const float clearcoat_roughness = max(0.089, _Clearcoat_Roughness);
-  const float clearcoat_perceptual_roughness = sqrt(clearcoat_roughness);
-  
-  // IoR of 1.5 -> reflectance of 0.04
-  const float clearcoat_f0 = 0.04; 
-
-  // Use cc normal for clearcoat instead of detail normal
-  const float3 cc_normal = i.normal;
-  const float NoV_cc = max(1E-4, dot(cc_normal, light.view_dir));
-  const float NoH_cc = saturate(dot(cc_normal, h));
-  const float NoL_cc = saturate(dot(cc_normal, light.dir));
-#if defined(_WRAPPED_LIGHTING)
-  const float NoL_cc_wrapped_s = saturate(wrapNoL(NoL_cc, _Wrap_NoL_Specular_Strength));
-  const float NoL_cc_wrapped_d = saturate(wrapNoL(NoL_cc, _Wrap_NoL_Diffuse_Strength));
-#else
-  const float NoL_cc_wrapped_s = NoL_cc;
-  const float NoL_cc_wrapped_d = NoL_cc;
-#endif
-  
-  // Calculate clearcoat DFG terms with cc normal
-  const float3 clearcoat_dfg = PrefilteredDFG_LUT(clearcoat_perceptual_roughness, NoV_cc);
-  const float clearcoat_E = specularDFG(clearcoat_dfg, clearcoat_f0);
-  const float clearcoat_energy_compensation = energyCompensation(clearcoat_dfg, clearcoat_f0);
-#endif
-
-  float3 direct;
+#if defined(_MATERIAL_TYPE_CLOTH)
+  // Cloth specific BRDF
+  float3 direct_cloth;
   {
-    // Base layer
-    float3 Fd = diffuseLobe(pbr.albedo, pbr.roughness_perceptual, LoH, NoL,
-        NoV, f90);
+    // Cloth diffuse BRDF - apply proper energy conservation
+    // Use a proper diffuse BRDF term instead of raw albedo
+    float3 Fd = pbr.albedo / PI;
+    Fd *= light.attenuation;
+    
+    #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
+      // Energy conservative wrap diffuse for subsurface scattering
+      float wrap_diffuse = saturate((NoL + 0.5) / 2.25);
+      Fd *= wrap_diffuse;
+      // Apply subsurface color
+      Fd *= saturate(_Cloth_Subsurface_Color + NoL);
+    #endif
+    
+    // Cloth specular BRDF
+    float3 Fr = specularLobe(pbr, 0.04, h, LoH, NoH, NoV, NoL_wrapped_s);
+    
+    #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
+      // No need to multiply by NoL when using subsurface scattering
+      direct_cloth = (Fd + Fr * NoL) * light.direct * _Cloth_Direct_Multiplier;
+    #else
+      direct_cloth = (Fd + Fr) * NoL * light.direct * _Cloth_Direct_Multiplier;
+    #endif
+  }
+#endif
+
+  float3 direct_standard;
+  {
+    // Typical values for different materials listed here:
+    //   https://google.github.io/filament/Filament.html#toc4.8.3.2
+    // TODO expose an enum for different types of materials
+    const float reflectance = _reflectance;
+    // f0 = amount of light reflected back when viewing surface at a right angle
+    // Change to match the design document
+    const float3 f0 = lerp(0.16 * reflectance * reflectance, pbr.albedo, pbr.metallic);
+    const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
+    const float3 E = specularDFG(dfg, f0);
+    const float3 energy_compensation = energyCompensation(dfg, f0);
+
+    float3 Fd = pbr.albedo / PI;
     Fd *= (1.0 - pbr.metallic) * light.attenuation;
     float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s);
     
-#if defined(_CLEARCOAT)
-    float Fcr = clearcoatLobe(clearcoat_roughness, clearcoat_f0, h, LoH, NoH_cc, NoV_cc, NoL_cc_wrapped_s);
-    Fcr *= clearcoat_strength * clearcoat_energy_compensation; 
-    float clearcoat_factor = 1.0 - clearcoat_strength * F_Schlick(clearcoat_f0, NoV_cc);
-    float3 color = (Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s) * clearcoat_factor + 
-                    Fcr * NoL_cc_wrapped_s;
-#else
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
-#endif
-
-    direct = color * light.direct;
+    direct_standard = color * light.direct;
   }
 
-  float3 indirect;
+#if defined(_MATERIAL_TYPE_CLOTH)
+  float3 indirect_cloth;
   {
+    // Simple indirect lighting for cloth
+    // Add additional corrective term to account for the fact that vrchat map
+    // makers suck shit and don't use enough reflection probes.
+    float diffuse_luminosity = dot(light.diffuse, float3(0.2126, 0.7152, 0.0722));
+    float3 Fr = _Cloth_Sheen_Color * light.specular * diffuse_luminosity;
+    float3 Fd = pbr.albedo * light.diffuse * pbr.ao;
+    
+    #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
+      // Apply subsurface color to indirect diffuse
+      Fd *= _Cloth_Subsurface_Color;
+    #endif
+    
+    indirect_cloth = (Fr + Fd) * _Cloth_Indirect_Multiplier;
+  }
+#endif
+
+  float3 indirect_standard;
+  {
+    const float reflectance = _reflectance;
+    const float3 f0 = reflectance * (1.0 - pbr.metallic) + pbr.albedo * pbr.metallic;
+    const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
+    const float3 E = specularDFG(dfg, f0);
+    const float3 energy_compensation = energyCompensation(dfg, f0);
+
     float3 Fr = E * light.specular * energy_compensation;
     float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao;
     
-#if defined(_CLEARCOAT)
-    float Fcr = clearcoat_E * light.specular * clearcoat_energy_compensation * clearcoat_strength;
-    float clearcoat_factor = 1.0 - clearcoat_strength * F_Schlick(clearcoat_f0, NoV_cc);
-    indirect = (Fr + Fd) * clearcoat_factor + Fcr;
-#else
-    indirect = Fr + Fd;
-#endif
+    indirect_standard = Fr + Fd;
   }
+
+#if defined(_MATERIAL_TYPE_CLOTH)
+  float cloth_mask = _Cloth_Mask.Sample(linear_repeat_s, i.uv01.xy);
+  float3 direct = lerp(direct_standard, direct_cloth, cloth_mask);
+  float3 indirect = lerp(indirect_standard, indirect_cloth, cloth_mask);
+#else
+  float3 direct = direct_standard;
+  float3 indirect = indirect_standard;
+#endif
 
   return float4(direct + indirect, pbr.albedo.a);
 }
