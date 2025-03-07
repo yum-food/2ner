@@ -601,6 +601,14 @@ Shader "yum_food/2ner"
         //endex
 
       [HideInInspector] m_lightingOptions("Lighting Options", Float) = 0
+        //ifex _Fallback_Cubemap_Enabled==0
+        [HideInInspector] m_start_Fallback_Cubemap("Fallback Cubemap", Float) = 0
+          [ThryToggle(_FALLBACK_CUBEMAP)] _Fallback_Cubemap_Enabled("Enable", Float) = 0
+          [MaterialToggle] _Fallback_Cubemap_Force("Force", Float) = 0
+          _Fallback_Cubemap("Cubemap", Cube) = "" {}
+          _Fallback_Cubemap_Brightness("Brightness", Float) = 1.0
+        [HideInInspector] m_end_Fallback_Cubemap("Fallback Cubemap", Float) = 0
+        //endex
         //ifex _Receive_Shadows_Enabled==0
         [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
         [ThryToggle(_RECEIVE_SHADOWS)] _Receive_Shadows_Enabled("Enable", Float) = 1

@@ -26,6 +26,13 @@ float4 _EmissionMap_ST;
 float3 _EmissionColor;
 #endif
 
+#if defined(_FALLBACK_CUBEMAP)
+UNITY_DECLARE_TEXCUBE(_Fallback_Cubemap);
+half4 _Fallback_Cubemap_HDR;
+float _Fallback_Cubemap_Brightness;
+float _Fallback_Cubemap_Force;
+#endif
+
 #if defined(_AMBIENT_OCCLUSION)
 sampler2D _OcclusionMap;
 float _OcclusionStrength;

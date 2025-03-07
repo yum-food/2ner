@@ -100,7 +100,7 @@ float3 getDirectLightDirection(v2f i) {
 }
 
 float GetLodRoughness(float roughness) {
-	return (1.0 / UNITY_SPECCUBE_LOD_STEPS) * roughness * (1.7 - 0.7 * roughness);
+	return roughness * (1.7 - 0.7 * roughness);
 }
 
 float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir) {
@@ -122,8 +122,24 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir) {
   data.boxMin[1] = unity_SpecCube1_BoxMin;
   data.probePosition[1] = unity_SpecCube1_ProbePosition;
 #endif
-  return UnityGI_prefilteredRadiance(data, pbr.roughness_perceptual,
-      reflect_dir);
+
+#if defined(_FALLBACK_CUBEMAP)
+  // Check if there's no valid scene cubemap
+  if (!SceneHasReflections() || _Fallback_Cubemap_Force) {
+    // Set up data for fallback sampling similar to Unity's system
+    half3 reflectVector = reflect(-view_dir, pbr.normal);
+    
+    #ifdef UNITY_SPECCUBE_BOX_PROJECTION
+      reflectVector = BoxProjectedCubemapDirection(reflectVector, data.worldPos, data.probePosition[0], data.boxMin[0], data.boxMax[0]);
+    #endif
+
+    half mip = roughness * UNITY_SPECCUBE_LOD_STEPS;
+    float4 envSample = UNITY_SAMPLE_TEXCUBE_LOD(_Fallback_Cubemap, reflectVector, mip);
+    return DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness;
+  }
+#endif
+
+  return UnityGI_prefilteredRadiance(data, roughness, reflect_dir);
 }
 
 float4 getIndirectDiffuse(v2f i, float4 vertexLightColor) {

@@ -123,4 +123,11 @@ float3 getPoiLightingIndirect() {
   return BetterSH9(float4(0, 0, 0, 1));
 }
 
+bool SceneHasReflections()
+{
+  float width, height;
+  unity_SpecCube0.GetDimensions(width, height);
+  return !(width * height < 2);
+}
+
 #endif  // __POI_INC

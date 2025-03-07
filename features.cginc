@@ -22,6 +22,10 @@
 #pragma shader_feature_local _EMISSION
 //endex
 
+//ifex _Fallback_Cubemap_Enabled==0
+#pragma shader_feature_local _FALLBACK_CUBEMAP
+//endex
+
 //ifex _Wrapped_Lighting_Enabled==0
 #pragma shader_feature_local _WRAPPED_LIGHTING
 //endex
