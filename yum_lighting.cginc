@@ -130,7 +130,7 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir) {
     half3 reflectVector = reflect(-view_dir, pbr.normal);
     
     #ifdef UNITY_SPECCUBE_BOX_PROJECTION
-      reflectVector = BoxProjectedCubemapDirection(reflectVector, data.worldPos, data.probePosition[0], data.boxMin[0], data.boxMax[0]);
+      reflectVector = BoxProjectedCubemapDirection(reflectVector, data.worldPos, /*probe_position=*/0, /*box_min=*/-1, /*box_max=*/1);
     #endif
 
     half mip = roughness * UNITY_SPECCUBE_LOD_STEPS;
