@@ -16,6 +16,13 @@ half _BumpScale;
 float _BumpShadowHeightScale;
 float _BumpShadowHardness;
 
+float _VRChatMirrorMode;
+float3 _VRChatMirrorCameraPos;
+
+#if defined(_FACE_ME)
+float _Face_Me_Enabled_Dynamic;
+#endif
+
 #if defined(_ALPHA_MULTIPLIER)
 float _Alpha_Multiplier;
 #endif

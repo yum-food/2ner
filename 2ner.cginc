@@ -5,6 +5,7 @@
 #include "UnityLightingCommon.cginc"
 
 #include "eyes.cginc"
+#include "face_me.cginc"
 #include "features.cginc"
 #include "globals.cginc"
 #include "interpolators.cginc"
@@ -23,24 +24,28 @@ v2f vert(appdata v) {
 #endif
 #if defined(MASKED_STENCIL1_PASS)
   float masked_stencil1_mask = _Masked_Stencil1_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  [branch]
   if (masked_stencil1_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
 #endif
 #if defined(MASKED_STENCIL2_PASS)
   float masked_stencil2_mask = _Masked_Stencil2_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  [branch]
   if (masked_stencil2_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
 #endif
 #if defined(MASKED_STENCIL3_PASS)
   float masked_stencil3_mask = _Masked_Stencil3_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  [branch]
   if (masked_stencil3_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
 #endif
 #if defined(MASKED_STENCIL4_PASS)
   float masked_stencil4_mask = _Masked_Stencil4_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  [branch]
   if (masked_stencil4_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
@@ -57,6 +62,7 @@ v2f vert(appdata v) {
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
 #if defined(OUTLINE_PASS)
+  [branch]
   if (!_Outlines_Enabled_Dynamic) {
     return (v2f) (0.0/0.0);
   }
@@ -70,6 +76,10 @@ v2f vert(appdata v) {
   v.normal *= -1;
   v.tangent *= -1;
 #endif  // OUTLINE_PASS
+
+#if defined(_FACE_ME)
+  face_me(v);
+#endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)
   float3 basePos = v.vertex.xyz;

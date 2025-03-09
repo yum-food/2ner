@@ -98,6 +98,10 @@
 #pragma shader_feature_local _RIM_LIGHTING3_QUANTIZATION
 //endex
 
+//ifex _Face_Me_Enabled==0
+#pragma shader_feature_local _FACE_ME
+//endex
+
 //ifex _Decal0_Enabled==0
 #pragma shader_feature_local _DECAL0
 #pragma shader_feature_local _DECAL0_NORMAL

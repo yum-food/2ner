@@ -317,6 +317,13 @@ Shader "yum_food/2ner"
           //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
 
+        //ifex _Face_Me_Enabled==0
+        [HideInInspector] m_start_Face_Me("Face me", Float) = 0
+          [ThryToggle(_FACE_ME)] _Face_Me_Enabled("Enable", Float) = 0
+          [MaterialToggle] _Face_Me_Enabled_Dynamic("Enable dynamic", Float) = 0
+          [HideInInspector] m_end_Face_Me("Face me", Float) = 0
+        //endex
+
         //ifex _Vertex_Domain_Warping_Enabled==0
         [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
           [ThryToggle(_VERTEX_DOMAIN_WARPING)]_Vertex_Domain_Warping_Enabled("Enable", Float) = 0
