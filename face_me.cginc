@@ -47,16 +47,15 @@ void face_me(inout appdata v) {
 
     // Use the doubled angle values in your rotation matrix
     float2x2 face_me_rot = float2x2(cos_t, -sin_t, sin_t, cos_t);
-    float2x2 face_me_rot_inv = float2x2(cos_t, sin_t, -sin_t, cos_t);
     worldPos.xz = mul(face_me_rot, (worldPos.xz - object_center.xz)) + object_center.xz;
     v.vertex = mul(unity_WorldToObject, worldPos);
 
     float3 world_normal = UnityObjectToWorldNormal(v.normal);
-    world_normal.xz = mul(face_me_rot_inv, world_normal.xz);
+    world_normal.xz = mul(face_me_rot, world_normal.xz);
     v.normal = normalize(mul(unity_WorldToObject, world_normal));
 
     float3 world_tangent = UnityObjectToWorldDir(v.tangent.xyz);
-    world_tangent.xz = mul(face_me_rot_inv, world_tangent.xz);
+    world_tangent.xz = mul(face_me_rot, world_tangent.xz);
     v.tangent.xyz = normalize(mul(unity_WorldToObject, world_tangent));
   }
 }
