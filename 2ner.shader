@@ -672,7 +672,6 @@ Shader "yum_food/2ner"
       [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 1
       [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 0
       [Enum(Off, 0, On, 1)] _ZWrite("ZWrite", Int) = 1
-      [Enum(Realistic, 0, Toon, 1)] _SphericalHarmonics("Spherical harmonics", Int) = 1
       [HideInInspector] m_start_blending ("Blending--{button_help:{text:Tutorial,action:{type:URL,data:https://www.poiyomi.com/rendering/blending},hover:Documentation}}", Float) = 0
       [DoNotAnimate][Enum(Thry.BlendOp)]_BlendOp ("RGB Blend Op", Int) = 0
       [DoNotAnimate][Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("RGB Source Blend", Int) = 1
