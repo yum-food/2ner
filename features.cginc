@@ -102,6 +102,11 @@
 #pragma shader_feature_local _FACE_ME
 //endex
 
+//ifex _Harnack_Tracing_Enabled==0
+#pragma shader_feature_local _HARNACK_TRACING
+#pragma shader_feature_local _HARNACK_TRACING_GYROID
+//endex
+
 //ifex _Decal0_Enabled==0
 #pragma shader_feature_local _DECAL0
 #pragma shader_feature_local _DECAL0_NORMAL

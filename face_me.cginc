@@ -4,6 +4,7 @@
 #include "cnlohr.cginc"
 #include "interpolators.cginc"
 
+#if defined(_FACE_ME)
 // Rotate the object's position and normal so that it always faces the camera.
 void face_me(inout appdata v) {
   [branch]
@@ -59,6 +60,7 @@ void face_me(inout appdata v) {
     v.tangent.xyz = normalize(mul(unity_WorldToObject, world_tangent));
   }
 }
+#endif  // _FACE_ME
 
 #endif  // __FACE_ME_INC
 

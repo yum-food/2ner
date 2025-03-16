@@ -1,0 +1,600 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Mat09
+  m_Shader: {fileID: 4800000, guid: b4e71db42d10be94e9a50ee0569be871, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _METALLICS
+  m_InvalidKeywords:
+  - _
+  - _BUMP_SHADOWS
+  - _RECEIVE_SHADOWS
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 2dc42dfedb2bc704d984f7990c6b816a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CubeMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DFG:
+        m_Texture: {fileID: 2800000, guid: 53122c95e82e994448dce5a9c8346223, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gimmick_Eye_Effect_00_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Glitter_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Masked_Stencil1_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Masked_Stencil2_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Masked_Stencil3_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Masked_Stencil4_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Matcap0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Matcap0_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Outline_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Rim_Lighting0_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Rim_Lighting1_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Rim_Lighting2_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Rim_Lighting3_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSFD_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SmoothnessMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddBlendOp: 4
+    - _AddBlendOpAlpha: 4
+    - _AddDstBlend: 1
+    - _AddDstBlendAlpha: 1
+    - _AddSrcBlend: 1
+    - _AddSrcBlendAlpha: 0
+    - _Alpha_Multiplier: 1
+    - _Alpha_Multiplier_Enabled: 0
+    - _Ambient_Occlusion_Enabled: 0
+    - _BlendOp: 0
+    - _BlendOpAlpha: 0
+    - _Brightness_Control_Enabled: 0
+    - _Brightness_Multiplier: 1
+    - _BumpScale: 1
+    - _BumpShadowHardness: 50
+    - _BumpShadowHeightScale: 0.2
+    - _BumpShadowsEnabled: 0
+    - _Bump_Shadows_Enabled: 1
+    - _Cast_Shadows_Enabled: 1
+    - _Clip: 0.5
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _Detail_Maps_Enabled: 0
+    - _DstBlend: 0
+    - _DstBlendAlpha: 10
+    - _Emission_Enabled: 0
+    - _EnableMetallic: 0
+    - _ExtraStencilColorBackCompareFunction: 8
+    - _ExtraStencilColorBackFailOp: 0
+    - _ExtraStencilColorBackPassOp: 0
+    - _ExtraStencilColorBackZFailOp: 0
+    - _ExtraStencilColorCompareFunction: 8
+    - _ExtraStencilColorFailOp: 0
+    - _ExtraStencilColorFrontCompareFunction: 8
+    - _ExtraStencilColorFrontFailOp: 0
+    - _ExtraStencilColorFrontPassOp: 0
+    - _ExtraStencilColorFrontZFailOp: 0
+    - _ExtraStencilColorPassOp: 0
+    - _ExtraStencilColorPass_Enabled: 0
+    - _ExtraStencilColorReadMask: 255
+    - _ExtraStencilColorRef: 0
+    - _ExtraStencilColorType: 0
+    - _ExtraStencilColorWriteMask: 255
+    - _ExtraStencilColorZFailOp: 0
+    - _Eye_Effect_00_Enabled: 0
+    - _FFBFStencilHelp0: 0
+    - _FFBFStencilHelp1: 0
+    - _Focal_Length_Control_Enabled: 0
+    - _Focal_Length_Enabled_Dynamic: 0
+    - _Focal_Length_Multiplier: 1
+    - _ForgotToLockMaterial: 0
+    - _Gimmick_Eye_Effect_00_Domain_Warping_Octaves: 1
+    - _Gimmick_Eye_Effect_00_Domain_Warping_Scale: 1
+    - _Gimmick_Eye_Effect_00_Domain_Warping_Speed: 1
+    - _Gimmick_Eye_Effect_00_Domain_Warping_Strength: 0.1
+    - _Gimmick_Eye_Effect_00_Edge_Length: 0.1
+    - _Glitter_Angle_Limit: 1
+    - _Glitter_Angle_Limit_Enabled: 0
+    - _Glitter_Angle_Limit_Transition_Width: 0.1
+    - _Glitter_Angle_Randomization_Range: 1
+    - _Glitter_Center_Randomization_Range: 1
+    - _Glitter_Enabled: 0
+    - _Glitter_Existence_Chance: 0.1
+    - _Glitter_Grid_Size: 1
+    - _Glitter_Layers: 1
+    - _Glitter_Major_Minor_Ratio: 1
+    - _Glitter_Mask_Enabled: 0
+    - _Glitter_Size: 1
+    - _Glitter_Size_Randomization_Range: 0.4
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _InvertSmoothness: 0
+    - _LTCGI_Enabled: 0
+    - _LTCGI_Strength: 1
+    - _MaskedStencil1BackCompareFunction: 8
+    - _MaskedStencil1BackFailOp: 0
+    - _MaskedStencil1BackPassOp: 0
+    - _MaskedStencil1BackZFailOp: 0
+    - _MaskedStencil1CompareFunction: 8
+    - _MaskedStencil1FailOp: 0
+    - _MaskedStencil1FrontCompareFunction: 8
+    - _MaskedStencil1FrontFailOp: 0
+    - _MaskedStencil1FrontPassOp: 0
+    - _MaskedStencil1FrontZFailOp: 0
+    - _MaskedStencil1PassOp: 0
+    - _MaskedStencil1ReadMask: 255
+    - _MaskedStencil1Ref: 0
+    - _MaskedStencil1WriteMask: 255
+    - _MaskedStencil1ZFailOp: 0
+    - _MaskedStencil2BackCompareFunction: 8
+    - _MaskedStencil2BackFailOp: 0
+    - _MaskedStencil2BackPassOp: 0
+    - _MaskedStencil2BackZFailOp: 0
+    - _MaskedStencil2CompareFunction: 8
+    - _MaskedStencil2FailOp: 0
+    - _MaskedStencil2FrontCompareFunction: 8
+    - _MaskedStencil2FrontFailOp: 0
+    - _MaskedStencil2FrontPassOp: 0
+    - _MaskedStencil2FrontZFailOp: 0
+    - _MaskedStencil2PassOp: 0
+    - _MaskedStencil2ReadMask: 255
+    - _MaskedStencil2Ref: 0
+    - _MaskedStencil2WriteMask: 255
+    - _MaskedStencil2ZFailOp: 0
+    - _MaskedStencil3BackCompareFunction: 8
+    - _MaskedStencil3BackFailOp: 0
+    - _MaskedStencil3BackPassOp: 0
+    - _MaskedStencil3BackZFailOp: 0
+    - _MaskedStencil3CompareFunction: 8
+    - _MaskedStencil3FailOp: 0
+    - _MaskedStencil3FrontCompareFunction: 8
+    - _MaskedStencil3FrontFailOp: 0
+    - _MaskedStencil3FrontPassOp: 0
+    - _MaskedStencil3FrontZFailOp: 0
+    - _MaskedStencil3PassOp: 0
+    - _MaskedStencil3ReadMask: 255
+    - _MaskedStencil3Ref: 0
+    - _MaskedStencil3WriteMask: 255
+    - _MaskedStencil3ZFailOp: 0
+    - _MaskedStencil4BackCompareFunction: 8
+    - _MaskedStencil4BackFailOp: 0
+    - _MaskedStencil4BackPassOp: 0
+    - _MaskedStencil4BackZFailOp: 0
+    - _MaskedStencil4CompareFunction: 8
+    - _MaskedStencil4FailOp: 0
+    - _MaskedStencil4FrontCompareFunction: 8
+    - _MaskedStencil4FrontFailOp: 0
+    - _MaskedStencil4FrontPassOp: 0
+    - _MaskedStencil4FrontZFailOp: 0
+    - _MaskedStencil4PassOp: 0
+    - _MaskedStencil4ReadMask: 255
+    - _MaskedStencil4Ref: 0
+    - _MaskedStencil4WriteMask: 255
+    - _MaskedStencil4ZFailOp: 0
+    - _Masked_Stencil1_Enabled: 0
+    - _Masked_Stencil2_Enabled: 0
+    - _Masked_Stencil3_Enabled: 0
+    - _Masked_Stencil4_Enabled: 0
+    - _Matcap0_Enabled: 0
+    - _Matcap0_Invert: 0
+    - _Matcap0_Mask_Enabled: 0
+    - _Matcap0_Mode: 0
+    - _Matcap0_Quantization_Enabled: 0
+    - _Matcap0_Quantization_Steps: 1
+    - _Matcap0_Strength: 1
+    - _Matcap0_Target_Mask: 1
+    - _Metallic: 0
+    - _Metallics_Enabled: 1
+    - _Min_Brightness: 0
+    - _Min_Brightness_Enabled: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _OutlineBlendOp: 0
+    - _OutlineBlendOpAlpha: 4
+    - _OutlineDstBlend: 0
+    - _OutlineDstBlendAlpha: 0
+    - _OutlineSrcBlend: 1
+    - _OutlineSrcBlendAlpha: 1
+    - _Outline_Mask_Enabled: 0
+    - _Outline_Mask_Invert: 0
+    - _Outline_StencilBackCompareFunction: 8
+    - _Outline_StencilBackFailOp: 0
+    - _Outline_StencilBackPassOp: 0
+    - _Outline_StencilBackZFailOp: 0
+    - _Outline_StencilCompareFunction: 8
+    - _Outline_StencilFailOp: 0
+    - _Outline_StencilFrontCompareFunction: 8
+    - _Outline_StencilFrontFailOp: 0
+    - _Outline_StencilFrontPassOp: 0
+    - _Outline_StencilFrontZFailOp: 0
+    - _Outline_StencilPassOp: 0
+    - _Outline_StencilReadMask: 255
+    - _Outline_StencilRef: 0
+    - _Outline_StencilType: 0
+    - _Outline_StencilWriteMask: 255
+    - _Outline_StencilZFailOp: 0
+    - _Outline_Stencil_Enabled: 0
+    - _Outline_Width: 0
+    - _OutlinesEnabled: 0
+    - _Outlines_Enabled: 0
+    - _Outlines_Enabled_Dynamic: 1
+    - _Parallax: 0.02
+    - _Quantize_NoL_Enabled: 0
+    - _Quantize_NoL_Steps: 1
+    - _Quantize_Specular_Enabled: 0
+    - _Quantize_Specular_Steps: 1
+    - _Receive_Shadows_Enabled: 1
+    - _Rim_Lighting0_Angle_Limit_Enabled: 0
+    - _Rim_Lighting0_Angle_Limit_Power: 1
+    - _Rim_Lighting0_Brightness: 1
+    - _Rim_Lighting0_Center: 0.5
+    - _Rim_Lighting0_Enabled: 0
+    - _Rim_Lighting0_Mask_Enabled: 0
+    - _Rim_Lighting0_Mode: 0
+    - _Rim_Lighting0_Power: 5
+    - _Rim_Lighting0_Quantization_Enabled: 0
+    - _Rim_Lighting0_Quantization_Steps: 1
+    - _Rim_Lighting0_Target_Mask: 1
+    - _Rim_Lighting1_Angle_Limit_Enabled: 0
+    - _Rim_Lighting1_Angle_Limit_Power: 1
+    - _Rim_Lighting1_Brightness: 1
+    - _Rim_Lighting1_Center: 0.5
+    - _Rim_Lighting1_Enabled: 0
+    - _Rim_Lighting1_Mask_Enabled: 0
+    - _Rim_Lighting1_Mode: 0
+    - _Rim_Lighting1_Power: 5
+    - _Rim_Lighting1_Quantization_Enabled: 0
+    - _Rim_Lighting1_Quantization_Steps: 1
+    - _Rim_Lighting1_Target_Mask: 1
+    - _Rim_Lighting2_Angle_Limit_Enabled: 0
+    - _Rim_Lighting2_Angle_Limit_Power: 1
+    - _Rim_Lighting2_Brightness: 1
+    - _Rim_Lighting2_Center: 0.5
+    - _Rim_Lighting2_Enabled: 0
+    - _Rim_Lighting2_Mask_Enabled: 0
+    - _Rim_Lighting2_Mode: 0
+    - _Rim_Lighting2_Power: 5
+    - _Rim_Lighting2_Quantization_Enabled: 0
+    - _Rim_Lighting2_Quantization_Steps: 1
+    - _Rim_Lighting2_Target_Mask: 1
+    - _Rim_Lighting3_Angle_Limit_Enabled: 0
+    - _Rim_Lighting3_Angle_Limit_Power: 1
+    - _Rim_Lighting3_Brightness: 1
+    - _Rim_Lighting3_Center: 0.5
+    - _Rim_Lighting3_Enabled: 0
+    - _Rim_Lighting3_Mask_Enabled: 0
+    - _Rim_Lighting3_Mode: 0
+    - _Rim_Lighting3_Power: 5
+    - _Rim_Lighting3_Quantization_Enabled: 0
+    - _Rim_Lighting3_Quantization_Steps: 1
+    - _Rim_Lighting3_Target_Mask: 1
+    - _SSFD_Enabled: 0
+    - _SSFD_Max_Fwidth: 1
+    - _SSFD_Scale: 1
+    - _SSFD_Size_Factor: 1
+    - _SSFD_Threshold: 0.5
+    - _SampleWorld: 0
+    - _Saturation: 0
+    - _ShaderOptimizerEnabled: 0
+    - _Shadow_Strength: 0.25
+    - _Smoothness: 1
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SphericalHarmonics: 1
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Stencil1Type: 0
+    - _Stencil2Type: 0
+    - _Stencil3Type: 0
+    - _Stencil4Type: 0
+    - _StencilBackCompareFunction: 8
+    - _StencilBackFailOp: 0
+    - _StencilBackPassOp: 0
+    - _StencilBackZFailOp: 0
+    - _StencilCompareFunction: 8
+    - _StencilFailOp: 0
+    - _StencilFrontCompareFunction: 8
+    - _StencilFrontFailOp: 0
+    - _StencilFrontPassOp: 0
+    - _StencilFrontZFailOp: 0
+    - _StencilPassOp: 0
+    - _StencilReadMask: 255
+    - _StencilRef: 0
+    - _StencilType: 0
+    - _StencilWriteMask: 255
+    - _StencilZFailOp: 0
+    - _Stencil_Enabled: 0
+    - _UVSec: 0
+    - _UV_Domain_Warping_Enabled: 0
+    - _UV_Domain_Warping_Spatial_Octaves: 1
+    - _UV_Domain_Warping_Spatial_Scale: 0.1
+    - _UV_Domain_Warping_Spatial_Strength: 0.1
+    - _Vertex_Domain_Warping_Enabled: 0
+    - _Vertex_Domain_Warping_Spatial_Octaves: 1
+    - _Vertex_Domain_Warping_Spatial_Scale: 1
+    - _Vertex_Domain_Warping_Spatial_Strength: 0.1
+    - _Vertex_Domain_Warping_Speed: 1
+    - _Vertex_Domain_Warping_Temporal_Strength: 0.1
+    - _Wrap_NoL_Diffuse_Strength: 0.25
+    - _Wrap_NoL_Specular_Strength: 0.1
+    - _Wrapped_Lighting_Enabled: 0
+    - _ZTest: 4
+    - _ZWrite: 1
+    - _reflectance: 0.028
+    - _reflectance_help: 1
+    - _specularAntiAliasingThreshold: 0.25
+    - _specularAntiAliasingVariance: 0.15
+    - m_FilamentStuff: 0
+    - m_LUTs: 1
+    - m_end_AO: 0
+    - m_end_Alpha_Multiplier: 0
+    - m_end_Brightness_Control: 0
+    - m_end_BumpShadows: 0
+    - m_end_Detail_Maps: 0
+    - m_end_Emission: 0
+    - m_end_ExtraStencilColorPass: 0
+    - m_end_ExtraStencilColorPassBackOptions: 0
+    - m_end_ExtraStencilColorPassFrontOptions: 0
+    - m_end_Eye_Effect_00: 0
+    - m_end_Focal_Length_Control: 0
+    - m_end_Glitter: 0
+    - m_end_Glitter_Angle_Limit: 0
+    - m_end_Glitter_Mask: 0
+    - m_end_LTCGI: 0
+    - m_end_MaskedStencil1PassBackOptions: 0
+    - m_end_MaskedStencil1PassFrontOptions: 0
+    - m_end_MaskedStencil2PassBackOptions: 0
+    - m_end_MaskedStencil2PassFrontOptions: 0
+    - m_end_MaskedStencil3PassBackOptions: 0
+    - m_end_MaskedStencil3PassFrontOptions: 0
+    - m_end_MaskedStencil4PassBackOptions: 0
+    - m_end_MaskedStencil4PassFrontOptions: 0
+    - m_end_Masked_Stencil1: 0
+    - m_end_Masked_Stencil2: 0
+    - m_end_Masked_Stencil3: 0
+    - m_end_Masked_Stencil4: 0
+    - m_end_Matcap0: 0
+    - m_end_Matcap0_Mask: 0
+    - m_end_Matcap0_Quantization: 0
+    - m_end_Matcaps: 0
+    - m_end_Metallic: 0
+    - m_end_Min_Brightness: 0
+    - m_end_Outline_Stencil: 0
+    - m_end_Outline_StencilPassBackOptions: 0
+    - m_end_Outline_StencilPassFrontOptions: 0
+    - m_end_Outlines: 0
+    - m_end_OutlinesMask: 0
+    - m_end_Quantize_NoL: 0
+    - m_end_Quantize_Specular: 0
+    - m_end_Rim_Lighting: 0
+    - m_end_Rim_Lighting0: 0
+    - m_end_Rim_Lighting0_Angle_Limit: 0
+    - m_end_Rim_Lighting0_Mask: 0
+    - m_end_Rim_Lighting0_Quantization: 0
+    - m_end_Rim_Lighting1: 0
+    - m_end_Rim_Lighting1_Angle_Limit: 0
+    - m_end_Rim_Lighting1_Mask: 0
+    - m_end_Rim_Lighting1_Quantization: 0
+    - m_end_Rim_Lighting2: 0
+    - m_end_Rim_Lighting2_Angle_Limit: 0
+    - m_end_Rim_Lighting2_Mask: 0
+    - m_end_Rim_Lighting2_Quantization: 0
+    - m_end_Rim_Lighting3: 0
+    - m_end_Rim_Lighting3_Angle_Limit: 0
+    - m_end_Rim_Lighting3_Mask: 0
+    - m_end_Rim_Lighting3_Quantization: 0
+    - m_end_SSFD: 0
+    - m_end_Shadow_Casting: 0
+    - m_end_Shadow_Receiving: 0
+    - m_end_Stencil: 0
+    - m_end_StencilPassBackOptions: 0
+    - m_end_StencilPassFrontOptions: 0
+    - m_end_UV_Domain_Warping: 0
+    - m_end_Vertex_Domain_Warping: 0
+    - m_end_WrappedLighting: 0
+    - m_end_alphaBlending: 0
+    - m_end_blending: 0
+    - m_end_outlineAlphaBlending: 0
+    - m_end_outlineBlending: 0
+    - m_gimmicks: 1
+    - m_lightingOptions: 1
+    - m_mainOptions: 1
+    - m_reflectionOptions: 1
+    - m_renderingOptions: 0
+    - m_start_AO: 0
+    - m_start_Alpha_Multiplier: 0
+    - m_start_Brightness_Control: 0
+    - m_start_BumpShadows: 1
+    - m_start_Detail_Maps: 0
+    - m_start_Emission: 0
+    - m_start_ExtraStencilColorPass: 0
+    - m_start_ExtraStencilColorPassBackOptions: 0
+    - m_start_ExtraStencilColorPassFrontOptions: 0
+    - m_start_Eye_Effect_00: 0
+    - m_start_Focal_Length_Control: 0
+    - m_start_Glitter: 0
+    - m_start_Glitter_Angle_Limit: 0
+    - m_start_Glitter_Mask: 0
+    - m_start_LTCGI: 0
+    - m_start_MaskedStencil1PassBackOptions: 0
+    - m_start_MaskedStencil1PassFrontOptions: 0
+    - m_start_MaskedStencil2PassBackOptions: 0
+    - m_start_MaskedStencil2PassFrontOptions: 0
+    - m_start_MaskedStencil3PassBackOptions: 0
+    - m_start_MaskedStencil3PassFrontOptions: 0
+    - m_start_MaskedStencil4PassBackOptions: 0
+    - m_start_MaskedStencil4PassFrontOptions: 0
+    - m_start_Masked_Stencil1: 0
+    - m_start_Masked_Stencil2: 0
+    - m_start_Masked_Stencil3: 0
+    - m_start_Masked_Stencil4: 0
+    - m_start_Matcap0: 0
+    - m_start_Matcap0_Mask: 0
+    - m_start_Matcap0_Quantization: 0
+    - m_start_Matcaps: 0
+    - m_start_Metallic: 1
+    - m_start_Min_Brightness: 0
+    - m_start_Outline_Stencil: 0
+    - m_start_Outline_StencilPassBackOptions: 0
+    - m_start_Outline_StencilPassFrontOptions: 0
+    - m_start_Outlines: 1
+    - m_start_OutlinesMask: 0
+    - m_start_Quantize_NoL: 0
+    - m_start_Quantize_Specular: 0
+    - m_start_Rim_Lighting: 0
+    - m_start_Rim_Lighting0: 0
+    - m_start_Rim_Lighting0_Angle_Limit: 0
+    - m_start_Rim_Lighting0_Mask: 0
+    - m_start_Rim_Lighting0_Quantization: 0
+    - m_start_Rim_Lighting1: 0
+    - m_start_Rim_Lighting1_Angle_Limit: 0
+    - m_start_Rim_Lighting1_Mask: 0
+    - m_start_Rim_Lighting1_Quantization: 0
+    - m_start_Rim_Lighting2: 0
+    - m_start_Rim_Lighting2_Angle_Limit: 0
+    - m_start_Rim_Lighting2_Mask: 0
+    - m_start_Rim_Lighting2_Quantization: 0
+    - m_start_Rim_Lighting3: 0
+    - m_start_Rim_Lighting3_Angle_Limit: 0
+    - m_start_Rim_Lighting3_Mask: 0
+    - m_start_Rim_Lighting3_Quantization: 0
+    - m_start_SSFD: 0
+    - m_start_Shadow_Casting: 0
+    - m_start_Shadow_Receiving: 0
+    - m_start_Stencil: 0
+    - m_start_StencilPassBackOptions: 0
+    - m_start_StencilPassFrontOptions: 0
+    - m_start_UV_Domain_Warping: 0
+    - m_start_Vertex_Domain_Warping: 0
+    - m_start_WrappedLighting: 1
+    - m_start_alphaBlending: 0
+    - m_start_blending: 0
+    - m_start_outlineAlphaBlending: 0
+    - m_start_outlineBlending: 0
+    - shader_is_using_thry_editor: 0
+    - shader_master_label: 0
+    - shader_presets: 0
+    - shader_properties_label_file: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ExtraStencilColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Gimmick_Eye_Effect_00_Count: {r: 1, g: 1, b: 1, a: 1}
+    - _Gimmick_Eye_Effect_00_Period: {r: 1, g: 1, b: 1, a: 1}
+    - _Glitter_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Glitter_Emission: {r: 1, g: 1, b: 1, a: 1}
+    - _LTCGI_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LTCGI_SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MetalReflectionTint: {r: 1, g: 1, b: 1, a: 1}
+    - _Outline_Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Rim_Lighting0_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
+    - _Rim_Lighting0_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Rim_Lighting1_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
+    - _Rim_Lighting1_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Rim_Lighting2_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
+    - _Rim_Lighting2_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Rim_Lighting3_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
+    - _Rim_Lighting3_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

@@ -348,4 +348,9 @@ float3 _Cloth_Subsurface_Color;
 #endif  // _MATERIAL_TYPE_CLOTH_SUBSURFACE
 #endif  // _MATERIAL_TYPE_CLOTH
 
+#if defined(_HARNACK_TRACING_GYROID)
+float _Harnack_Tracing_Gyroid_Speed;
+float _Harnack_Tracing_Gyroid_Scale;
+#endif  // _HARNACK_TRACING_GYROID
+
 #endif  // __GLOBALS_INC

@@ -8,6 +8,7 @@
 #include "face_me.cginc"
 #include "features.cginc"
 #include "globals.cginc"
+#include "harnack_tracing.cginc"
 #include "interpolators.cginc"
 #include "matcaps.cginc"
 #include "poi.cginc"
@@ -141,7 +142,11 @@ v2f vert(appdata v) {
   return o;
 }
 
-float4 frag(v2f i) : SV_Target {
+float4 frag(v2f i
+#if defined(_HARNACK_TRACING)
+  , out float depth : SV_DepthLessEqual
+#endif
+) : SV_Target {
   UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
   UNITY_SETUP_INSTANCE_ID(i);
   UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
@@ -155,6 +160,15 @@ float4 frag(v2f i) : SV_Target {
 #endif
 
   YumPbr pbr = GetYumPbr(i);
+
+#if defined(_HARNACK_TRACING)
+  HarnackTracingOutput harnack_output = HarnackTracing(i);
+  pbr.albedo = float4(1, 1, 1, 0.2);
+  pbr.smoothness = 0.95;
+  pbr.roughness_perceptual = 0.05;
+  pbr.roughness = pbr.roughness_perceptual * pbr.roughness_perceptual;
+  pbr.metallic = 0;
+#endif
 
 #if defined(_SSFD)
   float ssfd_mask = ssfd(i.uv01.xy, _SSFD_Scale, _SSFD_Max_Fwidth, 0, _SSFD_Noise);
@@ -193,6 +207,25 @@ float4 frag(v2f i) : SV_Target {
 #endif
 
   float4 lit = YumBRDF(i, l, pbr);
+
+#if defined(_HARNACK_TRACING)
+  pbr.albedo = harnack_output.color;
+  pbr.smoothness = 0;
+  pbr.roughness = 1;
+  pbr.roughness_perceptual = 1;
+  pbr.metallic = 0;
+  pbr.normal = harnack_output.normal;
+  l.NoL = saturate(dot(pbr.normal, l.dir));
+  l.NoL_wrapped_s = l.NoL;
+  l.NoL_wrapped_d = l.NoL;
+  float4 harnack_lit = YumBRDF(i, l, pbr);
+  //lit = alphaBlend(harnack_lit, lit);
+  lit = harnack_lit;
+  {
+    float4 clip_pos = mul(UNITY_MATRIX_VP, float4(harnack_output.worldPos, 1.0));
+    depth = clip_pos.z / clip_pos.w;
+  }
+#endif
 
 #if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS))
   lit.rgb += pbr.emission;

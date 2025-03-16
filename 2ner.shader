@@ -369,6 +369,17 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_SSFD("SSFD", Float) = 0
         //endex
 
+        //ifex _Harnack_Tracing_Enabled==0
+        [HideInInspector] m_start_Harnack_Tracing("Harnack tracing", Float) = 0
+          [ThryToggle(_HARNACK_TRACING)] _Harnack_Tracing_Enabled("Enable", Float) = 0
+          [HideInInspector] m_start_Harnack_Tracing_Gyroid("Gyroid", Float) = 0
+            [ThryToggle(_HARNACK_TRACING_GYROID)] _Harnack_Tracing_Gyroid_Enabled("Enable", Float) = 0
+            _Harnack_Tracing_Gyroid_Speed("Speed", Float) = 0.0
+            _Harnack_Tracing_Gyroid_Scale("Scale", Float) = 10.0
+          [HideInInspector] m_end_Harnack_Tracing_Gyroid("Gyroid", Float) = 0
+        [HideInInspector] m_end_Harnack_Tracing("Harnack tracing", Float) = 0
+        //endex
+
         //ifex _Masked_Stencil1_Enabled==0
         [HideInInspector] m_start_Masked_Stencil1("Masked stencil 1", Float) = 0
           [ThryToggle(_)] _Masked_Stencil1_Enabled("Enable", Float) = 0
