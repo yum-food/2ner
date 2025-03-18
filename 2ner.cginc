@@ -24,28 +24,28 @@ v2f vert(appdata v) {
   return (v2f) (0.0/0.0);
 #endif
 #if defined(MASKED_STENCIL1_PASS)
-  float masked_stencil1_mask = _Masked_Stencil1_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  float masked_stencil1_mask = _Masked_Stencil1_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil1_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
 #endif
 #if defined(MASKED_STENCIL2_PASS)
-  float masked_stencil2_mask = _Masked_Stencil2_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  float masked_stencil2_mask = _Masked_Stencil2_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil2_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
 #endif
 #if defined(MASKED_STENCIL3_PASS)
-  float masked_stencil3_mask = _Masked_Stencil3_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  float masked_stencil3_mask = _Masked_Stencil3_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil3_mask < 0.5) {
     return (v2f) (0.0/0.0);
   }
 #endif
 #if defined(MASKED_STENCIL4_PASS)
-  float masked_stencil4_mask = _Masked_Stencil4_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  float masked_stencil4_mask = _Masked_Stencil4_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil4_mask < 0.5) {
     return (v2f) (0.0/0.0);
@@ -68,7 +68,7 @@ v2f vert(appdata v) {
     return (v2f) (0.0/0.0);
   }
 #if defined(_OUTLINE_MASK)
-  float thickness = _Outline_Mask.SampleLevel(linear_repeat_s, v.uv01, 0);
+  float thickness = _Outline_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   thickness = (_Outline_Mask_Invert == 0 ? thickness : 1 - thickness);
 #else
   float thickness = 1;
@@ -122,7 +122,8 @@ v2f vert(appdata v) {
   o.pos = UnityObjectToClipPos(v.vertex);
 #endif
 
-  o.uv01 = v.uv01;
+  o.uv01.xy = v.uv0;
+  o.uv01.zw = v.uv1;
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
@@ -134,7 +135,7 @@ v2f vert(appdata v) {
   o.binormal = cross(o.normal, o.tangent) * v.tangent.w *
     unity_WorldTransformParams.w;
 
-  UNITY_TRANSFER_LIGHTING(o, v.uv1);
+  UNITY_TRANSFER_LIGHTING(o, v.uv0);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
 #if defined(SHADOW_CASTER_PASS)
 	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
@@ -201,7 +202,7 @@ float4 frag(v2f i
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)
   applyMatcapsAndRimLighting(i, pbr, l);
-  pbr.albedo.rgb = max(0, pbr.albedo.rgb);
+  //pbr.albedo.rgb = max(0, pbr.albedo.rgb);
   l.diffuse = max(0, l.diffuse);
   l.specular = max(0, l.specular);
 #endif
@@ -227,7 +228,7 @@ float4 frag(v2f i
   }
 #endif
 
-#if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS))
+#if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS)) || defined(OUTLINE_PASS)
   lit.rgb += pbr.emission;
 #endif
 

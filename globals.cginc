@@ -3,6 +3,7 @@
 
 #include "features.cginc"
 
+SamplerState point_repeat_s;
 SamplerState linear_repeat_s;
 SamplerState linear_clamp_s;
 
@@ -104,6 +105,7 @@ float _Clearcoat_Roughness;
 #if defined(OUTLINE_PASS)
 float _Outlines_Enabled_Dynamic;
 float4 _Outline_Color;
+float _Outline_Emission;
 float _Outline_Width;
 #if defined(_OUTLINE_MASK)
 texture2D _Outline_Mask;
@@ -234,24 +236,53 @@ float _Rim_Lighting3_Quantization_Steps;
 #define DECAL_TILING_MODE_CLAMP 0
 #define DECAL_TILING_MODE_TILE  1
 
+#define DECAL_ALPHA_BLEND_MODE_ALPHA_BLEND 0
+#define DECAL_ALPHA_BLEND_MODE_REPLACE 1
+
+#define DECLARE_DECAL_VARIABLES(n) \
+texture2D _Decal##n##_MainTex; \
+float4 _Decal##n##_MainTex_ST; \
+float4 _Decal##n##_Color; \
+float _Decal##n##_Opacity; \
+float _Decal##n##_Angle; \
+float _Decal##n##_UV_Channel; \
+float _Decal##n##_Tiling_Mode; \
+float _Decal##n##_Alpha_Blend_Mode; \
+float _Decal##n##_Normal_Enabled; \
+texture2D _Decal##n##_Normal; \
+float4 _Decal##n##_Normal_ST; \
+float _Decal##n##_Normal_Scale; \
+\
+float _Decal##n##_Reflections_Enabled; \
+texture2D _Decal##n##_MetallicGlossMap; \
+float4 _Decal##n##_MetallicGlossMap_ST; \
+float _Decal##n##_Smoothness; \
+float _Decal##n##_Metallic; \
+\
+float _Decal##n##_SDF_Enabled; \
+float _Decal##n##_SDF_Threshold; \
+float _Decal##n##_SDF_Invert; \
+float _Decal##n##_SDF_Softness; \
+float _Decal##n##_SDF_Px_Range; \
+\
+float _Decal##n##_Mask_Enabled; \
+texture2D _Decal##n##_Mask; \
+float4 _Decal##n##_Mask_ST;
+
 #if defined(_DECAL0)
-texture2D _Decal0_MainTex;
-float4 _Decal0_MainTex_ST;
-float4 _Decal0_Color;
-float _Decal0_Opacity;
-float _Decal0_Angle;
-float _Decal0_Tiling_Mode;
-#if defined(_DECAL0_NORMAL)
-texture2D _Decal0_Normal;
-float4 _Decal0_Normal_ST;
-float _Decal0_Normal_Scale;
+DECLARE_DECAL_VARIABLES(0)
 #endif
-#if defined(_DECAL0_REFLECTIONS)
-texture2D _Decal0_MetallicGlossMap;
-float4 _Decal0_MetallicGlossMap_ST;
-float _Decal0_Smoothness;
-float _Decal0_Metallic;
+
+#if defined(_DECAL1)
+DECLARE_DECAL_VARIABLES(1)
 #endif
+
+#if defined(_DECAL2)
+DECLARE_DECAL_VARIABLES(2)
+#endif
+
+#if defined(_DECAL3)
+DECLARE_DECAL_VARIABLES(3)
 #endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)

@@ -12,7 +12,7 @@
 struct YumPbr {
   float4 albedo;
   float3 normal;
-#if defined(_EMISSION) || (defined(_GLITTER) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)))
+#if defined(_EMISSION) || (defined(_GLITTER) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))) || defined(OUTLINE_PASS)
   float3 emission;
 #endif
   float smoothness;
@@ -50,7 +50,7 @@ YumPbr GetYumPbr(v2f i) {
       _BumpScale);
 
 #if defined(_DETAIL_MAPS)
-  float detail_mask = _DetailMask.SampleLevel(linear_repeat_s, i.uv01.xy, 0);
+  float detail_mask = _DetailMask.SampleLevel(point_repeat_s, i.uv01.xy, 0);
   float4 detail_albedo = tex2D(_DetailAlbedoMap,
       UV_SCOFF(i, _DetailAlbedoMap_ST, /*which_channel=*/0));
   float3 detail_normal = UnpackScaleNormal(
@@ -58,6 +58,7 @@ YumPbr GetYumPbr(v2f i) {
           UV_SCOFF(i, _DetailNormalMap_ST, /*which_channel=*/0)),
       _DetailNormalMapScale);
   result.albedo = lerp(result.albedo, result.albedo * detail_albedo, detail_mask);
+  //result.albedo.a *= detail_albedo.a;
   normal_tangent = lerp(normal_tangent, blendNormalsHill12(normal_tangent, detail_normal), detail_mask);
 #endif
 
@@ -67,6 +68,13 @@ YumPbr GetYumPbr(v2f i) {
 
 #if defined(_EMISSION)
   result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
+#endif
+#if defined(OUTLINE_PASS)
+#if defined(_EMISSION)
+  result.emission += _Outline_Color * _Outline_Emission;
+#else
+  result.emission = _Outline_Color * _Outline_Emission;
+#endif
 #endif
 
 #if defined(_METALLICS)

@@ -5,7 +5,8 @@
 
 struct appdata {
   float4 vertex  : POSITION;
-  float4 uv01    : TEXCOORD0;  // uv channels 0:1
+  float2 uv0    : TEXCOORD0;
+  float2 uv1    : TEXCOORD1;
   float3 normal  : NORMAL;
   float4 tangent : TANGENT;
 
