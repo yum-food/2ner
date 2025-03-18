@@ -113,6 +113,8 @@
 #pragma shader_feature_local _DECAL0_REFLECTIONS
 #pragma shader_feature_local _DECAL0_SDF
 #pragma shader_feature_local _DECAL0_MASK
+#pragma shader_feature_local _DECAL0_TILING_MODE
+#pragma shader_feature_local _DECAL0_REPLACE_ALPHA
 //endex
 //ifex _Decal1_Enabled==0
 #pragma shader_feature_local _DECAL1
@@ -120,6 +122,8 @@
 #pragma shader_feature_local _DECAL1_REFLECTIONS
 #pragma shader_feature_local _DECAL1_SDF
 #pragma shader_feature_local _DECAL1_MASK
+#pragma shader_feature_local _DECAL1_TILING_MODE
+#pragma shader_feature_local _DECAL1_REPLACE_ALPHA
 //endex
 //ifex _Decal2_Enabled==0
 #pragma shader_feature_local _DECAL2
@@ -127,6 +131,8 @@
 #pragma shader_feature_local _DECAL2_REFLECTIONS
 #pragma shader_feature_local _DECAL2_SDF
 #pragma shader_feature_local _DECAL2_MASK
+#pragma shader_feature_local _DECAL2_TILING_MODE
+#pragma shader_feature_local _DECAL2_REPLACE_ALPHA
 //endex
 //ifex _Decal3_Enabled==0
 #pragma shader_feature_local _DECAL3
@@ -134,7 +140,9 @@
 #pragma shader_feature_local _DECAL3_REFLECTIONS
 #pragma shader_feature_local _DECAL3_SDF
 #pragma shader_feature_local _DECAL3_MASK
-
+#pragma shader_feature_local _DECAL3_TILING_MODE
+#pragma shader_feature_local _DECAL3_REPLACE_ALPHA
+//endex
 //ifex _Vertex_Domain_Warping_Enabled==0
 #pragma shader_feature_local _VERTEX_DOMAIN_WARPING
 //endex

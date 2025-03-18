@@ -130,21 +130,21 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #else
         APPLY_DECAL_SEC01_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.tiling_mode == DECAL_TILING_MODE_CLAMP) {
-            APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL0_TILING_MODE)
+        APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL0_MASK)
         APPLY_DECAL_SEC03_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC03_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.alpha_blend_mode == DECAL_ALPHA_BLEND_MODE_ALPHA_BLEND) {
-            APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL0_REPLACE_ALPHA)
+        APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL0_NORMAL)
         APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
@@ -166,21 +166,21 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #else
         APPLY_DECAL_SEC01_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.tiling_mode == DECAL_TILING_MODE_CLAMP) {
-            APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL1_TILING_MODE)
+        APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL1_MASK)
         APPLY_DECAL_SEC03_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC03_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.alpha_blend_mode == DECAL_ALPHA_BLEND_MODE_ALPHA_BLEND) {
-            APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL1_REPLACE_ALPHA)
+        APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL1_NORMAL)
         APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
@@ -202,21 +202,21 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #else
         APPLY_DECAL_SEC01_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.tiling_mode == DECAL_TILING_MODE_CLAMP) {
-            APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL2_TILING_MODE)
+        APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL2_MASK)
         APPLY_DECAL_SEC03_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC03_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.alpha_blend_mode == DECAL_ALPHA_BLEND_MODE_ALPHA_BLEND) {
-            APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL2_REPLACE_ALPHA)
+        APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL2_NORMAL)
         APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
@@ -238,21 +238,21 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #else
         APPLY_DECAL_SEC01_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.tiling_mode == DECAL_TILING_MODE_CLAMP) {
-            APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL3_TILING_MODE)
+        APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL3_MASK)
         APPLY_DECAL_SEC03_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC03_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
-        if (decal.alpha_blend_mode == DECAL_ALPHA_BLEND_MODE_ALPHA_BLEND) {
-            APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
-        } else {
-            APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
-        }
+        #if defined(_DECAL3_REPLACE_ALPHA)
+        APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL3_NORMAL)
         APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
