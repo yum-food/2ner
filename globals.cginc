@@ -384,4 +384,9 @@ float _Harnack_Tracing_Gyroid_Speed;
 float _Harnack_Tracing_Gyroid_Scale;
 #endif  // _HARNACK_TRACING_GYROID
 
+#if defined(_FALSE_COLOR_VISUALIZATION)
+float _False_Color_Visualization_Luminance;
+float _False_Color_Visualization_Luminance_Bounded;
+#endif  // _FALSE_COLOR_VISUALIZATION
+
 #endif  // __GLOBALS_INC

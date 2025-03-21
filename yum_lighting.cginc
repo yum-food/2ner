@@ -231,11 +231,11 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 #endif
 
 #if defined(_QUANTIZE_SPECULAR)
-  float specular_luminance = dot(light.specular, float3(0.2126, 0.7152, 0.0722));  // convert to luminance
+  float specular_luminance = luminance(light.specular);
   light.specular = light.specular * floor(specular_luminance * _Quantize_Specular_Steps) / _Quantize_Specular_Steps;
 #endif
 #if defined(_QUANTIZE_DIFFUSE)
-  float diffuse_luminance = dot(light.diffuse, float3(0.2126, 0.7152, 0.0722));  // convert to luminance
+  float diffuse_luminance = luminance(light.diffuse);
   light.diffuse = light.diffuse * floor(diffuse_luminance * _Quantize_Diffuse_Steps) / _Quantize_Diffuse_Steps;
 #endif
 

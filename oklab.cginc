@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 yum_food
+ * Copyright (c) 2023-2024 yum_food
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -28,8 +28,6 @@
 
 #ifndef __OKLAB_INC
 #define __OKLAB_INC
-
-#if defined(_EYE_EFFECT_00)
 
 // Utilities relating to the OKLAB color space, as defined here:
 //   https://bottosson.github.io/posts/oklab/
@@ -113,8 +111,6 @@ float3 LRGBtoOKLCH(float3 c) {
 float3 OKLCHtoLRGB(float3 c) {
   return XYZtoLRGB(OKLABtoXYZ(OKLCHtoOKLAB(c)));
 }
-
-#endif  // _OKLAB
 
 #endif  // __OKLAB_INC
 

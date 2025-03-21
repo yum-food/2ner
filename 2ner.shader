@@ -468,6 +468,14 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Face_Me("Face me", Float) = 0
         //endex
 
+        //ifex _False_Color_Visualization_Enabled==0
+        [HideInInspector] m_start_False_Color_Visualization("False color", Float) = 0
+          [ThryToggle(_FALSE_COLOR_VISUALIZATION)] _False_Color_Visualization_Enabled("Enable", Float) = 0
+          [MaterialToggle] _False_Color_Visualization_Luminance("Luminance", Float) = 0
+          [MaterialToggle] _False_Color_Visualization_Luminance_Bounded("Luminance (bounded)", Float) = 0
+        [HideInInspector] m_end_False_Color_Visualization("False color", Float) = 0
+        //endex
+
         //ifex _Vertex_Domain_Warping_Enabled==0
         [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
           [ThryToggle(_VERTEX_DOMAIN_WARPING)]_Vertex_Domain_Warping_Enabled("Enable", Float) = 0

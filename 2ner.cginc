@@ -6,6 +6,7 @@
 
 #include "eyes.cginc"
 #include "face_me.cginc"
+#include "false_color_visualization.cginc"
 #include "features.cginc"
 #include "globals.cginc"
 #include "harnack_tracing.cginc"
@@ -206,6 +207,9 @@ float4 frag(v2f i
   l.diffuse = max(0, l.diffuse);
   l.specular = max(0, l.specular);
 #endif
+
+
+  pbr.albedo.rgb = visualizeInFalseColor(pbr.albedo.rgb);
 
   float4 lit = YumBRDF(i, l, pbr);
 
