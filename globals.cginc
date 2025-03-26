@@ -425,8 +425,12 @@ float3 _Shatter_Wave_Direction;
 #endif  // _SHATTER_WAVE
 
 #if defined(_TESSELLATION)
-float3 _Tessellation_Edge_Factors;
-float _Tessellation_Inside_Factor;
+float _Tessellation_Factor;
+#if defined(_TESSELLATION_HEIGHTMAP)
+texture2D _Tessellation_Heightmap;
+float4 _Tessellation_Heightmap_ST;
+float _Tessellation_Heightmap_Scale;
+#endif  // _TESSELLATION_HEIGHTMAP
 #endif  // _TESSELLATION
 
 #if defined(_SPHERIZE)

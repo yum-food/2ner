@@ -523,8 +523,12 @@ Shader "yum_food/2ner"
         //ifex _Tessellation_Enabled==0
         [HideInInspector] m_start_Tessellation("Tessellation", Float) = 0
           [ThryToggle(_TESSELLATION)] _Tessellation_Enabled("Enable", Float) = 0
-          _Tessellation_Edge_Factors("Edge factors", Vector) = (1, 1, 1, 1)
-          _Tessellation_Inside_Factor("Inside factor", Float) = 1
+          _Tessellation_Factor("Factor", Range(1, 64)) = 1
+          [HideInInspector] m_start_Tessellation_Heightmap("Heightmap", Float) = 0
+            [ThryToggle(_TESSELLATION_HEIGHTMAP)] _Tessellation_Heightmap_Enabled("Enable", Float) = 0
+            _Tessellation_Heightmap("Heightmap", 2D) = "black" {}
+            _Tessellation_Heightmap_Scale("Scale", Float) = 1
+          [HideInInspector] m_end_Tessellation_Heightmap("Heightmap", Float) = 0
         [HideInInspector] m_end_Tessellation("Tessellation", Float) = 0
         //endex
 
@@ -993,11 +997,6 @@ Shader "yum_food/2ner"
       #pragma vertex vert
       #pragma fragment frag
 
-      //ifex _Tessellation_Enabled==0
-      #pragma hull hull
-      #pragma domain domain
-      //endex
-
       #define MASKED_STENCIL1_PASS
 
       #include "2ner.cginc"
@@ -1189,6 +1188,11 @@ Shader "yum_food/2ner"
       #pragma vertex vert
       #pragma fragment frag
 
+      //ifex _Tessellation_Enabled==0
+      #pragma hull hull
+      #pragma domain domain
+      //endex
+
       #define FORWARD_BASE_PASS
 
       #include "2ner.cginc"
@@ -1238,6 +1242,11 @@ Shader "yum_food/2ner"
       #pragma multi_compile_fog
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Tessellation_Enabled==0
+      #pragma hull hull
+      #pragma domain domain
+      //endex
 
       #define FORWARD_ADD_PASS
 
@@ -1335,6 +1344,11 @@ Shader "yum_food/2ner"
       #pragma multi_compile_fog
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Tessellation_Enabled==0
+      #pragma hull hull
+      #pragma domain domain
+      //endex
 
       #define OUTLINE_PASS
 

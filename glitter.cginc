@@ -7,7 +7,7 @@
 
 struct GlitterParams {
     float4 color;
-    float layers;
+    uint layers;
     float cell_size;
     float size;
     float major_minor_ratio;

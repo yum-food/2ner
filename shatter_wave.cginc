@@ -23,6 +23,12 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   float3 objPos_proj = dot(objPos, wave_axis) * normalize(wave_axis);
   float offset = exp(-length(objPos_proj - wave_center * wave_axis) * _Shatter_Wave_Power) * _Shatter_Wave_Amplitude;
   objPos += objNormal * offset;
+
+  float phase = (wave_t / _Shatter_Wave_Period) + 0.5;
+}
+
+void shatterWaveFrag(inout float3 normal, float3 objPos) {
+  normal = normalize(cross(ddy(objPos), ddx(objPos)));
 }
 
 #endif  // _SHATTER_WAVE
