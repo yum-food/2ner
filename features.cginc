@@ -196,6 +196,10 @@
 #pragma shader_feature_local _LETTER_GRID
 //endex
 
+//ifex _Shatter_Wave_Enabled==0
+#pragma shader_feature_local _SHATTER_WAVE
+//endex
+
 //ifex _Mirror_UVs_In_Mirror==0
 #pragma shader_feature_local _MIRROR_UVS_IN_MIRROR
 //endex

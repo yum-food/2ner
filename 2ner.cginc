@@ -14,6 +14,7 @@
 #include "letter_grid.cginc"
 #include "matcaps.cginc"
 #include "poi.cginc"
+#include "shatter_wave.cginc"
 #include "ssfd.cginc"
 #include "yum_brdf.cginc"
 #include "yum_pbr.cginc"
@@ -63,6 +64,10 @@ v2f vert(appdata v) {
   UNITY_INITIALIZE_OUTPUT(v2f, o);
   UNITY_TRANSFER_INSTANCE_ID(v, o);
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
+#if defined(_SHATTER_WAVE)
+  shatterWaveVert(v.vertex.xyz, v.normal, v.tangent);
+#endif
 
 #if defined(OUTLINE_PASS)
   [branch]
@@ -153,7 +158,7 @@ v2f vert(appdata v) {
 }
 
 float4 frag(v2f i
-#if defined(_HARNACK_TRACING)
+#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE)
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
@@ -163,6 +168,13 @@ float4 frag(v2f i
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
+
+#if defined(_SHATTER_WAVE)
+  {
+    float4 clip_pos = mul(UNITY_MATRIX_VP, float4(i.worldPos, 1.0));
+    depth = clip_pos.z / clip_pos.w;
+  }
+#endif
 
 #if defined(_EYE_EFFECT_00)
   EyeEffectOutput eye_effect_00 = EyeEffect_00(i);

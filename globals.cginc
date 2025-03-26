@@ -415,4 +415,13 @@ float _Letter_Grid_Blurriness;
 float _Letter_Grid_Alpha_Threshold;
 #endif  // _LETTER_GRID
 
+#if defined(_SHATTER_WAVE)
+float _Shatter_Wave_Amplitude;
+float _Shatter_Wave_Wavelength;
+float _Shatter_Wave_Speed;
+float _Shatter_Wave_Period;
+float _Shatter_Wave_Power;
+float3 _Shatter_Wave_Direction;
+#endif  // _SHATTER_WAVE
+
 #endif  // __GLOBALS_INC

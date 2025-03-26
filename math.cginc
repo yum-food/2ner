@@ -207,4 +207,24 @@ float median(float3 x) {
   return (x.r + x.g + x.b) - (x_min + x_max);
 }
 
+// Quaternions
+float4 qmul(float4 q1, float4 q2)
+{
+  return float4(
+      q2.xyz * q1.w + q1.xyz * q2.w + cross(q1.xyz, q2.xyz),
+      q1.w * q2.w - dot(q1.xyz, q2.xyz));
+}
+
+// Vector rotation with a quaternion
+// http://mathworld.wolfram.com/Quaternion.html
+float3 rotate_vector(float3 v, float4 r)
+{
+  float4 r_c = r * float4(-1, -1, -1, 1);
+  return qmul(r, qmul(float4(v, 0), r_c)).xyz;
+}
+
+float4 get_quaternion(float3 axis_normal, float theta) {
+  return float4(axis_normal * sin(theta / 2), cos(theta / 2));
+}
+
 #endif  // __MATH_INC

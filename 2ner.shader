@@ -503,6 +503,17 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Letter_Grid("Letter grid", Float) = 0
         //endex
 
+        //ifex _Shatter_Wave_Enabled==0
+        [HideInInspector] m_start_Shatter_Wave("Shatter wave", Float) = 0
+          [ThryToggle(_SHATTER_WAVE)] _Shatter_Wave_Enabled("Enable", Float) = 0
+          _Shatter_Wave_Amplitude("Amplitude", Float) = 0.4
+          _Shatter_Wave_Wavelength("Wavelength", Float) = 1
+          _Shatter_Wave_Speed("Speed", Float) = 30
+          _Shatter_Wave_Period("Period", Float) = 4
+          _Shatter_Wave_Power("Power", Float) = 5
+          _Shatter_Wave_Direction("Direction", Vector) = (0, 1, 0, 0)
+        [HideInInspector] m_end_Shatter_Wave("Shatter wave", Float) = 0
+
         //ifex _Mirror_UVs_In_Mirror==0
         [HideInInspector] m_start_Mirror_UVs_In_Mirror("Mirror UVs in mirror", Float) = 0
           [ThryToggle(_MIRROR_UVS_IN_MIRROR)] _Mirror_UVs_In_Mirror_Enabled("Enable", Float) = 0
