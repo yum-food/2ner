@@ -476,6 +476,39 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_False_Color_Visualization("False color", Float) = 0
         //endex
 
+        //ifex _Letter_Grid_Enabled==0
+        [HideInInspector] m_start_Letter_Grid("Letter grid", Float) = 0
+          [ThryToggle(_LETTER_GRID)] _Letter_Grid_Enabled("Enable", Float) = 0
+          _Letter_Grid_Texture("Glyph texture", 2D) = "black" {}
+          _Letter_Grid_Tex_Res_X("Glyph X resolution", Float) = 16
+          _Letter_Grid_Tex_Res_Y("Glyph Y resolution", Float) = 8
+          _Letter_Grid_Res_X("Cell X resolution", Range(1, 4)) = 1
+          _Letter_Grid_Res_Y("Cell Y resolution", Range(1, 4)) = 1
+          _Letter_Grid_Data_Row_0("Cell data row 0", Vector) = (0, 0, 0, 0)
+          _Letter_Grid_Data_Row_1("Cell data row 1", Vector) = (0, 0, 0, 0)
+          _Letter_Grid_Data_Row_2("Cell data row 2", Vector) = (0, 0, 0, 0)
+          _Letter_Grid_Data_Row_3("Cell data row 3", Vector) = (0, 0, 0, 0)
+          _Letter_Grid_UV_Scale_Offset("UV scale/offset", Vector) = (1, 1, 0, 0)
+          _Letter_Grid_Padding("Padding", Float) = 0.02
+          _Letter_Grid_Color("Color", Color) = (1, 1, 1, 1)
+          _Letter_Grid_Metallic("Metallic", Range(0, 1)) = 0
+          _Letter_Grid_Roughness("Roughness", Range(0 ,1)) = 0.5
+          _Letter_Grid_Emission("Emission", Range(0 ,1)) = 0.0
+          _Letter_Grid_Mask("Mask", 2D) = "white" {}
+          _Letter_Grid_Global_Offset("Global offset", Float) = 0
+          _Letter_Grid_Screen_Px_Range("Screen px range (from msdfgen)", Float) = 10
+          _Letter_Grid_Min_Screen_Px_Range("Minimum screen px range", Float) = 1
+          _Letter_Grid_Blurriness("Blurriness", Float) = 0.5
+          _Letter_Grid_Alpha_Threshold("Alpha threshold", Range(0, 1)) = 0.5
+        [HideInInspector] m_end_Letter_Grid("Letter grid", Float) = 0
+        //endex
+
+        //ifex _Mirror_UVs_In_Mirror==0
+        [HideInInspector] m_start_Mirror_UVs_In_Mirror("Mirror UVs in mirror", Float) = 0
+          [ThryToggle(_MIRROR_UVS_IN_MIRROR)] _Mirror_UVs_In_Mirror_Enabled("Enable", Float) = 0
+        [HideInInspector] m_end_Mirror_UVs_In_Mirror("Mirror UVs in mirror", Float) = 0
+        //endex
+
         //ifex _Vertex_Domain_Warping_Enabled==0
         [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
           [ThryToggle(_VERTEX_DOMAIN_WARPING)]_Vertex_Domain_Warping_Enabled("Enable", Float) = 0
@@ -493,6 +526,7 @@ Shader "yum_food/2ner"
           _UV_Domain_Warping_Spatial_Strength("Spatial warping strength", Float) = 0.10
           _UV_Domain_Warping_Spatial_Scale("Spatial warping scale", Float) = 0.10
           _UV_Domain_Warping_Spatial_Octaves("Spatial warping octaves", Float) = 1.0
+          _UV_Domain_Warping_Spatial_Speed("Spatial warping speed", Float) = 1.0
           [HideInInspector] m_end_UV_Domain_Warping("UV domain warping", Float) = 0
         //endex
 

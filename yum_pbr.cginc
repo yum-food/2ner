@@ -33,7 +33,8 @@ YumPbr GetYumPbr(v2f i) {
   float2 raw_uv = i.uv01.xy;
 #if defined(_UV_DOMAIN_WARPING)
   i.uv01.xy = domainWarp2(i.uv01.xy, _UV_Domain_Warping_Spatial_Octaves,
-      _UV_Domain_Warping_Spatial_Strength, _UV_Domain_Warping_Spatial_Scale);
+      _UV_Domain_Warping_Spatial_Strength, _UV_Domain_Warping_Spatial_Scale,
+      _UV_Domain_Warping_Spatial_Speed);
 #endif
 
 #if defined(OUTLINE_PASS)

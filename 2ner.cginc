@@ -11,6 +11,7 @@
 #include "globals.cginc"
 #include "harnack_tracing.cginc"
 #include "interpolators.cginc"
+#include "letter_grid.cginc"
 #include "matcaps.cginc"
 #include "poi.cginc"
 #include "ssfd.cginc"
@@ -125,6 +126,13 @@ v2f vert(appdata v) {
 
   o.uv01.xy = v.uv0;
   o.uv01.zw = v.uv1;
+#if defined(_MIRROR_UVS_IN_MIRROR)
+  [branch]
+  if (isInMirror()) {
+    o.uv01.x = 1.0 - o.uv01.x;
+    o.uv01.z = 1.0 - o.uv01.z;
+  }
+#endif
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
@@ -188,6 +196,13 @@ float4 frag(v2f i
   pbr.normal = eye_effect_00.normal;
 #endif
 
+#if defined(_LETTER_GRID)
+  LetterGridOutput letter_grid_output = LetterGrid(i);
+  pbr.albedo.rgb = lerp(pbr.albedo.rgb, letter_grid_output.albedo, letter_grid_output.albedo.a);
+  pbr.metallic = lerp(pbr.metallic, letter_grid_output.metallic, letter_grid_output.albedo.a);
+  pbr.roughness = lerp(pbr.roughness, letter_grid_output.roughness, letter_grid_output.albedo.a);
+#endif
+
   [branch]
   if (_Mode == 1) {
     clip(pbr.albedo.a - _Clip);
@@ -207,7 +222,6 @@ float4 frag(v2f i
   l.diffuse = max(0, l.diffuse);
   l.specular = max(0, l.specular);
 #endif
-
 
   pbr.albedo.rgb = visualizeInFalseColor(pbr.albedo.rgb);
 
@@ -234,6 +248,9 @@ float4 frag(v2f i
 
 #if defined(_EMISSION) || (defined(_GLITTER) && defined(FORWARD_BASE_PASS)) || defined(OUTLINE_PASS)
   lit.rgb += pbr.emission;
+#endif
+#if defined(_LETTER_GRID)
+  lit.rgb += letter_grid_output.emission * letter_grid_output.albedo.a;
 #endif
 
   UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);

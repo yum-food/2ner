@@ -297,6 +297,7 @@ float _Vertex_Domain_Warping_Temporal_Strength;
 float _UV_Domain_Warping_Spatial_Strength;
 float _UV_Domain_Warping_Spatial_Scale;
 float _UV_Domain_Warping_Spatial_Octaves;
+float _UV_Domain_Warping_Spatial_Speed;
 #endif
 
 #if defined(_EYE_EFFECT_00)
@@ -388,5 +389,30 @@ float _Harnack_Tracing_Gyroid_Scale;
 float _False_Color_Visualization_Luminance;
 float _False_Color_Visualization_Luminance_Bounded;
 #endif  // _FALSE_COLOR_VISUALIZATION
+
+#if defined(_LETTER_GRID)
+texture2D _Letter_Grid_Texture;
+float4 _Letter_Grid_Texture_TexelSize;
+float _Letter_Grid_Tex_Res_X;
+float _Letter_Grid_Tex_Res_Y;
+float _Letter_Grid_Res_X;
+float _Letter_Grid_Res_Y;
+float4 _Letter_Grid_Data_Row_0;
+float4 _Letter_Grid_Data_Row_1;
+float4 _Letter_Grid_Data_Row_2;
+float4 _Letter_Grid_Data_Row_3;
+float4 _Letter_Grid_UV_Scale_Offset;
+float _Letter_Grid_Padding;
+float4 _Letter_Grid_Color;
+float _Letter_Grid_Metallic;
+float _Letter_Grid_Roughness;
+float _Letter_Grid_Emission;
+texture2D _Letter_Grid_Mask;
+float _Letter_Grid_Global_Offset;
+float _Letter_Grid_Screen_Px_Range;
+float _Letter_Grid_Min_Screen_Px_Range;
+float _Letter_Grid_Blurriness;
+float _Letter_Grid_Alpha_Threshold;
+#endif  // _LETTER_GRID
 
 #endif  // __GLOBALS_INC

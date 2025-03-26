@@ -55,7 +55,7 @@ float rand3(float3 p)
     return frac(rand3_hash(p).x);
 }
 
-float2 domainWarp1(float x, uint octaves, float strength, float scale)
+float2 domainWarp1(float x, uint octaves, float strength, float scale, float speed)
 {
   [loop]
   for (uint i = 0; i < octaves; i++) {
@@ -66,14 +66,14 @@ float2 domainWarp1(float x, uint octaves, float strength, float scale)
   return x;
 }
 
-float2 domainWarp2(float2 uv, uint octaves, float strength, float scale)
+float2 domainWarp2(float2 uv, uint octaves, float strength, float scale, float speed)
 {
   uv *= 0.001;
   [loop]
   for (uint i = 0; i < octaves; i++) {
     uv += strength * frac(sin(float2(
       dot(uv * scale, float2(12.9898, 78.233)),
-      dot(uv * scale, float2(36.7539, 50.3658))) * 43758.5453123));
+      dot(uv * scale, float2(36.7539, 50.3658)))) * 43758.5453123);
   }
   uv *= 1000;
   return uv;
@@ -196,6 +196,15 @@ float3 blendNormalsHill12(float3 n0, float3 n1) {
 
 float3 luminance(float3 color) {
   return dot(color, float3(0.2126, 0.7152, 0.0722));
+}
+
+float median(float3 x) {
+  // Get the min and max.
+  float x_min= min(min(x.r, x.g), x.b);
+  float x_max = max(max(x.r, x.g), x.b);
+  
+  // Compute (x.r + x.g + x.b) - (x_min + x_max). This gives us the median.
+  return (x.r + x.g + x.b) - (x_min + x_max);
 }
 
 #endif  // __MATH_INC

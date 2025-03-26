@@ -27,4 +27,9 @@ SOFTWARE.
 
 #define glsl_mod(x,y) (((x)-(y)*floor((x)/(y))))
 
+bool isInMirror()
+{
+  return unity_CameraProjection[2][0] != 0.f || unity_CameraProjection[2][1] != 0.f;
+}
+
 #endif  // __PEMA_99_INC
