@@ -70,6 +70,16 @@ v2f vert(appdata v) {
   shatterWaveVert(v.vertex.xyz, v.normal, v.tangent);
 #endif
 
+#if defined(_SPHERIZE)
+  {
+    float3 tgt_normal = normalize(v.vertex.xyz);
+    float3 tgt_tangent = normalize(float3(tgt_normal.y, -tgt_normal.x, 0));
+    float3 tgt_pos = tgt_normal * _Spherize_Radius;
+    v.normal = normalize(lerp(v.normal, tgt_normal, _Spherize_Strength));
+    v.vertex.xyz = lerp(v.vertex.xyz, tgt_pos, _Spherize_Strength);
+  }
+#endif
+
 #if defined(OUTLINE_PASS)
   [branch]
   if (!_Outlines_Enabled_Dynamic) {

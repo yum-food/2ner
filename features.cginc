@@ -208,5 +208,9 @@
 #pragma shader_feature_local _TESSELLATION
 //endex
 
+//ifex _Spherize_Enabled==0
+#pragma shader_feature_local _SPHERIZE
+//endex
+
 #endif  // __FEATURES_INC
 

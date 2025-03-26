@@ -429,4 +429,9 @@ float3 _Tessellation_Edge_Factors;
 float _Tessellation_Inside_Factor;
 #endif  // _TESSELLATION
 
+#if defined(_SPHERIZE)
+float _Spherize_Radius;
+float _Spherize_Strength;
+#endif  // _SPHERIZE
+
 #endif  // __GLOBALS_INC

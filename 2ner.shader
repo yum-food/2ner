@@ -528,6 +528,14 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Tessellation("Tessellation", Float) = 0
         //endex
 
+        //ifex _Spherize_Enabled==0
+        [HideInInspector] m_start_Spherize("Spherize", Float) = 0
+          [ThryToggle(_SPHERIZE)] _Spherize_Enabled("Enable", Float) = 0
+          _Spherize_Radius("Radius", Float) = 1
+          _Spherize_Strength("Strength", Range(0, 1)) = 1
+        [HideInInspector] m_end_Spherize("Spherize", Float) = 0
+        //endex
+
         //ifex _Vertex_Domain_Warping_Enabled==0
         [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
           [ThryToggle(_VERTEX_DOMAIN_WARPING)]_Vertex_Domain_Warping_Enabled("Enable", Float) = 0
