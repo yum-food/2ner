@@ -506,13 +506,18 @@ Shader "yum_food/2ner"
         //ifex _Shatter_Wave_Enabled==0
         [HideInInspector] m_start_Shatter_Wave("Shatter wave", Float) = 0
           [ThryToggle(_SHATTER_WAVE)] _Shatter_Wave_Enabled("Enable", Float) = 0
-          _Shatter_Wave_Amplitude("Amplitude", Float) = 0.4
-          _Shatter_Wave_Wavelength("Wavelength", Float) = 1
-          _Shatter_Wave_Speed("Speed", Float) = 30
-          _Shatter_Wave_Period("Period", Float) = 4
-          _Shatter_Wave_Power("Power", Float) = 5
-          _Shatter_Wave_Direction("Direction", Vector) = (0, 1, 0, 0)
+          _Shatter_Wave_Amplitude("Amplitude", Vector) = (0.4, 0.4, 0.4, 0.4)
+          _Shatter_Wave_Wavelength("Wavelength", Vector) = (1, 1, 1, 1)
+          _Shatter_Wave_Speed("Speed", Vector) = (30, 30, 30, 30)
+          _Shatter_Wave_Period("Period", Vector) = (4, 4, 4, 4)
+          _Shatter_Wave_Time_Offset("Time offset", Vector) = (0, 0, 0, 0)
+          _Shatter_Wave_Power("Power", Vector) = (5, 5, 5, 5)
+          _Shatter_Wave_Direction0("Direction (wave 0)", Vector) = (0, 1, 0)
+          _Shatter_Wave_Direction1("Direction (wave 1)", Vector) = (0, 1, 0)
+          _Shatter_Wave_Direction2("Direction (wave 2)", Vector) = (0, 1, 0)
+          _Shatter_Wave_Direction3("Direction (wave 3)", Vector) = (0, 1, 0)
         [HideInInspector] m_end_Shatter_Wave("Shatter wave", Float) = 0
+        //endex
 
         //ifex _Mirror_UVs_In_Mirror_Enabled==0
         [HideInInspector] m_start_Mirror_UVs_In_Mirror("Mirror UVs in mirror", Float) = 0
@@ -528,7 +533,13 @@ Shader "yum_food/2ner"
             [ThryToggle(_TESSELLATION_HEIGHTMAP)] _Tessellation_Heightmap_Enabled("Enable", Float) = 0
             _Tessellation_Heightmap("Heightmap", 2D) = "black" {}
             _Tessellation_Heightmap_Scale("Scale", Float) = 1
+            _Tessellation_Heightmap_Offset("Offset", Range(-1, 1)) = 0
           [HideInInspector] m_end_Tessellation_Heightmap("Heightmap", Float) = 0
+          // Shit for thry
+          [HideInInspector] Tessellation_Enabled("Enabled", Float) = 1
+          [HideInInspector] Tessellation_EnabledForwardBase("Enabled (ForwardBase)", Float) = 1
+          [HideInInspector] Tessellation_EnabledForwardAdd("Enabled (ForwardAdd)", Float) = 1
+          [HideInInspector] Tessellation_EnabledShadowCaster("Enabled (ShadowCaster)", Float) = 1
         [HideInInspector] m_end_Tessellation("Tessellation", Float) = 0
         //endex
 
@@ -1397,6 +1408,11 @@ Shader "yum_food/2ner"
       #pragma multi_compile_fog
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Tessellation_Enabled==0
+      #pragma hull hull
+      #pragma domain domain
+      //endex
 
       #define SHADOW_CASTER_PASS
 

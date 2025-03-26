@@ -71,9 +71,12 @@ v2f vert(appdata v) {
     float3 tgt_normal = normalize(o.objPos.xyz);
     float3 tgt_tangent = normalize(float3(tgt_normal.y, -tgt_normal.x, 0));
     float3 tgt_pos = tgt_normal * _Spherize_Radius;
-    o.normal = normalize(lerp(o.normal, tgt_normal, _Spherize_Strength));
-    o.objPos.xyz = lerp(o.objPos.xyz, tgt_pos, _Spherize_Strength);
+    v.normal = normalize(lerp(v.normal, tgt_normal, _Spherize_Strength));
+    v.vertex.xyz = lerp(v.vertex.xyz, tgt_pos, _Spherize_Strength);
   }
+#endif
+#if !defined(_TESSELLATION) && defined(_SHATTER_WAVE)
+  shatterWaveVert(v.vertex.xyz, v.normal, v.tangent);
 #endif
 
 #if defined(OUTLINE_PASS)
@@ -154,10 +157,9 @@ v2f vert(appdata v) {
   o.eyeVec.w = 1;
 
   // These are used to convert normals from tangent space to world space.
-  o.normal = UnityObjectToWorldNormal(v.normal);
-  o.tangent = UnityObjectToWorldDir(v.tangent.xyz);
-  o.binormal = cross(o.normal, o.tangent) * v.tangent.w *
-    unity_WorldTransformParams.w;
+  o.normal = v.normal;
+  o.tangent = v.tangent.xyz;
+  o.binormal = cross(o.normal, o.tangent) * v.tangent.w;
 
   UNITY_TRANSFER_LIGHTING(o, v.uv0);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
@@ -178,6 +180,10 @@ float4 frag(v2f i
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
+
+  i.normal = UnityObjectToWorldNormal(i.normal);
+  i.tangent = UnityObjectToWorldNormal(i.tangent);
+  i.binormal = UnityObjectToWorldNormal(i.binormal);
 
 #if defined(_SHATTER_WAVE)
   shatterWaveFrag(i.normal, i.objPos);

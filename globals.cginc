@@ -416,22 +416,28 @@ float _Letter_Grid_Alpha_Threshold;
 #endif  // _LETTER_GRID
 
 #if defined(_SHATTER_WAVE)
-float _Shatter_Wave_Amplitude;
-float _Shatter_Wave_Wavelength;
-float _Shatter_Wave_Speed;
-float _Shatter_Wave_Period;
-float _Shatter_Wave_Power;
-float3 _Shatter_Wave_Direction;
+float4 _Shatter_Wave_Amplitude;
+float4 _Shatter_Wave_Wavelength;
+float4 _Shatter_Wave_Speed;
+float4 _Shatter_Wave_Period;
+float4 _Shatter_Wave_Time_Offset;
+float4 _Shatter_Wave_Power;
+float3 _Shatter_Wave_Direction0;
+float3 _Shatter_Wave_Direction1;
+float3 _Shatter_Wave_Direction2;
+float3 _Shatter_Wave_Direction3;
 #endif  // _SHATTER_WAVE
 
 #if defined(_TESSELLATION)
 float _Tessellation_Factor;
+#endif  // _TESSELLATION
+
 #if defined(_TESSELLATION_HEIGHTMAP)
 texture2D _Tessellation_Heightmap;
 float4 _Tessellation_Heightmap_ST;
 float _Tessellation_Heightmap_Scale;
+float _Tessellation_Heightmap_Offset;
 #endif  // _TESSELLATION_HEIGHTMAP
-#endif  // _TESSELLATION
 
 #if defined(_SPHERIZE)
 float _Spherize_Radius;

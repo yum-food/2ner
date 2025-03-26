@@ -54,25 +54,26 @@ v2f domain(
 #if defined(_TESSELLATION)
   o.objPos   = DOMAIN_INTERP(tpos);
 #else
-  o.objPos   = DOMAIN_INTERP(pos);
+  o.objPos   = DOMAIN_INTERP(objPos);
 #endif
   o.normal   = DOMAIN_INTERP(normal);
   o.tangent  = DOMAIN_INTERP(tangent);
   o.binormal = DOMAIN_INTERP(binormal);
   o.uv01     = DOMAIN_INTERP(uv01);
 
-#if defined(_SHATTER_WAVE)
+#if defined(_TESSELLATION) && defined(_SHATTER_WAVE)
   shatterWaveVert(o.objPos.xyz, o.normal, o.tangent);
-  o.binormal = cross(o.normal, o.tangent);
 #endif
 
 #if defined(_TESSELLATION_HEIGHTMAP)
-  float height = _Tessellation_Heightmap.SampleLevel(linear_repeat_s, o.uv01.xy * _Tessellation_Heightmap_ST.xy + _Tessellation_Heightmap_ST.zw, 0).r * _Tessellation_Heightmap_Scale;
+  float height = _Tessellation_Heightmap.SampleLevel(linear_repeat_s,
+      o.uv01.xy * _Tessellation_Heightmap_ST.xy + _Tessellation_Heightmap_ST.zw, 0).r *
+      _Tessellation_Heightmap_Scale + _Tessellation_Heightmap_Offset;
   o.objPos.xyz += o.normal * height;
 #endif
 
   o.pos      = UnityObjectToClipPos(o.objPos);
-  o.worldPos = mul(unity_ObjectToWorld, o.objPos);
+  o.worldPos = mul(unity_ObjectToWorld, float4(o.objPos, 1.0)).xyz;
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
   o.eyeVec.w = 1;
 
@@ -82,7 +83,6 @@ v2f domain(
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
   return o;
 }
-
 
 //endex
 
