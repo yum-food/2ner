@@ -47,6 +47,7 @@ struct YumLighting {
 	float3 dir;
 	float3 direct;
 	float3 diffuse;
+  float diffuse_luminance;
   float3 specular;
 	float NoL;
 #if defined(_WRAPPED_LIGHTING)
@@ -103,7 +104,7 @@ float GetLodRoughness(float roughness) {
 	return roughness * (1.7 - 0.7 * roughness);
 }
 
-float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir) {
+float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_luminance) {
   float roughness = GetLodRoughness(pbr.roughness_perceptual);
 	float3 reflect_dir = reflect(-view_dir, pbr.normal);
 
@@ -135,7 +136,7 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir) {
 
     half mip = roughness * UNITY_SPECCUBE_LOD_STEPS;
     float4 envSample = UNITY_SAMPLE_TEXCUBE_LOD(_Fallback_Cubemap, reflectVector, mip);
-    return DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness;
+    return DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness * diffuse_luminance;
   }
 #endif
 
@@ -215,7 +216,8 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.diffuse = max(_Min_Brightness, light.diffuse);
 #endif
 
-  light.specular = getIndirectSpecular(i, pbr, light.view_dir);
+  light.diffuse_luminance = luminance(light.diffuse);
+  light.specular = getIndirectSpecular(i, pbr, light.view_dir, light.diffuse_luminance);
 
 #if defined(_LTCGI)
   ltcgi_acc acc = (ltcgi_acc) 0;
@@ -235,8 +237,8 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.specular = light.specular * floor(specular_luminance * _Quantize_Specular_Steps) / _Quantize_Specular_Steps;
 #endif
 #if defined(_QUANTIZE_DIFFUSE)
-  float diffuse_luminance = luminance(light.diffuse);
-  light.diffuse = light.diffuse * floor(diffuse_luminance * _Quantize_Diffuse_Steps) / _Quantize_Diffuse_Steps;
+  light.diffuse = light.diffuse * floor(light.diffuse_luminance * _Quantize_Diffuse_Steps) / _Quantize_Diffuse_Steps;
+  light.diffuse_luminance = luminance(light.diffuse);
 #endif
 
 #if defined(_BRIGHTNESS_CONTROL)

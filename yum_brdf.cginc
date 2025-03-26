@@ -116,8 +116,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     // Simple indirect lighting for cloth
     // Add additional corrective term to account for the fact that vrchat map
     // makers suck shit and don't use enough reflection probes.
-    float diffuse_luminosity = dot(light.diffuse, float3(0.2126, 0.7152, 0.0722));
-    float3 Fr = _Cloth_Sheen_Color * light.specular * diffuse_luminosity;
+    float3 Fr = _Cloth_Sheen_Color * light.specular * light.diffuse_luminance;
     float3 Fd = pbr.albedo * light.diffuse * pbr.ao;
     
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)

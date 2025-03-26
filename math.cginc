@@ -194,7 +194,7 @@ float3 blendNormalsHill12(float3 n0, float3 n1) {
   return normalize(n0 * dot(n0, n1) - n1 * n0.z);
 }
 
-float3 luminance(float3 color) {
+float luminance(float3 color) {
   return dot(color, float3(0.2126, 0.7152, 0.0722));
 }
 
