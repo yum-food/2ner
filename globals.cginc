@@ -424,4 +424,9 @@ float _Shatter_Wave_Power;
 float3 _Shatter_Wave_Direction;
 #endif  // _SHATTER_WAVE
 
+#if defined(_TESSELLATION)
+float3 _Tessellation_Edge_Factors;
+float _Tessellation_Inside_Factor;
+#endif  // _TESSELLATION
+
 #endif  // __GLOBALS_INC

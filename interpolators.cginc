@@ -14,6 +14,9 @@ struct appdata {
 };
 
 struct v2f {
+#if defined(_TESSELLATION)
+	float4 tpos         : INTERNALTESSPOS;
+#endif
 	float4 pos         : SV_POSITION;
 	float4 uv01        : TEXCOORD0;
 	float3 objPos      : TEXCOORD1;

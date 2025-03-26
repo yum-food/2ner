@@ -200,8 +200,12 @@
 #pragma shader_feature_local _SHATTER_WAVE
 //endex
 
-//ifex _Mirror_UVs_In_Mirror==0
+//ifex _Mirror_UVs_In_Mirror_Enabled==0
 #pragma shader_feature_local _MIRROR_UVS_IN_MIRROR
+//endex
+
+//ifex _Tessellation_Enabled==0
+#pragma shader_feature_local _TESSELLATION
 //endex
 
 #endif  // __FEATURES_INC

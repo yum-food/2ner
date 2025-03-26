@@ -16,6 +16,7 @@
 #include "poi.cginc"
 #include "shatter_wave.cginc"
 #include "ssfd.cginc"
+#include "tessellation.cginc"
 #include "yum_brdf.cginc"
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
@@ -129,6 +130,9 @@ v2f vert(appdata v) {
   o.pos = UnityObjectToClipPos(v.vertex);
 #endif
 
+#if defined(_TESSELLATION)
+  o.tpos = v.vertex;
+#endif
   o.uv01.xy = v.uv0;
   o.uv01.zw = v.uv1;
 #if defined(_MIRROR_UVS_IN_MIRROR)

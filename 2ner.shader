@@ -514,10 +514,18 @@ Shader "yum_food/2ner"
           _Shatter_Wave_Direction("Direction", Vector) = (0, 1, 0, 0)
         [HideInInspector] m_end_Shatter_Wave("Shatter wave", Float) = 0
 
-        //ifex _Mirror_UVs_In_Mirror==0
+        //ifex _Mirror_UVs_In_Mirror_Enabled==0
         [HideInInspector] m_start_Mirror_UVs_In_Mirror("Mirror UVs in mirror", Float) = 0
           [ThryToggle(_MIRROR_UVS_IN_MIRROR)] _Mirror_UVs_In_Mirror_Enabled("Enable", Float) = 0
         [HideInInspector] m_end_Mirror_UVs_In_Mirror("Mirror UVs in mirror", Float) = 0
+        //endex
+
+        //ifex _Tessellation_Enabled==0
+        [HideInInspector] m_start_Tessellation("Tessellation", Float) = 0
+          [ThryToggle(_TESSELLATION)] _Tessellation_Enabled("Enable", Float) = 0
+          _Tessellation_Edge_Factors("Edge factors", Vector) = (1, 1, 1, 1)
+          _Tessellation_Inside_Factor("Inside factor", Float) = 1
+        [HideInInspector] m_end_Tessellation("Tessellation", Float) = 0
         //endex
 
         //ifex _Vertex_Domain_Warping_Enabled==0
@@ -976,6 +984,11 @@ Shader "yum_food/2ner"
       #pragma multi_compile_instancing
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Tessellation_Enabled==0
+      #pragma hull hull
+      #pragma domain domain
+      //endex
 
       #define MASKED_STENCIL1_PASS
 
