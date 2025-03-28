@@ -207,6 +207,7 @@
 //ifex _Tessellation_Enabled==0
 #pragma shader_feature_local _TESSELLATION
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP
+#pragma shader_feature_local _TESSELLATION_RANGE_FACTOR
 //endex
 
 //ifex _Spherize_Enabled==0

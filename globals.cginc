@@ -6,6 +6,7 @@
 SamplerState point_repeat_s;
 SamplerState linear_repeat_s;
 SamplerState linear_clamp_s;
+SamplerState trilinear_repeat_s;
 
 sampler2D _MainTex;
 float4 _MainTex_ST;
@@ -286,11 +287,11 @@ DECLARE_DECAL_VARIABLES(3)
 #endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)
-float _Vertex_Domain_Warping_Spatial_Strength;
-float _Vertex_Domain_Warping_Spatial_Scale;
-float _Vertex_Domain_Warping_Spatial_Octaves;
+texture3D _Vertex_Domain_Warping_Noise;
+float _Vertex_Domain_Warping_Strength;
+float _Vertex_Domain_Warping_Scale;
+float _Vertex_Domain_Warping_Octaves;
 float _Vertex_Domain_Warping_Speed;
-float _Vertex_Domain_Warping_Temporal_Strength;
 #endif  // _VERTEX_DOMAIN_WARPING
 
 #if defined(_UV_DOMAIN_WARPING)
@@ -438,6 +439,13 @@ float4 _Tessellation_Heightmap_ST;
 float _Tessellation_Heightmap_Scale;
 float _Tessellation_Heightmap_Offset;
 #endif  // _TESSELLATION_HEIGHTMAP
+
+#if defined(_TESSELLATION_RANGE_FACTOR)
+float _Tessellation_Range_Factor_Distance_Near;
+float _Tessellation_Range_Factor_Factor_Near;
+float _Tessellation_Range_Factor_Distance_Far;
+float _Tessellation_Range_Factor_Factor_Far;
+#endif  // _TESSELLATION_RANGE_FACTOR
 
 #if defined(_SPHERIZE)
 float _Spherize_Radius;

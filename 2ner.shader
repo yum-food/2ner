@@ -535,6 +535,13 @@ Shader "yum_food/2ner"
             _Tessellation_Heightmap_Scale("Scale", Float) = 1
             _Tessellation_Heightmap_Offset("Offset", Range(-1, 1)) = 0
           [HideInInspector] m_end_Tessellation_Heightmap("Heightmap", Float) = 0
+          [HideInInspector] m_start_Tessellation_Range_Factor("Range-based factor", Float) = 0
+            [ThryToggle(_TESSELLATION_RANGE_FACTOR)] _Tessellation_Range_Factor_Enabled("Enable", Float) = 0
+            _Tessellation_Range_Factor_Distance_Near("Distance (near)", Float) = 1
+            _Tessellation_Range_Factor_Factor_Near("Factor (near)", Float) = 1
+            _Tessellation_Range_Factor_Distance_Far("Distance (far)", Float) = 1
+            _Tessellation_Range_Factor_Factor_Far("Factor (far)", Float) = 1
+          [HideInInspector] m_end_Tessellation_Range_Factor("Range-based factor", Float) = 0
           // Shit for thry
           [HideInInspector] Tessellation_Enabled("Enabled", Float) = 1
           [HideInInspector] Tessellation_EnabledForwardBase("Enabled (ForwardBase)", Float) = 1
@@ -554,11 +561,11 @@ Shader "yum_food/2ner"
         //ifex _Vertex_Domain_Warping_Enabled==0
         [HideInInspector] m_start_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
           [ThryToggle(_VERTEX_DOMAIN_WARPING)]_Vertex_Domain_Warping_Enabled("Enable", Float) = 0
-          _Vertex_Domain_Warping_Spatial_Strength("Spatial warping strength", Float) = 0.10
-          _Vertex_Domain_Warping_Spatial_Scale("Spatial warping scale", Float) = 1.0
-          _Vertex_Domain_Warping_Spatial_Octaves("Spatial warping octaves", Float) = 1.0
+          _Vertex_Domain_Warping_Noise("Noise", 3D) = "black" {}
+          _Vertex_Domain_Warping_Strength("Strength", Float) = 0.10
+          _Vertex_Domain_Warping_Scale("Scale", Float) = 1.0
+          _Vertex_Domain_Warping_Octaves("Octaves", Float) = 1.0
           _Vertex_Domain_Warping_Speed("Speed", Float) = 1.0
-          _Vertex_Domain_Warping_Temporal_Strength("Temporal warping strength", Float) = 0.10
           [HideInInspector] m_end_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
         //endex
 

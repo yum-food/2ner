@@ -79,6 +79,18 @@ v2f vert(appdata v) {
   shatterWaveVert(v.vertex.xyz, v.normal, v.tangent);
 #endif
 
+#if defined(_VERTEX_DOMAIN_WARPING)
+  float3 basePos = v.vertex.xyz;
+  float t = _Time[0] * _Vertex_Domain_Warping_Speed;
+  for (uint i = 0; i < _Vertex_Domain_Warping_Octaves; i++) {
+    float3 uv = basePos * _Vertex_Domain_Warping_Scale +
+      _Time[0] * _Vertex_Domain_Warping_Speed;
+    float3 noise = _Vertex_Domain_Warping_Noise.SampleLevel(trilinear_repeat_s, uv, 0);
+    basePos += (noise * 2 - 1) * _Vertex_Domain_Warping_Strength;
+  }
+  v.vertex.xyz = basePos;
+#endif
+
 #if defined(OUTLINE_PASS)
   [branch]
   if (!_Outlines_Enabled_Dynamic) {
@@ -97,24 +109,6 @@ v2f vert(appdata v) {
 
 #if defined(_FACE_ME)
   face_me(v);
-#endif
-
-#if defined(_VERTEX_DOMAIN_WARPING)
-  float3 basePos = v.vertex.xyz;
-  float offset = sin(_Time[0] * _Vertex_Domain_Warping_Speed) *
-      _Vertex_Domain_Warping_Temporal_Strength;
-  v.vertex.xyz = domainWarp3(v.vertex,
-      _Vertex_Domain_Warping_Spatial_Octaves,
-      _Vertex_Domain_Warping_Spatial_Strength,
-      _Vertex_Domain_Warping_Spatial_Scale,
-      offset);
-  float3 tangent_tmp = v.tangent.xyz;
-  domainWarp3Normals(v.normal, tangent_tmp, basePos,
-      _Vertex_Domain_Warping_Spatial_Octaves,
-      _Vertex_Domain_Warping_Spatial_Strength,
-      _Vertex_Domain_Warping_Spatial_Scale,
-      offset);
-  v.tangent.xyz = tangent_tmp;
 #endif
 
 #if defined(_FOCAL_LENGTH_CONTROL)
@@ -170,7 +164,7 @@ v2f vert(appdata v) {
 }
 
 float4 frag(v2f i
-#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE)
+#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING)
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
@@ -187,6 +181,9 @@ float4 frag(v2f i
 
 #if defined(_SHATTER_WAVE)
   shatterWaveFrag(i.normal, i.objPos);
+#endif
+
+#if defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING)
   {
     float4 clip_pos = mul(UNITY_MATRIX_VP, float4(i.worldPos, 1.0));
     depth = clip_pos.z / clip_pos.w;

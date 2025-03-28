@@ -15,16 +15,25 @@ struct tess_factors {
 tess_factors patch_constant(InputPatch<v2f, 3> patch) {
   tess_factors f;
 #if defined(_TESSELLATION)
-  f.edge[0] = _Tessellation_Factor;
-  f.edge[1] = _Tessellation_Factor;
-  f.edge[2] = _Tessellation_Factor;
-  f.inside = _Tessellation_Factor;
+#if defined(_TESSELLATION_RANGE_FACTOR)
+  float d = length(getCenterCamPos() - patch[0].worldPos.xyz);
+  float factor = lerp(
+      _Tessellation_Range_Factor_Factor_Near,
+      _Tessellation_Range_Factor_Factor_Far,
+      smoothstep(
+        _Tessellation_Range_Factor_Distance_Near,
+        _Tessellation_Range_Factor_Distance_Far,
+        d));
 #else
-  f.edge[0] = 1;
-  f.edge[1] = 1;
-  f.edge[2] = 1;
-  f.inside = 1;
+  float factor = _Tessellation_Factor;
 #endif
+#else
+  float factor = 1;
+#endif
+  f.edge[0] = factor;
+  f.edge[1] = factor;
+  f.edge[2] = factor;
+  f.inside = factor;
   return f;
 }
 
