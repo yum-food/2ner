@@ -80,10 +80,10 @@ v2f domain(
 
 #if defined(_TESSELLATION_HEIGHTMAP)
   float height = _Tessellation_Heightmap.SampleLevel(linear_repeat_s,
-      o.uv01.xy * _Tessellation_Heightmap_ST.xy + _Tessellation_Heightmap_ST.zw, 0).r *
+      o.uv01.xy * _Tessellation_Heightmap_ST.xy, 0).r *
       _Tessellation_Heightmap_Scale +
-      _Tessellation_Heightmap_Offset -
-      _Tessellation_Heightmap_Scale * 0.5;
+      _Tessellation_Heightmap_Offset +
+      _Tessellation_Heightmap_Scale * -0.5;
 #if defined(OUTLINE_PASS)
   o.objPos.xyz += -o.normal * height;
 #else

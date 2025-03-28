@@ -200,6 +200,10 @@
 #pragma shader_feature_local _SHATTER_WAVE
 //endex
 
+//ifex _Shatter_Wave_Audiolink_Enabled==0
+#pragma shader_feature_local _SHATTER_WAVE_AUDIOLINK
+//endex
+
 //ifex _Mirror_UVs_In_Mirror_Enabled==0
 #pragma shader_feature_local _MIRROR_UVS_IN_MIRROR
 //endex

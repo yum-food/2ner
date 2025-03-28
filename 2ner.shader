@@ -516,6 +516,13 @@ Shader "yum_food/2ner"
           _Shatter_Wave_Direction1("Direction (wave 1)", Vector) = (0, 1, 0)
           _Shatter_Wave_Direction2("Direction (wave 2)", Vector) = (0, 1, 0)
           _Shatter_Wave_Direction3("Direction (wave 3)", Vector) = (0, 1, 0)
+          [HideInInspector] m_start_Shatter_Wave_Audiolink("Audiolink", Float) = 0
+            [ThryToggle(_SHATTER_WAVE_AUDIOLINK)] _Shatter_Wave_Audiolink_Enabled("Enable", Float) = 0
+            _Shatter_Wave_Chronotensity_Weights0("Chronotensity weights (wave 0)", Vector) = (0, 0, 0, 0)
+            _Shatter_Wave_Chronotensity_Weights1("Chronotensity weights (wave 1)", Vector) = (0, 0, 0, 0)
+            _Shatter_Wave_Chronotensity_Weights2("Chronotensity weights (wave 2)", Vector) = (0, 0, 0, 0)
+            _Shatter_Wave_Chronotensity_Weights3("Chronotensity weights (wave 3)", Vector) = (0, 0, 0, 0)
+          [HideInInspector] m_end_Shatter_Wave_Audiolink("Audiolink", Float) = 0
         [HideInInspector] m_end_Shatter_Wave("Shatter wave", Float) = 0
         //endex
 

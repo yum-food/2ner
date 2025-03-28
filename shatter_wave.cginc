@@ -3,6 +3,7 @@
 #pragma exclude_renderers gles
 #define __SHATTER_WAVE_INC
 
+#include "audiolink.cginc"
 #include "globals.cginc"
 #include "math.cginc"
 
@@ -20,7 +21,51 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   objPos_proj[2] = dot(objPos, wave_axis2) * normalize(wave_axis2);
   objPos_proj[3] = dot(objPos, wave_axis3) * normalize(wave_axis3);
 
-  float4 wave_t = fmod(_Time[0] * _Shatter_Wave_Speed + _Shatter_Wave_Time_Offset * _Shatter_Wave_Period, _Shatter_Wave_Period) - _Shatter_Wave_Period * 0.5;
+  float4 wave_t = _Time[0] * _Shatter_Wave_Speed;
+#if defined(_SHATTER_WAVE_AUDIOLINK)
+  if (AudioLinkIsAvailable()) {
+    const uint chrono_time_scale_i = 1000 * 1000;
+    const float chrono_time_scale_f = 1000 * 1000;
+    // For some fucking reason the compiler shits itself if this is a loop.
+    {
+      uint band = 0;
+      uint chrono_raw = AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(0, band));
+      float chrono_normalized = (chrono_raw % chrono_time_scale_i) / chrono_time_scale_f;
+      wave_t.x = _Shatter_Wave_Chronotensity_Weights0[band] * chrono_normalized;
+      wave_t.y = _Shatter_Wave_Chronotensity_Weights1[band] * chrono_normalized;
+      wave_t.z = _Shatter_Wave_Chronotensity_Weights2[band] * chrono_normalized;
+      wave_t.w = _Shatter_Wave_Chronotensity_Weights3[band] * chrono_normalized;
+    }
+    {
+      uint band = 1;
+      uint chrono_raw = AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(0, band));
+      float chrono_normalized = (chrono_raw % chrono_time_scale_i) / chrono_time_scale_f;
+      wave_t.x += _Shatter_Wave_Chronotensity_Weights0[band] * chrono_normalized;
+      wave_t.y += _Shatter_Wave_Chronotensity_Weights1[band] * chrono_normalized;
+      wave_t.z += _Shatter_Wave_Chronotensity_Weights2[band] * chrono_normalized;
+      wave_t.w += _Shatter_Wave_Chronotensity_Weights3[band] * chrono_normalized;
+    }
+    {
+      uint band = 2;
+      uint chrono_raw = AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(0, band));
+      float chrono_normalized = (chrono_raw % chrono_time_scale_i) / chrono_time_scale_f;
+      wave_t.x += _Shatter_Wave_Chronotensity_Weights0[band] * chrono_normalized;
+      wave_t.y += _Shatter_Wave_Chronotensity_Weights1[band] * chrono_normalized;
+      wave_t.z += _Shatter_Wave_Chronotensity_Weights2[band] * chrono_normalized;
+      wave_t.w += _Shatter_Wave_Chronotensity_Weights3[band] * chrono_normalized;
+    }
+    {
+      uint band = 3;
+      uint chrono_raw = AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(0, band));
+      float chrono_normalized = (chrono_raw % chrono_time_scale_i) / chrono_time_scale_f;
+      wave_t.x += _Shatter_Wave_Chronotensity_Weights0[band] * chrono_normalized;
+      wave_t.y += _Shatter_Wave_Chronotensity_Weights1[band] * chrono_normalized;
+      wave_t.z += _Shatter_Wave_Chronotensity_Weights2[band] * chrono_normalized;
+      wave_t.w += _Shatter_Wave_Chronotensity_Weights3[band] * chrono_normalized;
+    }
+  }
+#endif
+  wave_t = fmod(wave_t + _Shatter_Wave_Time_Offset * _Shatter_Wave_Period, _Shatter_Wave_Period) - _Shatter_Wave_Period * 0.5;
 
   float4 wave_center = wave_t;
   float4 offset;

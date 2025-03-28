@@ -429,6 +429,13 @@ float3 _Shatter_Wave_Direction2;
 float3 _Shatter_Wave_Direction3;
 #endif  // _SHATTER_WAVE
 
+#if defined(_SHATTER_WAVE_AUDIOLINK)
+float4 _Shatter_Wave_Chronotensity_Weights0;
+float4 _Shatter_Wave_Chronotensity_Weights1;
+float4 _Shatter_Wave_Chronotensity_Weights2;
+float4 _Shatter_Wave_Chronotensity_Weights3;
+#endif  // _SHATTER_WAVE_AUDIOLINK
+
 #if defined(_TESSELLATION)
 float _Tessellation_Factor;
 #endif  // _TESSELLATION
