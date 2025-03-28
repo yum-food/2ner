@@ -436,6 +436,10 @@ float4 _Shatter_Wave_Chronotensity_Weights2;
 float4 _Shatter_Wave_Chronotensity_Weights3;
 #endif  // _SHATTER_WAVE_AUDIOLINK
 
+#if defined(_SHATTER_WAVE_ROTATION)
+float4 _Shatter_Wave_Rotation_Strength;
+#endif  // _SHATTER_WAVE_ROTATION
+
 #if defined(_TESSELLATION)
 float _Tessellation_Factor;
 #endif  // _TESSELLATION

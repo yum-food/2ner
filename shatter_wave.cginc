@@ -68,10 +68,24 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   wave_t = fmod(wave_t + _Shatter_Wave_Time_Offset * _Shatter_Wave_Period, _Shatter_Wave_Period) - _Shatter_Wave_Period * 0.5;
 
   float4 wave_center = wave_t;
-  float4 offset;
+
+  // TODO calculate signed distance from wave center
+  float4 distance_signed;
   for (uint i = 0; i < 4; i++) {
-    offset[i] = exp(-length(objPos_proj[i] - wave_center[i] * wave_axes[i]) * _Shatter_Wave_Power[i]) * _Shatter_Wave_Amplitude[i];
-    objPos += objNormal * offset[i];
+    float3 dist_to_center = objPos_proj[i] - wave_center[i] * wave_axes[i];
+    distance_signed[i] = dot(dist_to_center, wave_axes[i]);
+  }
+
+#if defined(_SHATTER_WAVE_ROTATION)
+  float4 thetas = clamp(distance_signed * _Shatter_Wave_Rotation_Strength, -1, 1) * TAU;
+  for (uint i = 0; i < 4; i++) {
+    objPos = rotate_vector(objPos, get_quaternion(wave_axes[i], thetas[i]));
+  }
+#endif
+
+  for (uint i = 0; i < 4; i++) {
+    float offset = exp(-abs(distance_signed[i]) * _Shatter_Wave_Power[i]) * _Shatter_Wave_Amplitude[i];
+    objPos += objNormal * offset;
   }
 }
 
