@@ -434,6 +434,7 @@ float4 _Shatter_Wave_Chronotensity_Weights0;
 float4 _Shatter_Wave_Chronotensity_Weights1;
 float4 _Shatter_Wave_Chronotensity_Weights2;
 float4 _Shatter_Wave_Chronotensity_Weights3;
+float4 _Shatter_Wave_Chronotensity_Time_Factor;
 #endif  // _SHATTER_WAVE_AUDIOLINK
 
 #if defined(_SHATTER_WAVE_ROTATION)
