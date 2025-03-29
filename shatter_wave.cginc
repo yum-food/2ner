@@ -78,10 +78,11 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   }
 #endif
 
-  for (uint i = 0; i < 4; i++) {
-    float offset = exp(-abs(distance_signed[i]) * _Shatter_Wave_Power[i]) * _Shatter_Wave_Amplitude[i];
-    objPos += objNormal * offset;
-  }
+  float4 offset = exp(-abs(distance_signed) * _Shatter_Wave_Power) * _Shatter_Wave_Amplitude;
+  objPos += objNormal * offset[0];
+  objPos += objNormal * offset[1];
+  objPos += objNormal * offset[2];
+  objPos += objNormal * offset[3];
 }
 
 void shatterWaveFrag(inout float3 normal, float3 objPos) {
