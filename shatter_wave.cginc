@@ -27,20 +27,35 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   if (AudioLinkIsAvailable()) {
     const uint chrono_time_scale_i = 1000 * 1000;
     const float chrono_time_scale_f = 1000 * 1000;
-    // For some fucking reason the compiler shits itself if this is a loop.
-    float4 chrono_t = 0;
+    float4x4 chrono_t;
+    float4x4 weights = float4x4(
+      // Weights are per band. .x is wave0, .y is wave1, etc.
+      _Shatter_Wave_Chronotensity_Weights0,
+      _Shatter_Wave_Chronotensity_Weights1,
+      _Shatter_Wave_Chronotensity_Weights2,
+      _Shatter_Wave_Chronotensity_Weights3);
     [unroll]
     for (uint band = 0; band < 4; ++band)
     {
-      uint chrono_raw = AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(6, band));
-      float chrono_normalized = (chrono_raw % chrono_time_scale_i) / chrono_time_scale_f;
-      chrono_t.x += _Shatter_Wave_Chronotensity_Weights0[band] * chrono_normalized;
-      chrono_t.y += _Shatter_Wave_Chronotensity_Weights1[band] * chrono_normalized;
-      chrono_t.z += _Shatter_Wave_Chronotensity_Weights2[band] * chrono_normalized;
-      chrono_t.w += _Shatter_Wave_Chronotensity_Weights3[band] * chrono_normalized;
+      uint chrono_raw = AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(2, band));
+      float chrono_normalized = chrono_raw / chrono_time_scale_f;
+      chrono_t[band] = weights[band] * chrono_normalized;
     }
-    wave_t = chrono_t * _Shatter_Wave_Chronotensity_Time_Factor;
-    wave_t = fmod(wave_t, 10) - 10 * 0.5;
+    float4 chrono_t4;
+    [unroll]
+    for (uint wave = 0; wave < 4; ++wave)
+    {
+      chrono_t4[wave] = chrono_t[0][wave];
+      chrono_t4[wave] += chrono_t[1][wave];
+      chrono_t4[wave] += chrono_t[2][wave];
+      chrono_t4[wave] += chrono_t[3][wave];
+    }
+    wave_t = chrono_t4 * _Shatter_Wave_Chronotensity_Time_Factor;
+    wave_t = fmod(
+        wave_t +
+        _Shatter_Wave_Time_Offset * _Shatter_Wave_Period -
+        _Time[0] * _Shatter_Wave_Speed * .3,
+      _Shatter_Wave_Period) - _Shatter_Wave_Period * 0.5;
   }
 #else
   float4 wave_t = _Time[0] * _Shatter_Wave_Speed;
