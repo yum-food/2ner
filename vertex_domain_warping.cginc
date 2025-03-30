@@ -1,15 +1,33 @@
 #ifndef __VERTEX_DOMAIN_WARPING_INC
 #define __VERTEX_DOMAIN_WARPING_INC
 
+#include "audiolink.cginc"
+#include "globals.cginc"
 #include "math.cginc"
 
-float3 domainWarpVertexPosition(float3 vertex, float3 normal, float3 tangent,
-    float3 binormal, float3 worldPos, float3 centerCamPos) {
-  float3 worldNormal = UnityObjectToWorldNormal(normal);
-  float3 worldTangent = UnityObjectToWorldDir(tangent);
-  float3 worldBinormal = cross(worldNormal, worldTangent) * tangent.w * unity_WorldTransformParams.w;
+float3 domainWarpVertexPosition(float3 objPos) {
+#if defined(_VERTEX_DOMAIN_WARPING)
+  float speed = _Vertex_Domain_Warping_Speed;
+  float scale = _Vertex_Domain_Warping_Scale;
+  float strength = _Vertex_Domain_Warping_Strength;
+  float octaves = _Vertex_Domain_Warping_Octaves;
 
-  float3 worldPos = mul(unity_ObjectToWorld, vertex);
+#if defined(_VERTEX_DOMAIN_WARPING_AUDIOLINK)
+  [branch]
+  if (AudioLinkIsAvailable()) {
+    float vu = AudioLinkData(ALPASS_FILTEREDVU_INTENSITY + uint2(0, 0));
+    strength += vu * _Vertex_Domain_Warping_Audiolink_VU_Factors.x;
+    scale += vu * _Vertex_Domain_Warping_Audiolink_VU_Factors.y;
+  }
+#endif
+
+  for (uint i = 0; i < octaves; i++) {
+    float3 uv = objPos * scale + speed * _Time[0];
+    float3 noise = _Vertex_Domain_Warping_Noise.SampleLevel(trilinear_repeat_s, uv, 0);
+    objPos += (noise * 2 - 1) * strength;
+  }
+#endif  // _VERTEX_DOMAIN_WARPING
+  return objPos;
 }
 
 #endif  // __VERTEX_DOMAIN_WARPING_INC

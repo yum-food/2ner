@@ -579,6 +579,10 @@ Shader "yum_food/2ner"
           _Vertex_Domain_Warping_Scale("Scale", Float) = 1.0
           _Vertex_Domain_Warping_Octaves("Octaves", Float) = 1.0
           _Vertex_Domain_Warping_Speed("Speed", Float) = 1.0
+          [HideInInspector] m_start_Vertex_Domain_Warping_Audiolink("Audiolink", Float) = 0
+            [ThryToggle(_VERTEX_DOMAIN_WARPING_AUDIOLINK)] _Vertex_Domain_Warping_Audiolink_Enabled("Enable", Float) = 0
+            _Vertex_Domain_Warping_Audiolink_VU_Factors("VU factors (strength|scale|unused|unused)", Vector) = (1, 1, 0, 0)
+          [HideInInspector] m_end_Vertex_Domain_Warping_Audiolink("Audiolink", Float) = 0
           [HideInInspector] m_end_Vertex_Domain_Warping("Vertex domain warping", Float) = 0
         //endex
 

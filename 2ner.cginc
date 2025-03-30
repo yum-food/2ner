@@ -17,6 +17,7 @@
 #include "shatter_wave.cginc"
 #include "ssfd.cginc"
 #include "tessellation.cginc"
+#include "vertex_domain_warping.cginc"
 #include "yum_brdf.cginc"
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
@@ -80,15 +81,7 @@ v2f vert(appdata v) {
 #endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)
-  float3 basePos = v.vertex.xyz;
-  float t = _Time[0] * _Vertex_Domain_Warping_Speed;
-  for (uint i = 0; i < _Vertex_Domain_Warping_Octaves; i++) {
-    float3 uv = basePos * _Vertex_Domain_Warping_Scale +
-      _Time[0] * _Vertex_Domain_Warping_Speed;
-    float3 noise = _Vertex_Domain_Warping_Noise.SampleLevel(trilinear_repeat_s, uv, 0);
-    basePos += (noise * 2 - 1) * _Vertex_Domain_Warping_Strength;
-  }
-  v.vertex.xyz = basePos;
+  v.vertex.xyz = domainWarpVertexPosition(v.vertex.xyz);
 #endif
 
 #if defined(OUTLINE_PASS)

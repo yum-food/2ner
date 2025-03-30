@@ -152,6 +152,10 @@
 #pragma shader_feature_local _VERTEX_DOMAIN_WARPING
 //endex
 
+//ifex _Vertex_Domain_Warping_Audiolink_Enabled==0
+#pragma shader_feature_local _VERTEX_DOMAIN_WARPING_AUDIOLINK
+//endex
+
 //ifex _UV_Domain_Warping_Enabled==0
 #pragma shader_feature_local _UV_DOMAIN_WARPING
 //endex
