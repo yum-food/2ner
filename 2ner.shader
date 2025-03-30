@@ -549,6 +549,7 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Tessellation_Heightmap("Heightmap", Float) = 0
           [HideInInspector] m_start_Tessellation_Range_Factor("Range-based factor", Float) = 0
             [ThryToggle(_TESSELLATION_RANGE_FACTOR)] _Tessellation_Range_Factor_Enabled("Enable", Float) = 0
+            [Helpbox]_Tessellation_Range_Factor_Help("All distances are given in squared meters. For example, to set the far distance to 4 meters, enter 16.", Int) = 0
             _Tessellation_Range_Factor_Distance_Near("Distance (near)", Float) = 1
             _Tessellation_Range_Factor_Factor_Near("Factor (near)", Float) = 1
             _Tessellation_Range_Factor_Distance_Far("Distance (far)", Float) = 1

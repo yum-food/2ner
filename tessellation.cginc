@@ -16,20 +16,54 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
   tess_factors f;
 #if defined(_TESSELLATION)
 #if defined(_TESSELLATION_RANGE_FACTOR)
-  float d = length(getCenterCamPos() - patch[0].worldPos.xyz);
+  float3 vec = getCenterCamPos() - patch[0].worldPos.xyz;
+  float d2 = dot(vec, vec);
   float factor = lerp(
       _Tessellation_Range_Factor_Factor_Near,
       _Tessellation_Range_Factor_Factor_Far,
       smoothstep(
         _Tessellation_Range_Factor_Distance_Near,
         _Tessellation_Range_Factor_Distance_Far,
-        d));
+        d2));
 #else
   float factor = _Tessellation_Factor;
 #endif
+  {
+    // Frustum culling - don't tessellate if the patch is outside the viewport
+    // (xy) or behind the camera (w). We approximate this by checking the
+    // un-transformed and maximally transformed locations. Technically we could
+    // miss an intersection in the middle, but I haven't noticed any visible
+    // popping with this approach.
+    float max_displacement = _Tessellation_Heightmap_Scale * 0.5 + _Tessellation_Heightmap_Offset;
+    float3 p0d = patch[0].objPos.xyz + patch[0].normal.xyz * max_displacement;
+    float3 p1d = patch[1].objPos.xyz + patch[1].normal.xyz * max_displacement;
+    float3 p2d = patch[2].objPos.xyz + patch[2].normal.xyz * max_displacement;
+    float4 p0_clipPos = UnityObjectToClipPos(float4(patch[0].objPos.xyz, 1));
+    float4 p1_clipPos = UnityObjectToClipPos(float4(patch[1].objPos.xyz, 1));
+    float4 p2_clipPos = UnityObjectToClipPos(float4(patch[2].objPos.xyz, 1));
+    float4 p0d_clipPos = UnityObjectToClipPos(float4(p0d, 1));
+    float4 p1d_clipPos = UnityObjectToClipPos(float4(p1d, 1));
+    float4 p2d_clipPos = UnityObjectToClipPos(float4(p2d, 1));
+    float3 p0_ndc = p0_clipPos.xyz / p0_clipPos.w;
+    float3 p1_ndc = p1_clipPos.xyz / p1_clipPos.w;
+    float3 p2_ndc = p2_clipPos.xyz / p2_clipPos.w;
+    float3 p0d_ndc = p0d_clipPos.xyz / p0d_clipPos.w;
+    float3 p1d_ndc = p1d_clipPos.xyz / p1d_clipPos.w;
+    float3 p2d_ndc = p2d_clipPos.xyz / p2d_clipPos.w;
+
+    bool on_screen =
+        (p0_ndc.x > -1 && p0_ndc.x < 1 && p0_ndc.y > -1 && p0_ndc.y < 1 && p0_clipPos.w > 0) ||
+        (p1_ndc.x > -1 && p1_ndc.x < 1 && p1_ndc.y > -1 && p1_ndc.y < 1 && p1_clipPos.w > 0) ||
+        (p2_ndc.x > -1 && p2_ndc.x < 1 && p2_ndc.y > -1 && p2_ndc.y < 1 && p2_clipPos.w > 0) ||
+        (p0d_ndc.x > -1 && p0d_ndc.x < 1 && p0d_ndc.y > -1 && p0d_ndc.y < 1 && p0d_clipPos.w > 0) ||
+        (p1d_ndc.x > -1 && p1d_ndc.x < 1 && p1d_ndc.y > -1 && p1d_ndc.y < 1 && p1d_clipPos.w > 0) ||
+        (p2d_ndc.x > -1 && p2d_ndc.x < 1 && p2d_ndc.y > -1 && p2d_ndc.y < 1 && p2d_clipPos.w > 0);
+    factor = lerp(0, factor, on_screen);
+  }
 #else
   float factor = 1;
 #endif
+
   f.edge[0] = factor;
   f.edge[1] = factor;
   f.edge[2] = factor;
@@ -40,7 +74,7 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
 [UNITY_domain("tri")]
 [UNITY_outputcontrolpoints(3)]
 [UNITY_outputtopology("triangle_cw")]
-[UNITY_partitioning("fractional_odd")]
+[UNITY_partitioning("integer")]
 [UNITY_patchconstantfunc("patch_constant")]
 v2f hull(
     InputPatch<v2f, 3> patch,
@@ -55,7 +89,7 @@ v2f domain(
     OutputPatch<v2f, 3> patch,
     float3 baryc : SV_DomainLocation)
 {
-  v2f o;
+  v2f o = (v2f) 0;
 #define DOMAIN_INTERP(fieldName) \
   patch[0].fieldName * baryc.x + \
   patch[1].fieldName * baryc.y + \
