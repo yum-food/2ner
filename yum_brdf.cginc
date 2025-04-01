@@ -68,7 +68,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     // Use a proper diffuse BRDF term instead of raw albedo
     float3 Fd = pbr.albedo / PI;
     Fd *= light.attenuation;
-    
+
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // Energy conservative wrap diffuse for subsurface scattering
       float wrap_diffuse = saturate((NoL + 0.5) / 2.25);
@@ -76,15 +76,15 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
       // Apply subsurface color
       Fd *= saturate(_Cloth_Subsurface_Color + NoL);
     #endif
-    
+
     // Cloth specular BRDF
     float3 Fr = specularLobe(pbr, 0.04, h, LoH, NoH, NoV, NoL_wrapped_s);
-    
+
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // No need to multiply by NoL when using subsurface scattering
-      direct_cloth = (Fd + Fr * NoL) * light.direct * _Cloth_Direct_Multiplier;
+      direct_cloth = (Fd + Fr * NoL_wrapped_d) * light.direct * _Cloth_Direct_Multiplier;
     #else
-      direct_cloth = (Fd + Fr) * NoL * light.direct * _Cloth_Direct_Multiplier;
+      direct_cloth = (Fd + Fr) * NoL_wrapped_d * light.direct * _Cloth_Direct_Multiplier;
     #endif
   }
 #endif
@@ -105,7 +105,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float3 Fd = pbr.albedo / PI;
     Fd *= (1.0 - pbr.metallic) * light.attenuation;
     float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s);
-    
+
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
     direct_standard = color * light.direct;
   }

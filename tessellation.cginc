@@ -3,6 +3,7 @@
 
 #include "globals.cginc"
 #include "interpolators.cginc"
+#include "math.cginc"
 #include "shatter_wave.cginc"
 
 //ifex _Tessellation_Enabled==0
@@ -34,16 +35,20 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
     // un-transformed and maximally transformed locations. Technically we could
     // miss an intersection in the middle, but I haven't noticed any visible
     // popping with this approach.
+#if defined(_TESSELLATION_HEIGHTMAP)
     float max_displacement = _Tessellation_Heightmap_Scale * 0.5 + _Tessellation_Heightmap_Offset;
+#else
+    float max_displacement = 0;
+#endif
     float3 p0d = patch[0].objPos.xyz + patch[0].normal.xyz * max_displacement;
     float3 p1d = patch[1].objPos.xyz + patch[1].normal.xyz * max_displacement;
     float3 p2d = patch[2].objPos.xyz + patch[2].normal.xyz * max_displacement;
-    float4 p0_clipPos = UnityObjectToClipPos(float4(patch[0].objPos.xyz, 1));
-    float4 p1_clipPos = UnityObjectToClipPos(float4(patch[1].objPos.xyz, 1));
-    float4 p2_clipPos = UnityObjectToClipPos(float4(patch[2].objPos.xyz, 1));
-    float4 p0d_clipPos = UnityObjectToClipPos(float4(p0d, 1));
-    float4 p1d_clipPos = UnityObjectToClipPos(float4(p1d, 1));
-    float4 p2d_clipPos = UnityObjectToClipPos(float4(p2d, 1));
+    float4 p0_clipPos = UnityObjectToClipPos(patch[0].objPos.xyz);
+    float4 p1_clipPos = UnityObjectToClipPos(patch[1].objPos.xyz);
+    float4 p2_clipPos = UnityObjectToClipPos(patch[2].objPos.xyz);
+    float4 p0d_clipPos = UnityObjectToClipPos(p0d);
+    float4 p1d_clipPos = UnityObjectToClipPos(p1d);
+    float4 p2d_clipPos = UnityObjectToClipPos(p2d);
     float3 p0_ndc = p0_clipPos.xyz / p0_clipPos.w;
     float3 p1_ndc = p1_clipPos.xyz / p1_clipPos.w;
     float3 p2_ndc = p2_clipPos.xyz / p2_clipPos.w;
@@ -58,7 +63,7 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
         (p0d_ndc.x > -1 && p0d_ndc.x < 1 && p0d_ndc.y > -1 && p0d_ndc.y < 1 && p0d_clipPos.w > 0) ||
         (p1d_ndc.x > -1 && p1d_ndc.x < 1 && p1d_ndc.y > -1 && p1d_ndc.y < 1 && p1d_clipPos.w > 0) ||
         (p2d_ndc.x > -1 && p2d_ndc.x < 1 && p2d_ndc.y > -1 && p2d_ndc.y < 1 && p2d_clipPos.w > 0);
-    factor = lerp(0, factor, on_screen);
+    factor = lerp(1, factor, on_screen);
   }
 #else
   float factor = 1;
@@ -74,7 +79,7 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
 [UNITY_domain("tri")]
 [UNITY_outputcontrolpoints(3)]
 [UNITY_outputtopology("triangle_cw")]
-[UNITY_partitioning("integer")]
+[UNITY_partitioning("fractional_odd")]
 [UNITY_patchconstantfunc("patch_constant")]
 v2f hull(
     InputPatch<v2f, 3> patch,
@@ -113,11 +118,21 @@ v2f domain(
 #endif
 
 #if defined(_TESSELLATION_HEIGHTMAP)
-  float height = _Tessellation_Heightmap.SampleLevel(linear_repeat_s,
-      o.uv01.xy * _Tessellation_Heightmap_ST.xy, 0).r *
+#if 1
+  float raw_noise = _Tessellation_Heightmap.SampleLevel(linear_repeat_s,
+      o.uv01.xy * _Tessellation_Heightmap_ST.xy, 0).r;
+  float height = raw_noise *
       _Tessellation_Heightmap_Scale +
       _Tessellation_Heightmap_Offset +
       _Tessellation_Heightmap_Scale * -0.5;
+#else
+  // For whatever reason, it seems like the texture read is initially
+  // returning a small number when the mesh spawns in VRC. A procedural noise
+  // works around the issue.
+  float height = rand2(o.uv01.xy) * _Tessellation_Heightmap_Scale +
+      _Tessellation_Heightmap_Offset +
+      _Tessellation_Heightmap_Scale * -0.5;
+#endif
 #if defined(OUTLINE_PASS)
   o.objPos.xyz += -o.normal * height;
 #else

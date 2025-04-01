@@ -295,7 +295,8 @@ float _Vertex_Domain_Warping_Speed;
 #endif  // _VERTEX_DOMAIN_WARPING
 
 #if defined(_VERTEX_DOMAIN_WARPING_AUDIOLINK)
-float4 _Vertex_Domain_Warping_Audiolink_VU_Factors;
+float _Vertex_Domain_Warping_Audiolink_VU_Strength_Factor;
+float _Vertex_Domain_Warping_Audiolink_VU_Scale_Factor;
 #endif  // _VERTEX_DOMAIN_WARPING_AUDIOLINK
 
 #if defined(_UV_DOMAIN_WARPING)

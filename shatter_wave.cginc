@@ -15,7 +15,7 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   float3 wave_axis2 = normalize(_Shatter_Wave_Direction2);
   float3 wave_axis3 = normalize(_Shatter_Wave_Direction3);
   float4x3 wave_axes = float4x3(wave_axis0, wave_axis1, wave_axis2, wave_axis3);
-  
+
   float4 projDots = mul(wave_axes, objPos);
   // Equivalent code:
   // float4 projDots = float4(
@@ -24,7 +24,7 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   //   dot(objPos, wave_axis2),
   //   dot(objPos, wave_axis3)
   // );
-  
+
   float4x3 objPos_proj = float4x3(
     projDots.x * wave_axis0,
     projDots.y * wave_axis1,
@@ -67,6 +67,9 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
         _Shatter_Wave_Time_Offset * _Shatter_Wave_Period -
         _Time[0] * _Shatter_Wave_Speed * .3,
       _Shatter_Wave_Period) - _Shatter_Wave_Period * 0.5;
+  } else {
+    wave_t = _Time[0] * _Shatter_Wave_Speed;
+    wave_t = fmod(wave_t + _Shatter_Wave_Time_Offset * _Shatter_Wave_Period, _Shatter_Wave_Period) - _Shatter_Wave_Period * 0.5;
   }
 #else
   float4 wave_t = _Time[0] * _Shatter_Wave_Speed;

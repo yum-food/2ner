@@ -274,6 +274,7 @@ float4 frag(v2f i
 
   UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
   UNITY_APPLY_FOG(_unity_fogCoord, lit.rgb);
+
   return lit;
 #elif defined(SHADOW_CASTER_PASS) || defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS)
   return 0;

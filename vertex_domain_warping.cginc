@@ -2,6 +2,7 @@
 #define __VERTEX_DOMAIN_WARPING_INC
 
 #include "audiolink.cginc"
+#include "features.cginc"
 #include "globals.cginc"
 #include "math.cginc"
 
@@ -10,14 +11,14 @@ float3 domainWarpVertexPosition(float3 objPos) {
   float speed = _Vertex_Domain_Warping_Speed;
   float scale = _Vertex_Domain_Warping_Scale;
   float strength = _Vertex_Domain_Warping_Strength;
-  float octaves = _Vertex_Domain_Warping_Octaves;
+  uint octaves = (uint) _Vertex_Domain_Warping_Octaves;
 
 #if defined(_VERTEX_DOMAIN_WARPING_AUDIOLINK)
   [branch]
   if (AudioLinkIsAvailable()) {
     float vu = AudioLinkData(ALPASS_FILTEREDVU_INTENSITY + uint2(0, 0));
-    strength += vu * _Vertex_Domain_Warping_Audiolink_VU_Factors.x;
-    scale += vu * _Vertex_Domain_Warping_Audiolink_VU_Factors.y;
+    strength += vu * _Vertex_Domain_Warping_Audiolink_VU_Strength_Factor;
+    scale += vu * _Vertex_Domain_Warping_Audiolink_VU_Scale_Factor;
   }
 #endif
 

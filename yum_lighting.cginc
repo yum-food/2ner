@@ -202,11 +202,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   // normalize has no visibile impact in test scene
   light.view_dir = -i.eyeVec.xyz;
 
-#if defined(POINT) || defined(POINT_COOKIE) || defined(SPOT)
-	light.dir = normalize((_WorldSpaceLightPos0 - i.worldPos).xyz);
-#else
-	light.dir = _WorldSpaceLightPos0;
-#endif
+  light.dir = getDirectLightDirection(i);
 
 	light.direct = _LightColor0.rgb;
 	// TODO filament's spherical harmonics look nicer than this.
