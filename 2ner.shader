@@ -74,7 +74,6 @@ Shader "yum_food/2ner"
       [HideInInspector] m_reflectionOptions("Reflections", Float) = 0
       [HideInInspector] m_start_Metallic("Metallics", Float) = 0
         [ThryToggle(_METALLICS)]_Metallics_Enabled("Enable", Float) = 0
-        _MetallicMask("Metallic Mask", 2D) = "white" {}
         _Metallic("Metallic", Range(0, 1)) = 0
         _Smoothness("Smoothness", Range(0, 1)) = 0
         _MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
@@ -880,6 +879,9 @@ Shader "yum_food/2ner"
           [MaterialToggle] _Fallback_Cubemap_Force("Force", Float) = 0
           _Fallback_Cubemap("Cubemap", Cube) = "" {}
           _Fallback_Cubemap_Brightness("Brightness", Float) = 1.0
+          [HideInInspector] m_start_Fallback_Cubemap_Limit_Metallic("Limit override to metallic", Float) = 0
+            [ThryToggle(_FALLBACK_CUBEMAP_LIMIT_METALLIC)] _Fallback_Cubemap_Limit_Metallic("Enable", Float) = 0
+          [HideInInspector] m_end_Fallback_Cubemap_Limit_Metallic("Limit override to metallic", Float) = 0
         [HideInInspector] m_end_Fallback_Cubemap("Fallback Cubemap", Float) = 0
         //endex
         //ifex _Receive_Shadows_Enabled==0

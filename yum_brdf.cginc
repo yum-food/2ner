@@ -82,9 +82,9 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // No need to multiply by NoL when using subsurface scattering
-      direct_cloth = (Fd + Fr * NoL_wrapped_d) * light.direct * _Cloth_Direct_Multiplier;
+      direct_cloth = (Fd + Fr * NoL) * light.direct * _Cloth_Direct_Multiplier;
     #else
-      direct_cloth = (Fd + Fr) * NoL_wrapped_d * light.direct * _Cloth_Direct_Multiplier;
+      direct_cloth = (Fd + Fr) * NoL * light.direct * _Cloth_Direct_Multiplier;
     #endif
   }
 #endif

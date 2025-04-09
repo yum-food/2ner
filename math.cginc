@@ -16,10 +16,10 @@ float pow5(float x)
 }
 
 float wrapNoL(float NoL, float k) {
-#if 0
+#if 1
 		// https://www.iro.umontreal.ca/~derek/files/jgt_wrap_final.pdf
     return pow(max(1E-4, (NoL + k) / (1 + k)), 1 + k);
-#else 
+#else
     float k_sq = k * k;
     float b = max(0, lerp(NoL, 1.0, k));
     float p = -6.0 * k_sq + 5.0 * k + 1.0;
@@ -27,7 +27,7 @@ float wrapNoL(float NoL, float k) {
     float F = pow(b, p);
 
     // Approximate integral of NoL with respect to theta
-    float I = 0.7856 * k_sq - 0.2148 * k + 1.0;
+    float I = (0.7856 * k_sq - 0.2148 * k) + 1.0;
 
     float G = F / max(I, 1E-6);
 

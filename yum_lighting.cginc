@@ -124,8 +124,11 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
   data.probePosition[1] = unity_SpecCube1_ProbePosition;
 #endif
 
+  const float3 env_refl = UnityGI_prefilteredRadiance(data, roughness, reflect_dir);
+
 #if defined(_FALLBACK_CUBEMAP)
   // Check if there's no valid scene cubemap
+  float3 canned_refl = env_refl;
   if (!SceneHasReflections() || _Fallback_Cubemap_Force) {
     // Set up data for fallback sampling similar to Unity's system
     half3 reflectVector = reflect(-view_dir, pbr.normal);
@@ -136,11 +139,17 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
 
     half mip = roughness * UNITY_SPECCUBE_LOD_STEPS;
     float4 envSample = UNITY_SAMPLE_TEXCUBE_LOD(_Fallback_Cubemap, reflectVector, mip);
-    return DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness * diffuse_luminance;
+    canned_refl = DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness * diffuse_luminance;
   }
 #endif
 
-  return UnityGI_prefilteredRadiance(data, roughness, reflect_dir);
+#if defined(_FALLBACK_CUBEMAP_LIMIT_METALLIC)
+  return lerp(env_refl, canned_refl, pbr.metallic);
+#elif defined(_FALLBACK_CUBEMAP)
+  return canned_refl;
+#else
+  return env_refl;
+#endif
 }
 
 float3 yumSH9(float4 n) {
