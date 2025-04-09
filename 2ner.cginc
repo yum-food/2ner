@@ -156,7 +156,7 @@ v2f vert(appdata v) {
   return o;
 }
 
-float4 frag(v2f i
+float4 frag(v2f i, uint facing : SV_IsFrontFace
 #if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING)
   , out float depth : SV_DepthLessEqual
 #endif
@@ -168,6 +168,8 @@ float4 frag(v2f i
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
 
+  i.normal *= facing ? 1 : -1;
+
   i.normal = UnityObjectToWorldNormal(i.normal);
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
@@ -178,8 +180,23 @@ float4 frag(v2f i
 
 #if defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING)
   {
-    float4 clip_pos = mul(UNITY_MATRIX_VP, float4(i.worldPos, 1.0));
-    depth = clip_pos.z / clip_pos.w;
+    [branch]
+    if (
+        false
+#if defined(_SHATTER_WAVE)
+        || any(_Shatter_Wave_Amplitude > 1E-4)
+#endif
+#if defined(_VERTEX_DOMAIN_WARPING)
+        || _Vertex_Domain_Warping_Octaves > 0.1
+#endif
+    ) {
+      float4 clip_pos = UnityObjectToClipPos(i.objPos);
+      depth = clip_pos.z / clip_pos.w;
+    } else {
+      // Perspective division takes place before the fragment shader, so we
+      // don't have to divide again.
+      depth = i.pos.z;
+    }
   }
 #endif
 

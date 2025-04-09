@@ -17,9 +17,9 @@ struct v2f {
 #if defined(_TESSELLATION)
 	float4 tpos         : INTERNALTESSPOS;
 #endif
-	float4 pos         : SV_POSITION;
+	linear noperspective centroid float4 pos         : SV_POSITION;
 	float4 uv01        : TEXCOORD0;
-	float3 objPos      : TEXCOORD1;
+	float4 objPos      : TEXCOORD1;
 	float3 worldPos    : TEXCOORD2;
 	float3 normal      : TEXCOORD3;
 	float3 tangent     : TEXCOORD4;

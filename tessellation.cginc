@@ -141,7 +141,7 @@ v2f domain(
 #endif
 
   o.pos      = UnityObjectToClipPos(o.objPos);
-  o.worldPos = mul(unity_ObjectToWorld, float4(o.objPos, 1.0)).xyz;
+  o.worldPos = mul(unity_ObjectToWorld, o.objPos).xyz;
   o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
   o.eyeVec.w = 1;
 
