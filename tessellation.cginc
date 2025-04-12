@@ -133,11 +133,16 @@ v2f domain(
       _Tessellation_Heightmap_Offset +
       _Tessellation_Heightmap_Scale * -0.5;
 #endif
-#if defined(OUTLINE_PASS)
-  o.objPos.xyz += -o.normal * height;
+#if defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = mul(transpose(-float3x3(o.normal, o.tangent, o.binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
+#elif defined(OUTLINE_PASS) && !defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = -o.normal;
+#elif !defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = mul(transpose(float3x3(o.normal, o.tangent, o.binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
 #else
-  o.objPos.xyz += o.normal * height;
+  float3 heightmap_direction = o.normal;
 #endif
+  o.objPos.xyz += heightmap_direction * height;
 #endif
 
   o.pos      = UnityObjectToClipPos(o.objPos);

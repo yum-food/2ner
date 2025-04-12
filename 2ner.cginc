@@ -13,6 +13,7 @@
 #include "interpolators.cginc"
 #include "letter_grid.cginc"
 #include "matcaps.cginc"
+#include "math.cginc"
 #include "poi.cginc"
 #include "shatter_wave.cginc"
 #include "ssfd.cginc"
@@ -174,11 +175,11 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
 
-#if defined(_SHATTER_WAVE)
-  shatterWaveFrag(i.normal, i.objPos);
+#if defined(_SHATTER_WAVE) || defined(_TESSELLATION_HEIGHTMAP)
+  calcNormalInScreenSpace(i.normal, i.objPos);
 #endif
 
-#if defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING)
+#if defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || defined(_TESSELLATION_HEIGHTMAP)
   {
     [branch]
     if (
@@ -188,6 +189,9 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #if defined(_VERTEX_DOMAIN_WARPING)
         || _Vertex_Domain_Warping_Octaves > 0.1
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP)
+        || _Tessellation_Heightmap_Scale > 1E-4
 #endif
     ) {
       float4 clip_pos = UnityObjectToClipPos(i.objPos);

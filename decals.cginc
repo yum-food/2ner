@@ -71,7 +71,6 @@ struct DecalParams {
         sd = params.sdf_invert ? 1 - sd : sd;                                                       \
         sd = (sd > params.sdf_threshold ? 1 : 0);                                                   \
         decal_albedo = params.color * sd;                                                           \
-        decal_albedo.a *= params.opacity;                                                           \
     }
 
 #define APPLY_DECAL_SEC01_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, params)          \
@@ -79,7 +78,6 @@ struct DecalParams {
     {                                                                                               \
         decal_albedo = params.mainTex.Sample(linear_repeat_s, decal_uv);                            \
         decal_albedo *= params.color;                                                               \
-        decal_albedo.a *= params.opacity;                                                           \
     }
 
 #define APPLY_DECAL_SEC02_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, params)         \
@@ -99,16 +97,18 @@ struct DecalParams {
     float decal_mask = 1;
 
 #define APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, params)   \
+    decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
     albedo = alphaBlend(albedo, decal_albedo);
 
 #define APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, params)       \
-    albedo = lerp(albedo, decal_albedo, decal_mask);
+    albedo = lerp(albedo, decal_albedo, decal_mask * params.opacity);
 
 #define APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, params)        \
     float3 decal_normal = UnpackScaleNormal(                                                        \
             params.normalTex.Sample(linear_repeat_s, decal_uv),                                     \
-            params.normal_scale * decal_albedo.a);                                                  \
-    normal_tangent = lerp(normal_tangent, decal_normal, decal_albedo.a);
+            params.normal_scale * decal_albedo.a * params.opacity);                                 \
+    normal_tangent = blendNormalsHill12(normal_tangent, decal_normal);
+    //normal_tangent = lerp(normal_tangent, decal_normal, decal_albedo.a * params.opacity);
 
 #define APPLY_DECAL_SEC05_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, params) {}
 

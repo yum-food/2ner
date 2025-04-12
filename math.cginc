@@ -16,7 +16,7 @@ float pow5(float x)
 }
 
 float wrapNoL(float NoL, float k) {
-#if 1
+#if 0
 		// https://www.iro.umontreal.ca/~derek/files/jgt_wrap_final.pdf
     return pow(max(1E-4, (NoL + k) / (1 + k)), 1 + k);
 #else
@@ -240,6 +240,10 @@ float3 rotate_vector(float3 v, float4 r)
 
 float4 get_quaternion(float3 axis_normal, float theta) {
   return float4(axis_normal * sin(theta / 2), cos(theta / 2));
+}
+
+void calcNormalInScreenSpace(inout float3 normal, float3 objPos) {
+  normal = normalize(cross(ddy(objPos), ddx(objPos)));
 }
 
 #endif  // __MATH_INC

@@ -97,10 +97,6 @@ void shatterWaveVert(inout float3 objPos, float3 objNormal, float3 objTangent) {
   objPos += objNormal * (offset.x + offset.y + offset.z + offset.w);
 }
 
-void shatterWaveFrag(inout float3 normal, float3 objPos) {
-  normal = normalize(cross(ddy(objPos), ddx(objPos)));
-}
-
 #endif  // _SHATTER_WAVE
 
 #endif  // __SHATTER_WAVE_INC

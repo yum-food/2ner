@@ -545,6 +545,10 @@ Shader "yum_food/2ner"
             _Tessellation_Heightmap("Heightmap", 2D) = "black" {}
             _Tessellation_Heightmap_Scale("Scale", Float) = 1
             _Tessellation_Heightmap_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_Direction_Control("Direction control", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)] _Tessellation_Heightmap_Direction_Control_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_Direction_Control_Vector("Direction (normal/tangent/binormal)", Vector) = (1, 0, 0)
+            [HideInInspector] m_end_Tessellation_Heightmap_Direction_Control("Direction control", Float) = 0
           [HideInInspector] m_end_Tessellation_Heightmap("Heightmap", Float) = 0
           [HideInInspector] m_start_Tessellation_Range_Factor("Range-based factor", Float) = 0
             [ThryToggle(_TESSELLATION_RANGE_FACTOR)] _Tessellation_Range_Factor_Enabled("Enable", Float) = 0
