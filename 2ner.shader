@@ -460,6 +460,20 @@ Shader "yum_food/2ner"
           //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
 
+        //ifex _3D_SDF_Enabled==0
+        [HideInInspector] m_start_3D_SDF("3D SDF", Float) = 0
+          [ThryToggle(_3D_SDF)] _3D_SDF_Enabled("Enable", Float) = 0
+          _3D_SDF_Texture("Texture", 3D) = "white" {}
+          _3D_SDF_Thresholds("Thresholds", Vector) = (0.2, 0.4, 0.6, 0.8)
+          _3D_SDF_Color_0("Color 0", Color) = (1, 0, 0, 1)
+          _3D_SDF_Color_1("Color 1", Color) = (0, 1, 0, 1)
+          _3D_SDF_Color_2("Color 2", Color) = (0, 0, 1, 1)
+          _3D_SDF_Color_3("Color 3", Color) = (1, 1, 0, 1)
+          _3D_SDF_Z("Z", Range(0, 1)) = 0
+          _3D_SDF_Z_Speed("Z speed", Float) = 0
+        [HideInInspector] m_end_3D_SDF("3D SDF", Float) = 0
+        //endex
+
         //ifex _Face_Me_Enabled==0
         [HideInInspector] m_start_Face_Me("Face me", Float) = 0
           [ThryToggle(_FACE_ME)] _Face_Me_Enabled("Enable", Float) = 0
@@ -595,10 +609,12 @@ Shader "yum_food/2ner"
         //ifex _UV_Domain_Warping_Enabled==0
         [HideInInspector] m_start_UV_Domain_Warping("UV domain warping", Float) = 0
           [ThryToggle(_UV_DOMAIN_WARPING)]_UV_Domain_Warping_Enabled("Enable", Float) = 0
+          _UV_Domain_Warping_Noise("Noise", 2D) = "black" {}
           _UV_Domain_Warping_Spatial_Strength("Spatial warping strength", Float) = 0.10
           _UV_Domain_Warping_Spatial_Scale("Spatial warping scale", Float) = 0.10
           _UV_Domain_Warping_Spatial_Octaves("Spatial warping octaves", Float) = 1.0
           _UV_Domain_Warping_Spatial_Speed("Spatial warping speed", Float) = 1.0
+          _UV_Domain_Warping_Spatial_Direction("Spatial warping direction", Vector) = (1.0, 1.0, 0.0, 0.0)
           [HideInInspector] m_end_UV_Domain_Warping("UV domain warping", Float) = 0
         //endex
 

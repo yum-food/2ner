@@ -300,10 +300,12 @@ float _Vertex_Domain_Warping_Audiolink_VU_Scale_Factor;
 #endif  // _VERTEX_DOMAIN_WARPING_AUDIOLINK
 
 #if defined(_UV_DOMAIN_WARPING)
+texture2D _UV_Domain_Warping_Noise;
 float _UV_Domain_Warping_Spatial_Strength;
 float _UV_Domain_Warping_Spatial_Scale;
 float _UV_Domain_Warping_Spatial_Octaves;
 float _UV_Domain_Warping_Spatial_Speed;
+float2 _UV_Domain_Warping_Spatial_Direction;
 #endif
 
 #if defined(_EYE_EFFECT_00)
@@ -472,5 +474,16 @@ float _Tessellation_Range_Factor_Factor_Far;
 float _Spherize_Radius;
 float _Spherize_Strength;
 #endif  // _SPHERIZE
+
+#if defined(_3D_SDF)
+texture3D _3D_SDF_Texture;
+float4 _3D_SDF_Thresholds;
+float4 _3D_SDF_Color_0;
+float4 _3D_SDF_Color_1;
+float4 _3D_SDF_Color_2;
+float4 _3D_SDF_Color_3;
+float _3D_SDF_Z;
+float _3D_SDF_Z_Speed;
+#endif  // _3D_SDF
 
 #endif  // __GLOBALS_INC

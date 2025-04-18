@@ -32,9 +32,28 @@ YumPbr GetYumPbr(v2f i) {
 
   float2 raw_uv = i.uv01.xy;
 #if defined(_UV_DOMAIN_WARPING)
-  i.uv01.xy = domainWarp2(i.uv01.xy, _UV_Domain_Warping_Spatial_Octaves,
-      _UV_Domain_Warping_Spatial_Strength, _UV_Domain_Warping_Spatial_Scale,
-      _UV_Domain_Warping_Spatial_Speed);
+  {
+    float2 warped_uv = raw_uv;
+    float amplitude = _UV_Domain_Warping_Spatial_Strength;
+    float frequency = _UV_Domain_Warping_Spatial_Scale;
+
+    float2 speed_direction = _UV_Domain_Warping_Spatial_Direction;
+    float2 time_offset = speed_direction * _Time.y * _UV_Domain_Warping_Spatial_Speed;
+
+    const float lacunarity = 2.0;
+    const float persistence = 0.5;
+
+    [loop]
+    for (uint ii = 0; ii < _UV_Domain_Warping_Spatial_Octaves; ii++) {
+      float2 noise_uv = warped_uv * frequency + time_offset;
+      float2 offset_sample = _UV_Domain_Warping_Noise.SampleLevel(trilinear_repeat_s, noise_uv, 0).rg;
+      offset_sample = (offset_sample * 2.0 - 1.0); 
+      warped_uv += offset_sample * amplitude;
+      frequency *= lacunarity;
+      amplitude *= persistence;
+    }
+    i.uv01.xy = warped_uv;
+  }
 #endif
 
 #if defined(OUTLINE_PASS)
@@ -44,6 +63,18 @@ YumPbr GetYumPbr(v2f i) {
 #else
   result.albedo = tex2D(_MainTex,
       UV_SCOFF(i, _MainTex_ST, /*which_channel=*/0)) * _Color;
+#endif
+
+#if defined(_3D_SDF)
+  {
+    float3 sdf_uv = float3(i.uv01.xy, _3D_SDF_Z + _Time.y * _3D_SDF_Z_Speed);
+    float sdf_value = _3D_SDF_Texture.SampleLevel(trilinear_repeat_s, sdf_uv, 0).r;
+    float4 is_lit = sdf_value < _3D_SDF_Thresholds;
+    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_3, is_lit.w);
+    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_2, is_lit.z);
+    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_1, is_lit.y);
+    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_0, is_lit.x);
+  }
 #endif
 
   float3 normal_tangent = UnpackScaleNormal(

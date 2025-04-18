@@ -148,6 +148,10 @@
 #pragma shader_feature_local _DECAL3_REPLACE_ALPHA
 //endex
 
+//ifex _3D_SDF_Enabled==0
+#pragma shader_feature_local _3D_SDF
+//endex
+
 //ifex _False_Color_Visualization_Enabled==0
 #pragma shader_feature_local _FALSE_COLOR_VISUALIZATION
 //endex
