@@ -132,11 +132,15 @@ v2f vert(appdata v) {
 #endif
   o.uv01.xy = v.uv0;
   o.uv01.zw = v.uv1;
+  o.uv23.xy = v.uv2;
+  o.uv23.zw = v.uv3;
 #if defined(_MIRROR_UVS_IN_MIRROR)
   [branch]
   if (isInMirror()) {
     o.uv01.x = 1.0 - o.uv01.x;
     o.uv01.z = 1.0 - o.uv01.z;
+    o.uv23.x = 1.0 - o.uv23.x;
+    o.uv23.z = 1.0 - o.uv23.z;
   }
 #endif
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);

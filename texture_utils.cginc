@@ -12,6 +12,12 @@ float2 get_uv_by_channel(v2f i, uint which_channel) {
     case 1:
       return i.uv01.zw;
       break;
+    case 2:
+      return i.uv23.xy;
+      break;
+    case 3:
+      return i.uv23.zw;
+      break;
     default:
       return 0;
       break;

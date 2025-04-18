@@ -297,7 +297,7 @@ Shader "yum_food/2ner"
             _Decal0_MainTex("Base color", 2D) = "white" {}
             _Decal0_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal0_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal0_UV_Channel("UV channel", Range(0, 1)) = 0
+            _Decal0_UV_Channel("UV channel", Range(0, 3)) = 0
             [ThryToggle(_DECAL0_TILING_MODE)] _Decal0_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL0_REPLACE_ALPHA)] _Decal0_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal0_Normal_Enabled==0
@@ -339,7 +339,7 @@ Shader "yum_food/2ner"
             _Decal1_MainTex("Base color", 2D) = "white" {}
             _Decal1_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal1_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal1_UV_Channel("UV channel", Range(0, 1)) = 0
+            _Decal1_UV_Channel("UV channel", Range(0, 3)) = 0
             [ThryToggle(_DECAL1_TILING_MODE)] _Decal1_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL1_REPLACE_ALPHA)] _Decal1_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal1_Normal_Enabled==0
@@ -381,7 +381,7 @@ Shader "yum_food/2ner"
             _Decal2_MainTex("Base color", 2D) = "white" {}
             _Decal2_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal2_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal2_UV_Channel("UV channel", Range(0, 1)) = 0
+            _Decal2_UV_Channel("UV channel", Range(0, 3)) = 0
             [ThryToggle(_DECAL2_TILING_MODE)] _Decal2_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL2_REPLACE_ALPHA)] _Decal2_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal2_Normal_Enabled==0
@@ -423,7 +423,7 @@ Shader "yum_food/2ner"
             _Decal3_MainTex("Base color", 2D) = "white" {}
             _Decal3_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal3_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal3_UV_Channel("UV channel", Range(0, 1)) = 0
+            _Decal3_UV_Channel("UV channel", Range(0, 3)) = 0
             [ThryToggle(_DECAL3_TILING_MODE)] _Decal3_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL3_REPLACE_ALPHA)] _Decal3_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal3_Normal_Enabled==0

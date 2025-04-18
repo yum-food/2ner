@@ -4,6 +4,7 @@
 #include "features.cginc"
 #include "globals.cginc"
 #include "math.cginc"
+#include "texture_utils.cginc"
 
 // Struct to hold all decal parameters
 struct DecalParams {
@@ -58,7 +59,7 @@ struct DecalParams {
         sin(params.angle * TAU), cos(params.angle * TAU)                                            \
     );                                                                                              \
                                                                                                     \
-    float2 raw_decal_uv = (params.uv_channel == 0) ? i.uv01.xy : i.uv01.zw;                         \
+    float2 raw_decal_uv = get_uv_by_channel(i, params.uv_channel);                                  \
     float2 decal_uv = (raw_decal_uv * params.mainTex_ST.xy + params.mainTex_ST.zw);                 \
     decal_uv = mul(decal_rot, decal_uv);                                                            \
     decal_uv = (params.tiling_mode == DECAL_TILING_MODE_CLAMP ? saturate(decal_uv) : decal_uv);
@@ -90,7 +91,7 @@ struct DecalParams {
 #define APPLY_DECAL_SEC02_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, params) {}
 
 #define APPLY_DECAL_SEC03_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, params)          \
-    float decal_mask = params.mask.Sample(linear_repeat_s, raw_decal_uv);                           \
+    float decal_mask = params.mask.SampleLevel(linear_repeat_s, raw_decal_uv, 0);                           \
     decal_albedo.a *= decal_mask;
 
 #define APPLY_DECAL_SEC03_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, params)         \

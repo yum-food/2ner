@@ -108,6 +108,7 @@ v2f domain(
   o.tangent  = DOMAIN_INTERP(tangent);
   o.binormal = DOMAIN_INTERP(binormal);
   o.uv01     = DOMAIN_INTERP(uv01);
+  o.uv23     = DOMAIN_INTERP(uv23);
 
 #if defined(_TESSELLATION) && defined(_SHATTER_WAVE)
 #if defined(OUTLINE_PASS)
