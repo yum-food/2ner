@@ -47,7 +47,7 @@ YumPbr GetYumPbr(v2f i) {
     for (uint ii = 0; ii < _UV_Domain_Warping_Spatial_Octaves; ii++) {
       float2 noise_uv = warped_uv * frequency + time_offset;
       float2 offset_sample = _UV_Domain_Warping_Noise.SampleLevel(trilinear_repeat_s, noise_uv, 0).rg;
-      offset_sample = (offset_sample * 2.0 - 1.0); 
+      offset_sample = (offset_sample * 2.0 - 1.0);
       warped_uv += offset_sample * amplitude;
       frequency *= lacunarity;
       amplitude *= persistence;
@@ -78,16 +78,15 @@ YumPbr GetYumPbr(v2f i) {
 #endif
 
   float3 normal_tangent = UnpackScaleNormal(
-      tex2D(_BumpMap, UV_SCOFF(i, _BumpMap_ST, /*which_channel=*/0)),
-      _BumpScale);
+      tex2D(_BumpMap, UV_SCOFF_IMPL(raw_uv, _BumpMap_ST)), _BumpScale);
 
 #if defined(_DETAIL_MAPS)
   float detail_mask = _DetailMask.SampleLevel(point_repeat_s, i.uv01.xy, 0);
   float4 detail_albedo = tex2D(_DetailAlbedoMap,
-      UV_SCOFF(i, _DetailAlbedoMap_ST, /*which_channel=*/0));
+      UV_SCOFF_IMPL(raw_uv, _DetailNormalMap_ST));
   float3 detail_normal = UnpackScaleNormal(
       tex2D(_DetailNormalMap,
-          UV_SCOFF(i, _DetailNormalMap_ST, /*which_channel=*/0)),
+          UV_SCOFF_IMPL(raw_uv, _DetailNormalMap_ST)),
       _DetailNormalMapScale);
   result.albedo = lerp(result.albedo, result.albedo * detail_albedo, detail_mask);
   //result.albedo.a *= detail_albedo.a;

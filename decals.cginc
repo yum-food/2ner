@@ -60,8 +60,9 @@ struct DecalParams {
     );                                                                                              \
                                                                                                     \
     float2 raw_decal_uv = get_uv_by_channel(i, params.uv_channel);                                  \
-    float2 decal_uv = (raw_decal_uv * params.mainTex_ST.xy + params.mainTex_ST.zw);                 \
-    decal_uv = mul(decal_rot, decal_uv);                                                            \
+    float2 decal_uv = raw_decal_uv;                                                                 \
+    decal_uv = decal_uv * params.mainTex_ST.xy + params.mainTex_ST.zw;                              \
+    decal_uv = mul(decal_rot, decal_uv - 0.5) + 0.5;                                                \
     decal_uv = (params.tiling_mode == DECAL_TILING_MODE_CLAMP ? saturate(decal_uv) : decal_uv);
 
 #define APPLY_DECAL_SEC01_SDF_ON(i, albedo, normal_tangent, metallic, smoothness, params)           \

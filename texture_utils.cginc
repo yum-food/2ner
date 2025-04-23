@@ -24,7 +24,9 @@ float2 get_uv_by_channel(v2f i, uint which_channel) {
   }
 }
 
-#define UV_SCOFF(i, tex_st, which_channel) get_uv_by_channel(i, round(which_channel)) * (tex_st).xy + (tex_st).zw
+#define UV_SCOFF_IMPL(uv, tex_st) (uv) * (tex_st).xy + (tex_st).zw
+
+#define UV_SCOFF(i, tex_st, which_channel) UV_SCOFF_IMPL(get_uv_by_channel(i, round(which_channel)), tex_st)
 
 #endif  // __TEXTURE_UTILS_INC
 
