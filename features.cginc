@@ -119,6 +119,7 @@
 #pragma shader_feature_local _DECAL0_MASK
 #pragma shader_feature_local _DECAL0_TILING_MODE
 #pragma shader_feature_local _DECAL0_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL0_CMYK_WARPING_PLANES
 //endex
 //ifex _Decal1_Enabled==0
 #pragma shader_feature_local _DECAL1
@@ -128,6 +129,7 @@
 #pragma shader_feature_local _DECAL1_MASK
 #pragma shader_feature_local _DECAL1_TILING_MODE
 #pragma shader_feature_local _DECAL1_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL1_CMYK_WARPING_PLANES
 //endex
 //ifex _Decal2_Enabled==0
 #pragma shader_feature_local _DECAL2
@@ -137,6 +139,7 @@
 #pragma shader_feature_local _DECAL2_MASK
 #pragma shader_feature_local _DECAL2_TILING_MODE
 #pragma shader_feature_local _DECAL2_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL2_CMYK_WARPING_PLANES
 //endex
 //ifex _Decal3_Enabled==0
 #pragma shader_feature_local _DECAL3
@@ -146,6 +149,7 @@
 #pragma shader_feature_local _DECAL3_MASK
 #pragma shader_feature_local _DECAL3_TILING_MODE
 #pragma shader_feature_local _DECAL3_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL3_CMYK_WARPING_PLANES
 //endex
 
 //ifex _3D_SDF_Enabled==0

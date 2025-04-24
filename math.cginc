@@ -246,4 +246,41 @@ void calcNormalInScreenSpace(inout float3 normal, float3 objPos) {
   normal = normalize(cross(ddy(objPos), ddx(objPos)));
 }
 
+// Formulae from here: https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
+float4 rgbToCmyk(float3 rgb) {
+  float4 cmyk;
+  cmyk[3] = 1 - max(rgb.r, max(rgb.g, rgb.b));
+  cmyk[0] = (1 - rgb.r - cmyk[3]) / (1 - cmyk[3]);
+  cmyk[1] = (1 - rgb.g - cmyk[3]) / (1 - cmyk[3]);
+  cmyk[2] = (1 - rgb.b - cmyk[3]) / (1 - cmyk[3]);
+  return cmyk;
+}
+
+float rgbToCmyk_C(float3 rgb) {
+  float k = 1 - max(rgb.r, max(rgb.g, rgb.b));
+  float c = (1 - rgb.r - k) / (1 - k);
+  return c;
+}
+float rgbToCmyk_M(float3 rgb) {
+  float k = 1 - max(rgb.r, max(rgb.g, rgb.b));
+  float m = (1 - rgb.g - k) / (1 - k);
+  return m;
+}
+float rgbToCmyk_Y(float3 rgb) {
+  float k = 1 - max(rgb.r, max(rgb.g, rgb.b));
+  float y = (1 - rgb.b - k) / (1 - k);
+  return y;
+}
+float rgbToCmyk_K(float3 rgb) {
+  float k = 1 - max(rgb.r, max(rgb.g, rgb.b));
+  return k;
+}
+
+float3 cmykToRgb(float4 cmyk) {
+  return float3(
+    (1 - cmyk[0]) * (1 - cmyk[3]),
+    (1 - cmyk[1]) * (1 - cmyk[3]),
+    (1 - cmyk[2]) * (1 - cmyk[3]));
+}
+
 #endif  // __MATH_INC

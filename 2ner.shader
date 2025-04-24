@@ -322,7 +322,16 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal0_SDF_Invert("SDF invert", Float) = 0
               _Decal0_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal0_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal0_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal0_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL0_CMYK_WARPING_PLANES)] _Decal0_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal0_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal0_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal0_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal0_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal0_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
             [HideInInspector] m_end_Decal0_SDF("SDF", Float) = 0
+            //endex
             //endex
             //ifex _Decal0_Mask_Enabled==0
             [HideInInspector] m_start_Decal0_Mask("Mask", Float) = 0
@@ -364,7 +373,16 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal1_SDF_Invert("SDF invert", Float) = 0
               _Decal1_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal1_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal1_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal1_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL1_CMYK_WARPING_PLANES)] _Decal1_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal1_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal1_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal1_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal1_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal1_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
             [HideInInspector] m_end_Decal1_SDF("SDF", Float) = 0
+            //endex
             //endex
             //ifex _Decal1_Mask_Enabled==0
             [HideInInspector] m_start_Decal1_Mask("Mask", Float) = 0
@@ -406,7 +424,16 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal2_SDF_Invert("SDF invert", Float) = 0
               _Decal2_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal2_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal2_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal2_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL2_CMYK_WARPING_PLANES)] _Decal2_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal2_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal2_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal2_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal2_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal2_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
             [HideInInspector] m_end_Decal2_SDF("SDF", Float) = 0
+            //endex
             //endex
             //ifex _Decal2_Mask_Enabled==0
             [HideInInspector] m_start_Decal2_Mask("Mask", Float) = 0
@@ -448,7 +475,16 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal3_SDF_Invert("SDF invert", Float) = 0
               _Decal3_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal3_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal3_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal3_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL3_CMYK_WARPING_PLANES)] _Decal3_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal3_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal3_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal3_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal3_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal3_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
             [HideInInspector] m_end_Decal3_SDF("SDF", Float) = 0
+            //endex
             //endex
             //ifex _Decal3_Mask_Enabled==0
             [HideInInspector] m_start_Decal3_Mask("Mask", Float) = 0

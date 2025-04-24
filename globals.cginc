@@ -268,7 +268,12 @@ float _Decal##n##_SDF_Px_Range; \
 \
 float _Decal##n##_Mask_Enabled; \
 texture2D _Decal##n##_Mask; \
-float4 _Decal##n##_Mask_ST;
+float4 _Decal##n##_Mask_ST; \
+\
+texture2D _Decal##n##_CMYK_Warping_Planes_Noise; \
+float _Decal##n##_CMYK_Warping_Planes_Strength; \
+float _Decal##n##_CMYK_Warping_Planes_Scale; \
+float _Decal##n##_CMYK_Warping_Planes_Speed;
 
 #if defined(_DECAL0)
 DECLARE_DECAL_VARIABLES(0)
