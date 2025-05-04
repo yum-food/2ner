@@ -594,6 +594,155 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Letter_Grid("Letter grid", Float) = 0
         //endex
 
+        //ifex _Unigram_Letter_Grid_Enabled==0
+        [HideInInspector] m_start_Unigram_Letter_Grid("Unigram letter grid", Float) = 0
+          [ThryToggle(_UNIGRAM_LETTER_GRID)] _Unigram_Letter_Grid_Enabled("Enable", Float) = 0
+          _Unigram_Letter_Grid_Glyphs("Glyph texture", 2D) = "black" {}
+          _Unigram_Letter_Grid_LUT("Unigram tokenizer LUT", 2D) = "black" {}
+          _Unigram_Letter_Grid_Tex_Res_X("Glyph X resolution", Float) = 16
+          _Unigram_Letter_Grid_Tex_Res_Y("Glyph Y resolution", Float) = 8
+          _Unigram_Letter_Grid_Res_X("Cell X resolution", Range(1, 4)) = 1
+          _Unigram_Letter_Grid_Res_Y("Cell Y resolution", Range(1, 4)) = 1
+          _Unigram_Letter_Grid_UV_Scale_Offset("UV scale/offset", Vector) = (1, 1, 0, 0)
+          _Unigram_Letter_Grid_Padding("Padding", Float) = 0.02
+          _Unigram_Letter_Grid_Screen_Px_Range("Screen px range (from msdfgen)", Float) = 10
+          _Unigram_Letter_Grid_Min_Screen_Px_Range("Minimum screen px range", Float) = 1
+          _Unigram_Letter_Grid_Blurriness("Blurriness", Float) = 0.5
+          _Unigram_Letter_Grid_Alpha_Threshold("Alpha threshold", Range(0, 1)) = 0.5
+
+          // We compose the addressable space into blocks of 2-byte cells.
+          // Each cell contains a 16-bit token id.
+          // Each block contains 5 cells.
+          // There are a total of 40 blocks.
+          // This gives us a total of 200 cells. Since each cell is, on
+          // average, 4.8 characters (according to test), this gives an
+          // addressable space of 960 characters. Sending one block at 3 Hz
+          // means that it will take a total of 13.3 seconds to fill the entire
+          // space.
+          _Unigram_Letter_Grid_Block00_Visual_Pointer("Block 00 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block01_Visual_Pointer("Block 01 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block02_Visual_Pointer("Block 02 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block03_Visual_Pointer("Block 03 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block04_Visual_Pointer("Block 04 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block05_Visual_Pointer("Block 05 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block06_Visual_Pointer("Block 06 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block07_Visual_Pointer("Block 07 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block08_Visual_Pointer("Block 08 visual pointer", Float) = 0
+          _Unigram_Letter_Grid_Block09_Visual_Pointer("Block 09 visual pointer", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block00_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block01_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block02_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block03_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block04_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block05_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block06_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block07_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block08_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+          _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00("Block 00, Datum 00, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01("Block 00, Datum 00, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00("Block 00, Datum 01, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01("Block 00, Datum 01, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00("Block 00, Datum 02, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01("Block 00, Datum 02, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00("Block 00, Datum 03, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01("Block 00, Datum 03, Byte 01", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00("Block 00, Datum 04, Byte 00", Float) = 0
+          _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01("Block 00, Datum 04, Byte 01", Float) = 0
+
+        [HideInInspector] m_end_Unigram_Letter_Grid("Unigram letter grid", Float) = 0
+        //endex
+
         //ifex _Shatter_Wave_Enabled==0
         [HideInInspector] m_start_Shatter_Wave("Shatter wave", Float) = 0
           [ThryToggle(_SHATTER_WAVE)] _Shatter_Wave_Enabled("Enable", Float) = 0

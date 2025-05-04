@@ -18,6 +18,7 @@
 #include "shatter_wave.cginc"
 #include "ssfd.cginc"
 #include "tessellation.cginc"
+#include "unigram_letter_grid.cginc"
 #include "vertex_domain_warping.cginc"
 #include "yum_brdf.cginc"
 #include "yum_pbr.cginc"
@@ -247,6 +248,16 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   pbr.roughness = lerp(pbr.roughness, letter_grid_output.roughness, letter_grid_output.albedo.a);
 #endif
 
+#if defined(_UNIGRAM_LETTER_GRID)
+  UnigramLetterGridOutput unigram_letter_grid_output = UnigramLetterGrid(i);
+  pbr.albedo.rgb = lerp(pbr.albedo.rgb, unigram_letter_grid_output.albedo,
+      unigram_letter_grid_output.albedo.a);
+  pbr.metallic = lerp(pbr.metallic, unigram_letter_grid_output.metallic,
+      unigram_letter_grid_output.albedo.a);
+  pbr.roughness = lerp(pbr.roughness, unigram_letter_grid_output.roughness,
+      unigram_letter_grid_output.albedo.a);
+#endif
+
   [branch]
   if (_Mode == 1) {
     clip(pbr.albedo.a - _Clip);
@@ -295,6 +306,9 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #if defined(_LETTER_GRID)
   lit.rgb += letter_grid_output.emission * letter_grid_output.albedo.a;
+#endif
+#if defined(_UNIGRAM_LETTER_GRID)
+  lit.rgb += unigram_letter_grid_output.emission * unigram_letter_grid_output.albedo.a;
 #endif
 
   UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);

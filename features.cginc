@@ -216,6 +216,10 @@
 #pragma shader_feature_local _LETTER_GRID
 //endex
 
+//ifex _Unigram_Letter_Grid_Enabled==0
+#pragma shader_feature_local _UNIGRAM_LETTER_GRID
+//endex
+
 //ifex _Shatter_Wave_Enabled==0
 #pragma shader_feature_local _SHATTER_WAVE
 //endex
