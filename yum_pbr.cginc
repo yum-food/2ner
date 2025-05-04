@@ -67,13 +67,17 @@ YumPbr GetYumPbr(v2f i) {
 
 #if defined(_3D_SDF)
   {
-    float3 sdf_uv = float3(i.uv01.xy, _3D_SDF_Z + _Time.y * _3D_SDF_Z_Speed);
+    float2 sdf_uv_raw = get_uv_by_channel(i, _3D_SDF_UV_Channel);
+    float3 sdf_uv = float3(sdf_uv_raw, _3D_SDF_Z + _Time.y * _3D_SDF_Z_Speed);
+    sdf_uv.xy = saturate((sdf_uv.xy - (_3D_SDF_ST.zw + 0.5)) * _3D_SDF_ST.xy + (_3D_SDF_ST.zw + 0.5));
     float sdf_value = _3D_SDF_Texture.SampleLevel(trilinear_repeat_s, sdf_uv, 0).r;
-    float4 is_lit = sdf_value < _3D_SDF_Thresholds;
-    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_3, is_lit.w);
-    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_2, is_lit.z);
-    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_1, is_lit.y);
-    result.albedo.rgb = lerp(result.albedo.rgb, _3D_SDF_Color_0, is_lit.x);
+    float eps = 1E-4;
+    float4 is_lit = sdf_value < _3D_SDF_Thresholds && sdf_uv.x > eps && sdf_uv.x < 1 - eps && sdf_uv.y > eps && sdf_uv.y < 1 - eps;
+    float4 skin_albedo = result.albedo;
+    result.albedo.rgb = lerp(result.albedo.rgb, lerp(skin_albedo.rgb, _3D_SDF_Color_3.rgb, _3D_SDF_Color_3.a), is_lit.w);
+    result.albedo.rgb = lerp(result.albedo.rgb, lerp(skin_albedo.rgb, _3D_SDF_Color_2.rgb, _3D_SDF_Color_2.a), is_lit.z);
+    result.albedo.rgb = lerp(result.albedo.rgb, lerp(skin_albedo.rgb, _3D_SDF_Color_1.rgb, _3D_SDF_Color_1.a), is_lit.y);
+    result.albedo.rgb = lerp(result.albedo.rgb, lerp(skin_albedo.rgb, _3D_SDF_Color_0.rgb, _3D_SDF_Color_0.a), is_lit.x);
   }
 #endif
 

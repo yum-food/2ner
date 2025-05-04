@@ -273,8 +273,13 @@ float4 _Decal##n##_Mask_ST; \
 texture2D _Decal##n##_CMYK_Warping_Planes_Noise; \
 float _Decal##n##_CMYK_Warping_Planes_Strength; \
 float _Decal##n##_CMYK_Warping_Planes_Scale; \
-float _Decal##n##_CMYK_Warping_Planes_Speed;
-
+float _Decal##n##_CMYK_Warping_Planes_Speed; \
+\
+texture2D _Decal##n##_Domain_Warping_Noise; \
+float _Decal##n##_Domain_Warping_Octaves; \
+float _Decal##n##_Domain_Warping_Strength; \
+float _Decal##n##_Domain_Warping_Scale; \
+float _Decal##n##_Domain_Warping_Speed;
 #if defined(_DECAL0)
 DECLARE_DECAL_VARIABLES(0)
 #endif
@@ -482,6 +487,8 @@ float _Spherize_Strength;
 
 #if defined(_3D_SDF)
 texture3D _3D_SDF_Texture;
+float4 _3D_SDF_ST;
+float _3D_SDF_UV_Channel;
 float4 _3D_SDF_Thresholds;
 float4 _3D_SDF_Color_0;
 float4 _3D_SDF_Color_1;

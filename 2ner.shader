@@ -315,6 +315,16 @@ Shader "yum_food/2ner"
               _Decal0_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal0_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal0_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal0_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL0_DOMAIN_WARPING)] _Decal0_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal0_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal0_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal0_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal0_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal0_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal0_Domain_Warping("Domain warping", Float) = 0
+            //endex
             //ifex _Decal0_SDF_Enabled==0
             [HideInInspector] m_start_Decal0_SDF("SDF mode", Float) = 0
               [ThryToggle(_DECAL0_SDF)] _Decal0_SDF_Enabled("Enable", Float) = 0
@@ -365,6 +375,16 @@ Shader "yum_food/2ner"
               _Decal1_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal1_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal1_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal1_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal1_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL1_DOMAIN_WARPING)] _Decal1_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal1_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal1_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal1_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal1_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal1_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal1_Domain_Warping("Domain warping", Float) = 0
             //endex
             //ifex _Decal1_SDF_Enabled==0
             [HideInInspector] m_start_Decal1_SDF("SDF mode", Float) = 0
@@ -417,6 +437,16 @@ Shader "yum_food/2ner"
               _Decal2_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal2_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal2_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal2_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL2_DOMAIN_WARPING)] _Decal2_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal2_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal2_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal2_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal2_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal2_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal2_Domain_Warping("Domain warping", Float) = 0
+            //endex
             //ifex _Decal2_SDF_Enabled==0
             [HideInInspector] m_start_Decal2_SDF("SDF mode", Float) = 0
               [ThryToggle(_DECAL2_SDF)] _Decal2_SDF_Enabled("Enable", Float) = 0
@@ -468,6 +498,16 @@ Shader "yum_food/2ner"
               _Decal3_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal3_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal3_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal3_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL3_DOMAIN_WARPING)] _Decal3_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal3_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal3_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal3_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal3_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal3_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal3_Domain_Warping("Domain warping", Float) = 0
+            //endex
             //ifex _Decal3_SDF_Enabled==0
             [HideInInspector] m_start_Decal3_SDF("SDF mode", Float) = 0
               [ThryToggle(_DECAL3_SDF)] _Decal3_SDF_Enabled("Enable", Float) = 0
@@ -500,6 +540,8 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_3D_SDF("3D SDF", Float) = 0
           [ThryToggle(_3D_SDF)] _3D_SDF_Enabled("Enable", Float) = 0
           _3D_SDF_Texture("Texture", 3D) = "white" {}
+          _3D_SDF_ST("Scale and offset", Vector) = (1, 1, 0, 0)
+          _3D_SDF_UV_Channel("UV channel", Range(0, 3)) = 0
           _3D_SDF_Thresholds("Thresholds", Vector) = (0.2, 0.4, 0.6, 0.8)
           _3D_SDF_Color_0("Color 0", Color) = (1, 0, 0, 1)
           _3D_SDF_Color_1("Color 1", Color) = (0, 1, 0, 1)

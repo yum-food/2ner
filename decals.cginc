@@ -16,18 +16,19 @@ struct DecalParams {
     int tiling_mode;
     int alpha_blend_mode;
     Texture2D mainTex;
-    bool sdf_enabled;
     bool sdf_invert;
     float sdf_threshold;
-    bool mask_enabled;
     Texture2D mask;
-    bool normal_enabled;
     Texture2D normalTex;
     float normal_scale;
-    bool reflections_enabled;
     Texture2D metallicGlossMap;
     float metallic_value;
     float smoothness_value;
+    Texture2D domain_warping_noise;
+    float domain_warping_octaves;
+    float domain_warping_strength;
+    float domain_warping_scale;
+    float domain_warping_speed;
     Texture2D cmyk_warping_planes_noise;
     float cmyk_warping_planes_strength;
     float cmyk_warping_planes_scale;
@@ -44,22 +45,45 @@ struct DecalParams {
     params.tiling_mode = prefix##Tiling_Mode; \
     params.alpha_blend_mode = prefix##Alpha_Blend_Mode; \
     params.mainTex = prefix##MainTex; \
-    params.sdf_enabled = prefix##SDF_Enabled; \
     params.sdf_invert = prefix##SDF_Invert; \
     params.sdf_threshold = prefix##SDF_Threshold; \
-    params.mask_enabled = prefix##Mask_Enabled; \
     params.mask = prefix##Mask; \
-    params.normal_enabled = prefix##Normal_Enabled; \
     params.normalTex = prefix##Normal; \
     params.normal_scale = prefix##Normal_Scale; \
-    params.reflections_enabled = prefix##Reflections_Enabled; \
     params.metallicGlossMap = prefix##MetallicGlossMap; \
     params.metallic_value = prefix##Metallic; \
     params.smoothness_value = prefix##Smoothness; \
+    params.domain_warping_noise = prefix##Domain_Warping_Noise; \
+    params.domain_warping_octaves = prefix##Domain_Warping_Octaves; \
+    params.domain_warping_strength = prefix##Domain_Warping_Strength; \
+    params.domain_warping_scale = prefix##Domain_Warping_Scale; \
+    params.domain_warping_speed = prefix##Domain_Warping_Speed; \
     params.cmyk_warping_planes_noise = prefix##CMYK_Warping_Planes_Noise; \
     params.cmyk_warping_planes_strength = prefix##CMYK_Warping_Planes_Strength; \
     params.cmyk_warping_planes_scale = prefix##CMYK_Warping_Planes_Scale; \
     params.cmyk_warping_planes_speed = prefix##CMYK_Warping_Planes_Speed;
+
+float2 applyDomainWarping(DecalParams params, float2 uv) {
+    float2 warped_uv = uv;
+    float amplitude = 1.0;
+    float frequency = params.domain_warping_scale;
+    float2 total_offset = float2(0.0, 0.0);
+
+    float2 time_vec = float2(-0.83, 0.97) * _Time.y * params.domain_warping_speed;
+
+    [loop]
+    for (uint ii = 0; ii < params.domain_warping_octaves; ii++) {
+        float2 noise_uv = warped_uv * frequency + time_vec * frequency;
+        float2 noise_sample = params.domain_warping_noise.SampleLevel(trilinear_repeat_s, noise_uv, 0);
+        float2 noise_offset = (noise_sample.xy * 2.0 - 1.0);
+        total_offset += noise_offset * amplitude;
+        frequency *= 2.0;
+        amplitude *= 0.5;
+    }
+
+    warped_uv = uv + total_offset * params.domain_warping_strength;
+    return warped_uv;
+}
 
 float4 getDecalColor(DecalParams params, float2 uv) {
     float4 sdf_sample = params.mainTex.SampleLevel(linear_repeat_s, uv, 0);
@@ -104,7 +128,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
         rgbToCmyk_K(decal_color3.rgb));
 
     float3 final_rgb = saturate(cmykToRgb(final_cmyk));
-    return float4(final_rgb, decal_color0.a + decal_color1.a + decal_color2.a + decal_color3.a);
+    return float4(final_rgb, saturate(decal_color0.a + decal_color1.a + decal_color2.a + decal_color3.a));
 }
 
 #define APPLY_DECAL_SEC00_GENERIC(i, albedo, normal_tangent, metallic, smoothness, params)          \
@@ -118,6 +142,11 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
     decal_uv = decal_uv * params.mainTex_ST.xy + params.mainTex_ST.zw;                              \
     decal_uv = mul(decal_rot, decal_uv - 0.5) + 0.5;                                                \
     decal_uv = (params.tiling_mode == DECAL_TILING_MODE_CLAMP ? saturate(decal_uv) : decal_uv);
+
+#define APPLY_DECAL_SEC00B_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, params) \
+    decal_uv = applyDomainWarping(params, decal_uv);
+
+#define APPLY_DECAL_SEC00B_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, params) {}
 
 #define APPLY_DECAL_SEC01_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, params)  \
     float4 decal_albedo = getCmykWarpingPlanesColor(params, decal_uv);
@@ -177,6 +206,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
     {
         INIT_DECAL_PARAMS(decal, _Decal0_);
         APPLY_DECAL_SEC00_GENERIC(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #if defined(_DECAL0_DOMAIN_WARPING)
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL0_SDF) && defined(_DECAL0_CMYK_WARPING_PLANES)
         APPLY_DECAL_SEC01_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #elif defined(_DECAL0_SDF)
@@ -215,6 +249,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
     {
         INIT_DECAL_PARAMS(decal, _Decal1_);
         APPLY_DECAL_SEC00_GENERIC(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #if defined(_DECAL1_DOMAIN_WARPING)
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL1_SDF) && defined(_DECAL1_CMYK_WARPING_PLANES)
         APPLY_DECAL_SEC01_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #elif defined(_DECAL1_SDF)
@@ -253,6 +292,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
     {
         INIT_DECAL_PARAMS(decal, _Decal2_);
         APPLY_DECAL_SEC00_GENERIC(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #if defined(_DECAL2_DOMAIN_WARPING)
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL2_SDF) && defined(_DECAL2_CMYK_WARPING_PLANES)
         APPLY_DECAL_SEC01_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #elif defined(_DECAL2_SDF)
@@ -291,6 +335,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
     {
         INIT_DECAL_PARAMS(decal, _Decal3_);
         APPLY_DECAL_SEC00_GENERIC(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #if defined(_DECAL3_DOMAIN_WARPING)
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #else
+        APPLY_DECAL_SEC00B_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #endif
         #if defined(_DECAL3_SDF) && defined(_DECAL3_CMYK_WARPING_PLANES)
         APPLY_DECAL_SEC01_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, decal);
         #elif defined(_DECAL3_SDF)
