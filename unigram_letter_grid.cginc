@@ -75,7 +75,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00_Animated : packoffset(c2);
   float _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00_Animated : packoffset(c3);
   float _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00_Animated : packoffset(c4);
-
   float _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00_Animated : packoffset(c5);
   float _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00_Animated : packoffset(c6);
   float _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00_Animated : packoffset(c7);
@@ -87,7 +86,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00_Animated : packoffset(c12);
   float _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00_Animated : packoffset(c13);
   float _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00_Animated : packoffset(c14);
-
   float _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00_Animated : packoffset(c15);
   float _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00_Animated : packoffset(c16);
   float _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00_Animated : packoffset(c17);
@@ -99,7 +97,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00_Animated : packoffset(c22);
   float _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00_Animated : packoffset(c23);
   float _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00_Animated : packoffset(c24);
-
   float _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00_Animated : packoffset(c25);
   float _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00_Animated : packoffset(c26);
   float _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00_Animated : packoffset(c27);
@@ -111,7 +108,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00_Animated : packoffset(c32);
   float _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00_Animated : packoffset(c33);
   float _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00_Animated : packoffset(c34);
-
   float _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00_Animated : packoffset(c35);
   float _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00_Animated : packoffset(c36);
   float _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00_Animated : packoffset(c37);
@@ -123,7 +119,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00_Animated : packoffset(c42);
   float _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00_Animated : packoffset(c43);
   float _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00_Animated : packoffset(c44);
-
   float _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00_Animated : packoffset(c45);
   float _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00_Animated : packoffset(c46);
   float _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00_Animated : packoffset(c47);
@@ -135,7 +130,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block10_Datum02_Byte00_Animated : packoffset(c52);
   float _Unigram_Letter_Grid_Data_Block10_Datum03_Byte00_Animated : packoffset(c53);
   float _Unigram_Letter_Grid_Data_Block10_Datum04_Byte00_Animated : packoffset(c54);
-
   float _Unigram_Letter_Grid_Data_Block11_Datum00_Byte00_Animated : packoffset(c55);
   float _Unigram_Letter_Grid_Data_Block11_Datum01_Byte00_Animated : packoffset(c56);
   float _Unigram_Letter_Grid_Data_Block11_Datum02_Byte00_Animated : packoffset(c57);
@@ -147,7 +141,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block12_Datum02_Byte00_Animated : packoffset(c62);
   float _Unigram_Letter_Grid_Data_Block12_Datum03_Byte00_Animated : packoffset(c63);
   float _Unigram_Letter_Grid_Data_Block12_Datum04_Byte00_Animated : packoffset(c64);
-
   float _Unigram_Letter_Grid_Data_Block13_Datum00_Byte00_Animated : packoffset(c65);
   float _Unigram_Letter_Grid_Data_Block13_Datum01_Byte00_Animated : packoffset(c66);
   float _Unigram_Letter_Grid_Data_Block13_Datum02_Byte00_Animated : packoffset(c67);
@@ -159,7 +152,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block14_Datum02_Byte00_Animated : packoffset(c72);
   float _Unigram_Letter_Grid_Data_Block14_Datum03_Byte00_Animated : packoffset(c73);
   float _Unigram_Letter_Grid_Data_Block14_Datum04_Byte00_Animated : packoffset(c74);
-
   float _Unigram_Letter_Grid_Data_Block15_Datum00_Byte00_Animated : packoffset(c75);
   float _Unigram_Letter_Grid_Data_Block15_Datum01_Byte00_Animated : packoffset(c76);
   float _Unigram_Letter_Grid_Data_Block15_Datum02_Byte00_Animated : packoffset(c77);
@@ -171,7 +163,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block16_Datum02_Byte00_Animated : packoffset(c82);
   float _Unigram_Letter_Grid_Data_Block16_Datum03_Byte00_Animated : packoffset(c83);
   float _Unigram_Letter_Grid_Data_Block16_Datum04_Byte00_Animated : packoffset(c84);
-
   float _Unigram_Letter_Grid_Data_Block17_Datum00_Byte00_Animated : packoffset(c85);
   float _Unigram_Letter_Grid_Data_Block17_Datum01_Byte00_Animated : packoffset(c86);
   float _Unigram_Letter_Grid_Data_Block17_Datum02_Byte00_Animated : packoffset(c87);
@@ -183,7 +174,6 @@ cbuffer UnigramLetterGridDataByte00_Animated
   float _Unigram_Letter_Grid_Data_Block18_Datum02_Byte00_Animated : packoffset(c92);
   float _Unigram_Letter_Grid_Data_Block18_Datum03_Byte00_Animated : packoffset(c93);
   float _Unigram_Letter_Grid_Data_Block18_Datum04_Byte00_Animated : packoffset(c94);
-
   float _Unigram_Letter_Grid_Data_Block19_Datum00_Byte00_Animated : packoffset(c95);
   float _Unigram_Letter_Grid_Data_Block19_Datum01_Byte00_Animated : packoffset(c96);
   float _Unigram_Letter_Grid_Data_Block19_Datum02_Byte00_Animated : packoffset(c97);
@@ -202,7 +192,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01_Animated : packoffset(c2);
   float _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01_Animated : packoffset(c3);
   float _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01_Animated : packoffset(c4);
-
   float _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01_Animated : packoffset(c5);
   float _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01_Animated : packoffset(c6);
   float _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01_Animated : packoffset(c7);
@@ -214,7 +203,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01_Animated : packoffset(c12);
   float _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01_Animated : packoffset(c13);
   float _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01_Animated : packoffset(c14);
-
   float _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01_Animated : packoffset(c15);
   float _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01_Animated : packoffset(c16);
   float _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01_Animated : packoffset(c17);
@@ -226,7 +214,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01_Animated : packoffset(c22);
   float _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01_Animated : packoffset(c23);
   float _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01_Animated : packoffset(c24);
-
   float _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01_Animated : packoffset(c25);
   float _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01_Animated : packoffset(c26);
   float _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01_Animated : packoffset(c27);
@@ -238,7 +225,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01_Animated : packoffset(c32);
   float _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01_Animated : packoffset(c33);
   float _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01_Animated : packoffset(c34);
-
   float _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01_Animated : packoffset(c35);
   float _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01_Animated : packoffset(c36);
   float _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01_Animated : packoffset(c37);
@@ -250,7 +236,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01_Animated : packoffset(c42);
   float _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01_Animated : packoffset(c43);
   float _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01_Animated : packoffset(c44);
-
   float _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01_Animated : packoffset(c45);
   float _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01_Animated : packoffset(c46);
   float _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01_Animated : packoffset(c47);
@@ -262,7 +247,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block10_Datum02_Byte01_Animated : packoffset(c52);
   float _Unigram_Letter_Grid_Data_Block10_Datum03_Byte01_Animated : packoffset(c53);
   float _Unigram_Letter_Grid_Data_Block10_Datum04_Byte01_Animated : packoffset(c54);
-
   float _Unigram_Letter_Grid_Data_Block11_Datum00_Byte01_Animated : packoffset(c55);
   float _Unigram_Letter_Grid_Data_Block11_Datum01_Byte01_Animated : packoffset(c56);
   float _Unigram_Letter_Grid_Data_Block11_Datum02_Byte01_Animated : packoffset(c57);
@@ -274,7 +258,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block12_Datum02_Byte01_Animated : packoffset(c62);
   float _Unigram_Letter_Grid_Data_Block12_Datum03_Byte01_Animated : packoffset(c63);
   float _Unigram_Letter_Grid_Data_Block12_Datum04_Byte01_Animated : packoffset(c64);
-
   float _Unigram_Letter_Grid_Data_Block13_Datum00_Byte01_Animated : packoffset(c65);
   float _Unigram_Letter_Grid_Data_Block13_Datum01_Byte01_Animated : packoffset(c66);
   float _Unigram_Letter_Grid_Data_Block13_Datum02_Byte01_Animated : packoffset(c67);
@@ -286,7 +269,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block14_Datum02_Byte01_Animated : packoffset(c72);
   float _Unigram_Letter_Grid_Data_Block14_Datum03_Byte01_Animated : packoffset(c73);
   float _Unigram_Letter_Grid_Data_Block14_Datum04_Byte01_Animated : packoffset(c74);
-
   float _Unigram_Letter_Grid_Data_Block15_Datum00_Byte01_Animated : packoffset(c75);
   float _Unigram_Letter_Grid_Data_Block15_Datum01_Byte01_Animated : packoffset(c76);
   float _Unigram_Letter_Grid_Data_Block15_Datum02_Byte01_Animated : packoffset(c77);
@@ -298,7 +280,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block16_Datum02_Byte01_Animated : packoffset(c82);
   float _Unigram_Letter_Grid_Data_Block16_Datum03_Byte01_Animated : packoffset(c83);
   float _Unigram_Letter_Grid_Data_Block16_Datum04_Byte01_Animated : packoffset(c84);
-
   float _Unigram_Letter_Grid_Data_Block17_Datum00_Byte01_Animated : packoffset(c85);
   float _Unigram_Letter_Grid_Data_Block17_Datum01_Byte01_Animated : packoffset(c86);
   float _Unigram_Letter_Grid_Data_Block17_Datum02_Byte01_Animated : packoffset(c87);
@@ -310,7 +291,6 @@ cbuffer UnigramLetterGridDataByte01_Animated
   float _Unigram_Letter_Grid_Data_Block18_Datum02_Byte01_Animated : packoffset(c92);
   float _Unigram_Letter_Grid_Data_Block18_Datum03_Byte01_Animated : packoffset(c93);
   float _Unigram_Letter_Grid_Data_Block18_Datum04_Byte01_Animated : packoffset(c94);
-
   float _Unigram_Letter_Grid_Data_Block19_Datum00_Byte01_Animated : packoffset(c95);
   float _Unigram_Letter_Grid_Data_Block19_Datum01_Byte01_Animated : packoffset(c96);
   float _Unigram_Letter_Grid_Data_Block19_Datum02_Byte01_Animated : packoffset(c97);
@@ -576,10 +556,20 @@ void GetTokens(uint screen_ptr,
   uint which_block = 0;
   [loop]
   for (uint i = 1; i < ULG_NUM_BLOCKS; i++) {
-    if (screen_ptr < floor(_Unigram_Letter_Visual_Pointers[i])) {
-      break;
+    uint next_ptr = floor(_Unigram_Letter_Visual_Pointers[i]);
+    if (block_ptr < next_ptr) {
+      // Case 1: visual pointers are increasing
+      if (screen_ptr >= block_ptr && screen_ptr < next_ptr) {
+        break;
+      }
+    } else {
+      // Case 2: visual pointer went backwards. This happens when we page long
+      // data, wrapping around finite number of blocks.
+      if (screen_ptr >= block_ptr || screen_ptr < next_ptr) {
+        break;
+      }
     }
-    block_ptr = floor(_Unigram_Letter_Visual_Pointers[i]);
+    block_ptr = next_ptr;
     which_block = i;
   }
   GetBlock(which_block, tokens);
@@ -647,24 +637,38 @@ uint GetChar(uint screen_ptr) {
   // The current token is rendered starting at this location.
   // In other words, it covers [token_ptr, token_ptr + token_length)
   uint token_ptr = block_ptr;
+  // Wrap the block pointer around the board.
+  const uint BOARD_SIZE = _Unigram_Letter_Grid_Res_X * _Unigram_Letter_Grid_Res_Y;
+  token_ptr = token_ptr % BOARD_SIZE;
   uint token_offset;
   uint token_length = 0;
   bool got_match = false;
   [loop]
   for (uint i = 0; i < ULG_BLOCK_WIDTH; i++) {
     TokenLengthOffset(tokens[i], token_length, token_offset);
-    if (screen_ptr >= token_ptr &&
-        screen_ptr < token_ptr + token_length) {
+    if (token_length == 0) {
+      continue;
+    }
+    if (screen_ptr >= token_ptr && screen_ptr < token_ptr + token_length) {
       got_match = true;
       break;
     }
+    // Edge case: the token pointer may be partially outside of the visible
+    // part of the board.
+    if (screen_ptr + BOARD_SIZE >= token_ptr &&
+        screen_ptr + BOARD_SIZE < token_ptr + token_length) {
+      got_match = true;
+      break;
+    }
+
     token_ptr += token_length;
+    token_ptr = token_ptr % BOARD_SIZE;
   }
   // Edge case: no match
   if (!got_match) {
     return ' ';
   }
-  uint nth_char = screen_ptr - token_ptr;
+  uint nth_char = (screen_ptr >= token_ptr) ? screen_ptr - token_ptr : (screen_ptr + BOARD_SIZE) - token_ptr;
   return GetTokenChar(token_offset, nth_char);
 }
 #endif
