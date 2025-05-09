@@ -28,9 +28,9 @@ float4 _Unigram_Letter_Grid_UV_Scale_Offset;
 float _Unigram_Letter_Grid_Padding;
 float _Unigram_Letter_Grid_Screen_Px_Range;
 float _Unigram_Letter_Grid_Min_Screen_Px_Range;
-float _Unigram_Letter_Grid_Blurriness;
 float _Unigram_Letter_Grid_Alpha_Threshold;
 
+// These macros exist for debugging.
 #define ULG_VP
 #define ULG_D0
 #define ULG_D1
@@ -42,150 +42,150 @@ float _Unigram_Letter_Grid_Alpha_Threshold;
 cbuffer UnigramLetterGridVisualPointers
 {
   float _Unigram_Letter_Visual_Pointers[ULG_NUM_BLOCKS] : packoffset(c0);
-  float _Unigram_Letter_Grid_Block00_Visual_Pointer : packoffset(c0);
-  float _Unigram_Letter_Grid_Block01_Visual_Pointer : packoffset(c1);
-  float _Unigram_Letter_Grid_Block02_Visual_Pointer : packoffset(c2);
-  float _Unigram_Letter_Grid_Block03_Visual_Pointer : packoffset(c3);
-  float _Unigram_Letter_Grid_Block04_Visual_Pointer : packoffset(c4);
-  float _Unigram_Letter_Grid_Block05_Visual_Pointer : packoffset(c5);
-  float _Unigram_Letter_Grid_Block06_Visual_Pointer : packoffset(c6);
-  float _Unigram_Letter_Grid_Block07_Visual_Pointer : packoffset(c7);
-  float _Unigram_Letter_Grid_Block08_Visual_Pointer : packoffset(c8);
-  float _Unigram_Letter_Grid_Block09_Visual_Pointer : packoffset(c9);
+  float _Unigram_Letter_Grid_Block00_Visual_Pointer_Animated : packoffset(c0);
+  float _Unigram_Letter_Grid_Block01_Visual_Pointer_Animated : packoffset(c1);
+  float _Unigram_Letter_Grid_Block02_Visual_Pointer_Animated : packoffset(c2);
+  float _Unigram_Letter_Grid_Block03_Visual_Pointer_Animated : packoffset(c3);
+  float _Unigram_Letter_Grid_Block04_Visual_Pointer_Animated : packoffset(c4);
+  float _Unigram_Letter_Grid_Block05_Visual_Pointer_Animated : packoffset(c5);
+  float _Unigram_Letter_Grid_Block06_Visual_Pointer_Animated : packoffset(c6);
+  float _Unigram_Letter_Grid_Block07_Visual_Pointer_Animated : packoffset(c7);
+  float _Unigram_Letter_Grid_Block08_Visual_Pointer_Animated : packoffset(c8);
+  float _Unigram_Letter_Grid_Block09_Visual_Pointer_Animated : packoffset(c9);
 }
 #endif  // ULG_VP
 
 #if defined(ULG_D0)
-cbuffer UnigramLetterGridDataByte00
+cbuffer UnigramLetterGridDataByte00_Animated
 {
   float _Unigram_Letter_Data_Byte00[ULG_NUM_BLOCKS * ULG_BLOCK_WIDTH] : packoffset(c0);
 
-  float _Unigram_Letter_Grid_Data_Block00_Datum00_Byte00 : packoffset(c0);
-  float _Unigram_Letter_Grid_Data_Block00_Datum01_Byte00 : packoffset(c1);
-  float _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00 : packoffset(c2);
-  float _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00 : packoffset(c3);
-  float _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00 : packoffset(c4);
+  float _Unigram_Letter_Grid_Data_Block00_Datum00_Byte00_Animated : packoffset(c0);
+  float _Unigram_Letter_Grid_Data_Block00_Datum01_Byte00_Animated : packoffset(c1);
+  float _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00_Animated : packoffset(c2);
+  float _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00_Animated : packoffset(c3);
+  float _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00_Animated : packoffset(c4);
 
-  float _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00 : packoffset(c5);
-  float _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00 : packoffset(c6);
-  float _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00 : packoffset(c7);
-  float _Unigram_Letter_Grid_Data_Block01_Datum03_Byte00 : packoffset(c8);
-  float _Unigram_Letter_Grid_Data_Block01_Datum04_Byte00 : packoffset(c9);
+  float _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00_Animated : packoffset(c5);
+  float _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00_Animated : packoffset(c6);
+  float _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00_Animated : packoffset(c7);
+  float _Unigram_Letter_Grid_Data_Block01_Datum03_Byte00_Animated : packoffset(c8);
+  float _Unigram_Letter_Grid_Data_Block01_Datum04_Byte00_Animated : packoffset(c9);
 
-  float _Unigram_Letter_Grid_Data_Block02_Datum00_Byte00 : packoffset(c10);
-  float _Unigram_Letter_Grid_Data_Block02_Datum01_Byte00 : packoffset(c11);
-  float _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00 : packoffset(c12);
-  float _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00 : packoffset(c13);
-  float _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00 : packoffset(c14);
+  float _Unigram_Letter_Grid_Data_Block02_Datum00_Byte00_Animated : packoffset(c10);
+  float _Unigram_Letter_Grid_Data_Block02_Datum01_Byte00_Animated : packoffset(c11);
+  float _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00_Animated : packoffset(c12);
+  float _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00_Animated : packoffset(c13);
+  float _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00_Animated : packoffset(c14);
 
-  float _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00 : packoffset(c15);
-  float _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00 : packoffset(c16);
-  float _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00 : packoffset(c17);
-  float _Unigram_Letter_Grid_Data_Block03_Datum03_Byte00 : packoffset(c18);
-  float _Unigram_Letter_Grid_Data_Block03_Datum04_Byte00 : packoffset(c19);
+  float _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00_Animated : packoffset(c15);
+  float _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00_Animated : packoffset(c16);
+  float _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00_Animated : packoffset(c17);
+  float _Unigram_Letter_Grid_Data_Block03_Datum03_Byte00_Animated : packoffset(c18);
+  float _Unigram_Letter_Grid_Data_Block03_Datum04_Byte00_Animated : packoffset(c19);
 
-  float _Unigram_Letter_Grid_Data_Block04_Datum00_Byte00 : packoffset(c20);
-  float _Unigram_Letter_Grid_Data_Block04_Datum01_Byte00 : packoffset(c21);
-  float _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00 : packoffset(c22);
-  float _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00 : packoffset(c23);
-  float _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00 : packoffset(c24);
+  float _Unigram_Letter_Grid_Data_Block04_Datum00_Byte00_Animated : packoffset(c20);
+  float _Unigram_Letter_Grid_Data_Block04_Datum01_Byte00_Animated : packoffset(c21);
+  float _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00_Animated : packoffset(c22);
+  float _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00_Animated : packoffset(c23);
+  float _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00_Animated : packoffset(c24);
 
-  float _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00 : packoffset(c25);
-  float _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00 : packoffset(c26);
-  float _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00 : packoffset(c27);
-  float _Unigram_Letter_Grid_Data_Block05_Datum03_Byte00 : packoffset(c28);
-  float _Unigram_Letter_Grid_Data_Block05_Datum04_Byte00 : packoffset(c29);
+  float _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00_Animated : packoffset(c25);
+  float _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00_Animated : packoffset(c26);
+  float _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00_Animated : packoffset(c27);
+  float _Unigram_Letter_Grid_Data_Block05_Datum03_Byte00_Animated : packoffset(c28);
+  float _Unigram_Letter_Grid_Data_Block05_Datum04_Byte00_Animated : packoffset(c29);
 
-  float _Unigram_Letter_Grid_Data_Block06_Datum00_Byte00 : packoffset(c30);
-  float _Unigram_Letter_Grid_Data_Block06_Datum01_Byte00 : packoffset(c31);
-  float _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00 : packoffset(c32);
-  float _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00 : packoffset(c33);
-  float _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00 : packoffset(c34);
+  float _Unigram_Letter_Grid_Data_Block06_Datum00_Byte00_Animated : packoffset(c30);
+  float _Unigram_Letter_Grid_Data_Block06_Datum01_Byte00_Animated : packoffset(c31);
+  float _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00_Animated : packoffset(c32);
+  float _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00_Animated : packoffset(c33);
+  float _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00_Animated : packoffset(c34);
 
-  float _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00 : packoffset(c35);
-  float _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00 : packoffset(c36);
-  float _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00 : packoffset(c37);
-  float _Unigram_Letter_Grid_Data_Block07_Datum03_Byte00 : packoffset(c38);
-  float _Unigram_Letter_Grid_Data_Block07_Datum04_Byte00 : packoffset(c39);
+  float _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00_Animated : packoffset(c35);
+  float _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00_Animated : packoffset(c36);
+  float _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00_Animated : packoffset(c37);
+  float _Unigram_Letter_Grid_Data_Block07_Datum03_Byte00_Animated : packoffset(c38);
+  float _Unigram_Letter_Grid_Data_Block07_Datum04_Byte00_Animated : packoffset(c39);
 
-  float _Unigram_Letter_Grid_Data_Block08_Datum00_Byte00 : packoffset(c40);
-  float _Unigram_Letter_Grid_Data_Block08_Datum01_Byte00 : packoffset(c41);
-  float _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00 : packoffset(c42);
-  float _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00 : packoffset(c43);
-  float _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00 : packoffset(c44);
+  float _Unigram_Letter_Grid_Data_Block08_Datum00_Byte00_Animated : packoffset(c40);
+  float _Unigram_Letter_Grid_Data_Block08_Datum01_Byte00_Animated : packoffset(c41);
+  float _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00_Animated : packoffset(c42);
+  float _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00_Animated : packoffset(c43);
+  float _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00_Animated : packoffset(c44);
 
-  float _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00 : packoffset(c45);
-  float _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00 : packoffset(c46);
-  float _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00 : packoffset(c47);
-  float _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00 : packoffset(c48);
-  float _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00 : packoffset(c49);
+  float _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00_Animated : packoffset(c45);
+  float _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00_Animated : packoffset(c46);
+  float _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00_Animated : packoffset(c47);
+  float _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00_Animated : packoffset(c48);
+  float _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00_Animated : packoffset(c49);
 }
 #endif  // ULG_D0
 
 #if defined(ULG_D1)
-cbuffer UnigramLetterGridDataByte01
+cbuffer UnigramLetterGridDataByte01_Animated
 {
   float _Unigram_Letter_Data_Byte01[ULG_NUM_BLOCKS * ULG_BLOCK_WIDTH] : packoffset(c0);
 
-  float _Unigram_Letter_Grid_Data_Block00_Datum00_Byte01 : packoffset(c0);
-  float _Unigram_Letter_Grid_Data_Block00_Datum01_Byte01 : packoffset(c1);
-  float _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01 : packoffset(c2);
-  float _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01 : packoffset(c3);
-  float _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01 : packoffset(c4);
+  float _Unigram_Letter_Grid_Data_Block00_Datum00_Byte01_Animated : packoffset(c0);
+  float _Unigram_Letter_Grid_Data_Block00_Datum01_Byte01_Animated : packoffset(c1);
+  float _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01_Animated : packoffset(c2);
+  float _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01_Animated : packoffset(c3);
+  float _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01_Animated : packoffset(c4);
 
-  float _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01 : packoffset(c5);
-  float _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01 : packoffset(c6);
-  float _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01 : packoffset(c7);
-  float _Unigram_Letter_Grid_Data_Block01_Datum03_Byte01 : packoffset(c8);
-  float _Unigram_Letter_Grid_Data_Block01_Datum04_Byte01 : packoffset(c9);
+  float _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01_Animated : packoffset(c5);
+  float _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01_Animated : packoffset(c6);
+  float _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01_Animated : packoffset(c7);
+  float _Unigram_Letter_Grid_Data_Block01_Datum03_Byte01_Animated : packoffset(c8);
+  float _Unigram_Letter_Grid_Data_Block01_Datum04_Byte01_Animated : packoffset(c9);
 
-  float _Unigram_Letter_Grid_Data_Block02_Datum00_Byte01 : packoffset(c10);
-  float _Unigram_Letter_Grid_Data_Block02_Datum01_Byte01 : packoffset(c11);
-  float _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01 : packoffset(c12);
-  float _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01 : packoffset(c13);
-  float _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01 : packoffset(c14);
+  float _Unigram_Letter_Grid_Data_Block02_Datum00_Byte01_Animated : packoffset(c10);
+  float _Unigram_Letter_Grid_Data_Block02_Datum01_Byte01_Animated : packoffset(c11);
+  float _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01_Animated : packoffset(c12);
+  float _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01_Animated : packoffset(c13);
+  float _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01_Animated : packoffset(c14);
 
-  float _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01 : packoffset(c15);
-  float _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01 : packoffset(c16);
-  float _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01 : packoffset(c17);
-  float _Unigram_Letter_Grid_Data_Block03_Datum03_Byte01 : packoffset(c18);
-  float _Unigram_Letter_Grid_Data_Block03_Datum04_Byte01 : packoffset(c19);
+  float _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01_Animated : packoffset(c15);
+  float _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01_Animated : packoffset(c16);
+  float _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01_Animated : packoffset(c17);
+  float _Unigram_Letter_Grid_Data_Block03_Datum03_Byte01_Animated : packoffset(c18);
+  float _Unigram_Letter_Grid_Data_Block03_Datum04_Byte01_Animated : packoffset(c19);
 
-  float _Unigram_Letter_Grid_Data_Block04_Datum00_Byte01 : packoffset(c20);
-  float _Unigram_Letter_Grid_Data_Block04_Datum01_Byte01 : packoffset(c21);
-  float _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01 : packoffset(c22);
-  float _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01 : packoffset(c23);
-  float _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01 : packoffset(c24);
+  float _Unigram_Letter_Grid_Data_Block04_Datum00_Byte01_Animated : packoffset(c20);
+  float _Unigram_Letter_Grid_Data_Block04_Datum01_Byte01_Animated : packoffset(c21);
+  float _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01_Animated : packoffset(c22);
+  float _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01_Animated : packoffset(c23);
+  float _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01_Animated : packoffset(c24);
 
-  float _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01 : packoffset(c25);
-  float _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01 : packoffset(c26);
-  float _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01 : packoffset(c27);
-  float _Unigram_Letter_Grid_Data_Block05_Datum03_Byte01 : packoffset(c28);
-  float _Unigram_Letter_Grid_Data_Block05_Datum04_Byte01 : packoffset(c29);
+  float _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01_Animated : packoffset(c25);
+  float _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01_Animated : packoffset(c26);
+  float _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01_Animated : packoffset(c27);
+  float _Unigram_Letter_Grid_Data_Block05_Datum03_Byte01_Animated : packoffset(c28);
+  float _Unigram_Letter_Grid_Data_Block05_Datum04_Byte01_Animated : packoffset(c29);
 
-  float _Unigram_Letter_Grid_Data_Block06_Datum00_Byte01 : packoffset(c30);
-  float _Unigram_Letter_Grid_Data_Block06_Datum01_Byte01 : packoffset(c31);
-  float _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01 : packoffset(c32);
-  float _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01 : packoffset(c33);
-  float _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01 : packoffset(c34);
+  float _Unigram_Letter_Grid_Data_Block06_Datum00_Byte01_Animated : packoffset(c30);
+  float _Unigram_Letter_Grid_Data_Block06_Datum01_Byte01_Animated : packoffset(c31);
+  float _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01_Animated : packoffset(c32);
+  float _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01_Animated : packoffset(c33);
+  float _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01_Animated : packoffset(c34);
 
-  float _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01 : packoffset(c35);
-  float _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01 : packoffset(c36);
-  float _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01 : packoffset(c37);
-  float _Unigram_Letter_Grid_Data_Block07_Datum03_Byte01 : packoffset(c38);
-  float _Unigram_Letter_Grid_Data_Block07_Datum04_Byte01 : packoffset(c39);
+  float _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01_Animated : packoffset(c35);
+  float _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01_Animated : packoffset(c36);
+  float _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01_Animated : packoffset(c37);
+  float _Unigram_Letter_Grid_Data_Block07_Datum03_Byte01_Animated : packoffset(c38);
+  float _Unigram_Letter_Grid_Data_Block07_Datum04_Byte01_Animated : packoffset(c39);
 
-  float _Unigram_Letter_Grid_Data_Block08_Datum00_Byte01 : packoffset(c40);
-  float _Unigram_Letter_Grid_Data_Block08_Datum01_Byte01 : packoffset(c41);
-  float _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01 : packoffset(c42);
-  float _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01 : packoffset(c43);
-  float _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01 : packoffset(c44);
+  float _Unigram_Letter_Grid_Data_Block08_Datum00_Byte01_Animated : packoffset(c40);
+  float _Unigram_Letter_Grid_Data_Block08_Datum01_Byte01_Animated : packoffset(c41);
+  float _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01_Animated : packoffset(c42);
+  float _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01_Animated : packoffset(c43);
+  float _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01_Animated : packoffset(c44);
 
-  float _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01 : packoffset(c45);
-  float _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01 : packoffset(c46);
-  float _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01 : packoffset(c47);
-  float _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01 : packoffset(c48);
-  float _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01 : packoffset(c49);
+  float _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01_Animated : packoffset(c45);
+  float _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01_Animated : packoffset(c46);
+  float _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01_Animated : packoffset(c47);
+  float _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01_Animated : packoffset(c48);
+  float _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01_Animated : packoffset(c49);
 }
 #endif  // ULG_D1
 
@@ -196,122 +196,122 @@ void PreventCbufferElision(v2f i, inout float a) {
     a = 0;
 #if defined(ULG_VP)
     a +=
-      _Unigram_Letter_Grid_Block00_Visual_Pointer +
-      _Unigram_Letter_Grid_Block01_Visual_Pointer +
-      _Unigram_Letter_Grid_Block02_Visual_Pointer +
-      _Unigram_Letter_Grid_Block03_Visual_Pointer +
-      _Unigram_Letter_Grid_Block04_Visual_Pointer +
-      _Unigram_Letter_Grid_Block05_Visual_Pointer +
-      _Unigram_Letter_Grid_Block06_Visual_Pointer +
-      _Unigram_Letter_Grid_Block07_Visual_Pointer +
-      _Unigram_Letter_Grid_Block08_Visual_Pointer +
-      _Unigram_Letter_Grid_Block09_Visual_Pointer;
+      _Unigram_Letter_Grid_Block00_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block01_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block02_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block03_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block04_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block05_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block06_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block07_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block08_Visual_Pointer_Animated +
+      _Unigram_Letter_Grid_Block09_Visual_Pointer_Animated;
 #endif  // ULG_VP
 #if defined(ULG_D0)
     a +=
-      _Unigram_Letter_Grid_Data_Block00_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block00_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block01_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block01_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block02_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block02_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block03_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block03_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block04_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block04_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block05_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block05_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block06_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block06_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block07_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block07_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block08_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block08_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00 +
-      _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00 +
-      _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00 +
-      _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00 +
-      _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00 +
-      _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00;
+      _Unigram_Letter_Grid_Data_Block00_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00_Animated;
 #endif  // ULG_D0
 #if defined(ULG_D1)
     a +=
-      _Unigram_Letter_Grid_Data_Block00_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block00_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block01_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block01_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block02_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block02_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block03_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block03_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block04_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block04_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block05_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block05_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block06_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block06_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block07_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block07_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block08_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block08_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01 +
-      _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01 +
-      _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01 +
-      _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01 +
-      _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01 +
-      _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01;
+      _Unigram_Letter_Grid_Data_Block00_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block01_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block03_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block05_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block07_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01_Animated +
+      _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01_Animated;
 #endif  // ULG_D1
   }
 }
@@ -332,26 +332,26 @@ void GetBlock(uint which_block, out uint data[ULG_BLOCK_WIDTH]) {
 void GetTokens(uint screen_ptr,
     out uint block_ptr,
     out uint tokens[ULG_BLOCK_WIDTH]) {
-  block_ptr = _Unigram_Letter_Visual_Pointers[0];
+  block_ptr = floor(_Unigram_Letter_Visual_Pointers[0]);
   uint which_block = 0;
   [loop]
-  for (uint i = 1; i < ULG_BLOCK_WIDTH; i++) {
-    if (screen_ptr < _Unigram_Letter_Visual_Pointers[i]) {
+  for (uint i = 1; i < ULG_NUM_BLOCKS; i++) {
+    if (screen_ptr < floor(_Unigram_Letter_Visual_Pointers[i])) {
       break;
     }
-    block_ptr = _Unigram_Letter_Visual_Pointers[i];
+    block_ptr = floor(_Unigram_Letter_Visual_Pointers[i]);
     which_block = i;
   }
   GetBlock(which_block, tokens);
 }
 #endif
 
-uint2 FoldIndex(uint flat_idx, uint img_res) {
-  return uint2(flat_idx % img_res, floor(flat_idx / img_res));
+uint2 FoldIndex(uint flat_idx, uint2 img_res) {
+  return uint2(flat_idx % img_res.x, floor(flat_idx / img_res.x));
 }
 
-uint UnfoldIndex(uint2 coord, uint img_res) {
-  return coord[0] + coord[1] * img_res;
+uint UnfoldIndex(uint2 coord, uint2 img_res) {
+  return coord[0] + coord[1] * img_res.x;
 }
 
 float2 GetUnigramLutUV(uint idx)
@@ -408,14 +408,21 @@ uint GetChar(uint screen_ptr) {
   // In other words, it covers [token_ptr, token_ptr + token_length)
   uint token_ptr = block_ptr;
   uint token_offset;
+  uint token_length = 0;
+  bool got_match = false;
+  [loop]
   for (uint i = 0; i < ULG_BLOCK_WIDTH; i++) {
-    uint token_length;
     TokenLengthOffset(tokens[i], token_length, token_offset);
     if (screen_ptr >= token_ptr &&
         screen_ptr < token_ptr + token_length) {
+      got_match = true;
       break;
     }
     token_ptr += token_length;
+  }
+  // Edge case: no match
+  if (!got_match) {
+    return ' ';
   }
   uint nth_char = screen_ptr - token_ptr;
   return GetTokenChar(token_offset, nth_char);
@@ -443,8 +450,10 @@ UnigramLetterGridOutput UnigramLetterGrid(v2f i) {
   bool in_box = getBoxLoc(uv, 0, 1, grid_res, _Unigram_Letter_Grid_Padding, cell_pos, cell_uv);
   cell_pos.y = (grid_res.y - cell_pos.y) - 1;
 
+  uint flat_cell_pos = UnfoldIndex(cell_pos, grid_res);
+
 #if 1
-  float c = GetChar(cell_pos.x);
+  float c = GetChar(flat_cell_pos);
 #elif 0
   float token_offset=65536;
   float c = GetTokenChar(token_offset, cell_pos.x);
@@ -501,12 +510,11 @@ UnigramLetterGridOutput UnigramLetterGrid(v2f i) {
     float2 real_cell_size = floor(tex_size / grid_res);  // size of cell in texels
     float2 unit_range = _Unigram_Letter_Grid_Screen_Px_Range / real_cell_size;
     float2 screen_tex_size = 1 / fwidth(cell_uv);
-    screen_px_range = max(0.5 * dot(unit_range, screen_tex_size), _Unigram_Letter_Grid_Min_Screen_Px_Range);
+    screen_px_range = max(1.0 * dot(unit_range, screen_tex_size), _Unigram_Letter_Grid_Min_Screen_Px_Range);
   }
 
   float screen_px_distance = screen_px_range * (sd - _Unigram_Letter_Grid_Alpha_Threshold);
-  float smooth_range = (length(grid_res) / sqrt(screen_px_range)) * _Unigram_Letter_Grid_Blurriness;
-  float op = smoothstep(-smooth_range, smooth_range, screen_px_distance);
+  float op = clamp(screen_px_distance + 0.5, 0, 1);
 
   // Apply blending to output
   output.albedo.a = 1;
