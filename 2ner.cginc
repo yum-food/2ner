@@ -175,7 +175,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.normal = normalize(i.normal);
 
   i.normal *= facing ? 1 : -1;
-
   i.normal = UnityObjectToWorldNormal(i.normal);
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
@@ -249,7 +248,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 
 #if defined(_UNIGRAM_LETTER_GRID)
-  UnigramLetterGridOutput unigram_letter_grid_output = UnigramLetterGrid(i);
+  UnigramLetterGridOutput unigram_letter_grid_output = UnigramLetterGrid(i, facing);
   pbr.albedo.rgb = lerp(pbr.albedo.rgb, unigram_letter_grid_output.albedo,
       unigram_letter_grid_output.albedo.a);
   pbr.metallic = lerp(pbr.metallic, unigram_letter_grid_output.metallic,
