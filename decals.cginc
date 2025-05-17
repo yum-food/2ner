@@ -139,7 +139,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
                                                                                                     \
     float2 raw_decal_uv = get_uv_by_channel(i, params.uv_channel);                                  \
     float2 decal_uv = raw_decal_uv;                                                                 \
-    decal_uv = decal_uv * params.mainTex_ST.xy + params.mainTex_ST.zw;                              \
+    decal_uv = ((decal_uv - 0.5) - params.mainTex_ST.zw) * params.mainTex_ST.xy + 0.5;              \
     decal_uv = mul(decal_rot, decal_uv - 0.5) + 0.5;                                                \
     decal_uv = (params.tiling_mode == DECAL_TILING_MODE_CLAMP ? saturate(decal_uv) : decal_uv);
 
@@ -157,7 +157,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 #define APPLY_DECAL_SEC01_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, params)          \
     float4 decal_albedo;                                                                            \
     {                                                                                               \
-        decal_albedo = params.mainTex.Sample(linear_repeat_s, decal_uv);                            \
+        decal_albedo = params.mainTex.Sample(trilinear_repeat_s, decal_uv);                            \
         decal_albedo *= params.color;                                                               \
     }
 
@@ -186,7 +186,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 
 #define APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, params)        \
     float3 decal_normal = UnpackScaleNormal(                                                        \
-            params.normalTex.Sample(linear_repeat_s, decal_uv),                                     \
+            params.normalTex.Sample(trilinear_repeat_s, decal_uv),                                     \
             params.normal_scale * decal_albedo.a * params.opacity);                                 \
     normal_tangent = blendNormalsHill12(normal_tangent, decal_normal);
     //normal_tangent = lerp(normal_tangent, decal_normal, decal_albedo.a * params.opacity);
@@ -194,7 +194,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 #define APPLY_DECAL_SEC05_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, params) {}
 
 #define APPLY_DECAL_SEC06_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, params)   \
-    float4 metallic_gloss = params.metallicGlossMap.Sample(linear_repeat_s, decal_uv);              \
+    float4 metallic_gloss = params.metallicGlossMap.Sample(trilinear_repeat_s, decal_uv);              \
     metallic = lerp(metallic, metallic_gloss.r * params.metallic_value, decal_albedo.a);            \
     smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, decal_albedo.a);
 

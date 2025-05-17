@@ -272,7 +272,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)
   applyMatcapsAndRimLighting(i, pbr, l);
-  //pbr.albedo.rgb = max(0, pbr.albedo.rgb);
   l.diffuse = max(0, l.diffuse);
   l.specular = max(0, l.specular);
 #endif
