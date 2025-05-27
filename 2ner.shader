@@ -297,7 +297,7 @@ Shader "yum_food/2ner"
             _Decal0_MainTex("Base color", 2D) = "white" {}
             _Decal0_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal0_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal0_UV_Channel("UV channel", Range(0, 3)) = 0
+            _Decal0_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL0_TILING_MODE)] _Decal0_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL0_REPLACE_ALPHA)] _Decal0_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal0_Normal_Enabled==0
@@ -358,7 +358,7 @@ Shader "yum_food/2ner"
             _Decal1_MainTex("Base color", 2D) = "white" {}
             _Decal1_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal1_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal1_UV_Channel("UV channel", Range(0, 3)) = 0
+            _Decal1_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL1_TILING_MODE)] _Decal1_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL1_REPLACE_ALPHA)] _Decal1_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal1_Normal_Enabled==0
@@ -419,7 +419,7 @@ Shader "yum_food/2ner"
             _Decal2_MainTex("Base color", 2D) = "white" {}
             _Decal2_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal2_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal2_UV_Channel("UV channel", Range(0, 3)) = 0
+            _Decal2_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL2_TILING_MODE)] _Decal2_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL2_REPLACE_ALPHA)] _Decal2_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal2_Normal_Enabled==0
@@ -480,7 +480,7 @@ Shader "yum_food/2ner"
             _Decal3_MainTex("Base color", 2D) = "white" {}
             _Decal3_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal3_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal3_UV_Channel("UV channel", Range(0, 3)) = 0
+            _Decal3_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL3_TILING_MODE)] _Decal3_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL3_REPLACE_ALPHA)] _Decal3_Replace_Alpha_Mode("Replace alpha", Float) = 0
             //ifex _Decal3_Normal_Enabled==0
@@ -534,6 +534,250 @@ Shader "yum_food/2ner"
             //endex
           [HideInInspector] m_end_Decal3("Decal 3", Float) = 0
           //endex
+          //ifex _Decal4_Enabled==0
+          [HideInInspector] m_start_Decal4("Decal 4", Float) = 0
+            [ThryToggle(_DECAL4)] _Decal4_Enabled("Enable", Float) = 0
+            _Decal4_Color("Tint", Color) = (1, 1, 1, 1)
+            _Decal4_MainTex("Base color", 2D) = "white" {}
+            _Decal4_Opacity("Opacity", Range(0, 1)) = 1.0
+            _Decal4_Angle("Angle", Range(0, 1)) = 0.0
+            _Decal4_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [ThryToggle(_DECAL4_TILING_MODE)] _Decal4_Tiling_Mode("Tiling mode", Float) = 0
+            [ThryToggle(_DECAL4_REPLACE_ALPHA)] _Decal4_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            //ifex _Decal4_Normal_Enabled==0
+            [HideInInspector] m_start_Decal4_Normal("Normal", Float) = 0
+              [ThryToggle(_DECAL4_NORMAL)] _Decal4_Normal_Enabled("Enable", Float) = 0
+              [Normal]_Decal4_Normal("Normal", 2D) = "bump" {}
+              _Decal4_Normal_Scale("Normal scale", Float) = 1.0
+            [HideInInspector] m_end_Decal4_Normal("Normal", Float) = 0
+            //endex
+            //ifex _Decal4_Reflections_Enabled==0
+            [HideInInspector] m_start_Decal4_Reflections("Reflections", Float) = 0
+              [ThryToggle(_DECAL4_REFLECTIONS)] _Decal4_Reflections_Enabled("Enable", Float) = 0
+              _Decal4_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+              _Decal4_Smoothness("Smoothness", Range(0, 1)) = 0.5
+              _Decal4_Metallic("Metallic", Range(0, 1)) = 0.0
+            [HideInInspector] m_end_Decal4_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal4_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal4_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL4_DOMAIN_WARPING)] _Decal4_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal4_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal4_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal4_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal4_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal4_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal4_Domain_Warping("Domain warping", Float) = 0
+            //endex
+            //ifex _Decal4_SDF_Enabled==0
+            [HideInInspector] m_start_Decal4_SDF("SDF mode", Float) = 0
+              [ThryToggle(_DECAL4_SDF)] _Decal4_SDF_Enabled("Enable", Float) = 0
+              _Decal4_SDF_Threshold("SDF threshold", Range(0, 1)) = 0.5
+              [MaterialToggle] _Decal4_SDF_Invert("SDF invert", Float) = 0
+              _Decal4_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
+              _Decal4_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal4_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal4_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL4_CMYK_WARPING_PLANES)] _Decal4_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal4_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal4_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal4_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal4_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal4_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+            [HideInInspector] m_end_Decal4_SDF("SDF", Float) = 0
+            //endex
+            //endex
+            //ifex _Decal4_Mask_Enabled==0
+            [HideInInspector] m_start_Decal4_Mask("Mask", Float) = 0
+              [ThryToggle(_DECAL4_MASK)] _Decal4_Mask_Enabled("Enable", Float) = 0
+              _Decal4_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Decal4_Mask("Mask", Float) = 0
+            //endex
+          [HideInInspector] m_end_Decal4("Decal 4", Float) = 0
+          //endex
+          //ifex _Decal5_Enabled==0
+          [HideInInspector] m_start_Decal5("Decal 5", Float) = 0
+            [ThryToggle(_DECAL5)] _Decal5_Enabled("Enable", Float) = 0
+            _Decal5_Color("Tint", Color) = (1, 1, 1, 1)
+            _Decal5_MainTex("Base color", 2D) = "white" {}
+            _Decal5_Opacity("Opacity", Range(0, 1)) = 1.0
+            _Decal5_Angle("Angle", Range(0, 1)) = 0.0
+            _Decal5_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [ThryToggle(_DECAL5_TILING_MODE)] _Decal5_Tiling_Mode("Tiling mode", Float) = 0
+            [ThryToggle(_DECAL5_REPLACE_ALPHA)] _Decal5_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            //ifex _Decal5_Normal_Enabled==0
+            [HideInInspector] m_start_Decal5_Normal("Normal", Float) = 0
+              [ThryToggle(_DECAL5_NORMAL)] _Decal5_Normal_Enabled("Enable", Float) = 0
+              [Normal]_Decal5_Normal("Normal", 2D) = "bump" {}
+              _Decal5_Normal_Scale("Normal scale", Float) = 1.0
+            [HideInInspector] m_end_Decal5_Normal("Normal", Float) = 0
+            //endex
+            //ifex _Decal5_Reflections_Enabled==0
+            [HideInInspector] m_start_Decal5_Reflections("Reflections", Float) = 0
+              [ThryToggle(_DECAL5_REFLECTIONS)] _Decal5_Reflections_Enabled("Enable", Float) = 0
+              _Decal5_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+              _Decal5_Smoothness("Smoothness", Range(0, 1)) = 0.5
+              _Decal5_Metallic("Metallic", Range(0, 1)) = 0.0
+            [HideInInspector] m_end_Decal5_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal5_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal5_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL5_DOMAIN_WARPING)] _Decal5_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal5_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal5_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal5_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal5_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal5_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal5_Domain_Warping("Domain warping", Float) = 0
+            //endex
+            //ifex _Decal5_SDF_Enabled==0
+            [HideInInspector] m_start_Decal5_SDF("SDF mode", Float) = 0
+              [ThryToggle(_DECAL5_SDF)] _Decal5_SDF_Enabled("Enable", Float) = 0
+              _Decal5_SDF_Threshold("SDF threshold", Range(0, 1)) = 0.5
+              [MaterialToggle] _Decal5_SDF_Invert("SDF invert", Float) = 0
+              _Decal5_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
+              _Decal5_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal5_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal5_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL5_CMYK_WARPING_PLANES)] _Decal5_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal5_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal5_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal5_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal5_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal5_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+            [HideInInspector] m_end_Decal5_SDF("SDF", Float) = 0
+            //endex
+            //endex
+            //ifex _Decal6_Mask_Enabled==0
+            [HideInInspector] m_start_Decal6_Mask("Mask", Float) = 0
+              [ThryToggle(_DECAL6_MASK)] _Decal6_Mask_Enabled("Enable", Float) = 0
+              _Decal6_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Decal6_Mask("Mask", Float) = 0
+            //endex
+          [HideInInspector] m_end_Decal6("Decal 5", Float) = 0
+          //endex
+          //ifex _Decal6_Enabled==0
+          [HideInInspector] m_start_Decal6("Decal 6", Float) = 0
+            [ThryToggle(_DECAL6)] _Decal6_Enabled("Enable", Float) = 0
+            _Decal6_Color("Tint", Color) = (1, 1, 1, 1)
+            _Decal6_MainTex("Base color", 2D) = "white" {}
+            _Decal6_Opacity("Opacity", Range(0, 1)) = 1.0
+            _Decal6_Angle("Angle", Range(0, 1)) = 0.0
+            _Decal6_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [ThryToggle(_DECAL6_TILING_MODE)] _Decal6_Tiling_Mode("Tiling mode", Float) = 0
+            [ThryToggle(_DECAL6_REPLACE_ALPHA)] _Decal6_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            //ifex _Decal6_Normal_Enabled==0
+            [HideInInspector] m_start_Decal6_Normal("Normal", Float) = 0
+              [ThryToggle(_DECAL6_NORMAL)] _Decal6_Normal_Enabled("Enable", Float) = 0
+              [Normal]_Decal6_Normal("Normal", 2D) = "bump" {}
+              _Decal6_Normal_Scale("Normal scale", Float) = 1.0
+            [HideInInspector] m_end_Decal6_Normal("Normal", Float) = 0
+            //endex
+            //ifex _Decal6_Reflections_Enabled==0
+            [HideInInspector] m_start_Decal6_Reflections("Reflections", Float) = 0
+              [ThryToggle(_DECAL6_REFLECTIONS)] _Decal6_Reflections_Enabled("Enable", Float) = 0
+              _Decal6_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+              _Decal6_Smoothness("Smoothness", Range(0, 1)) = 0.5
+              _Decal6_Metallic("Metallic", Range(0, 1)) = 0.0
+            [HideInInspector] m_end_Decal6_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal6_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal6_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL6_DOMAIN_WARPING)] _Decal6_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal6_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal6_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal6_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal6_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal6_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal6_Domain_Warping("Domain warping", Float) = 0
+            //endex
+            //ifex _Decal6_SDF_Enabled==0
+            [HideInInspector] m_start_Decal6_SDF("SDF mode", Float) = 0
+              [ThryToggle(_DECAL6_SDF)] _Decal6_SDF_Enabled("Enable", Float) = 0
+              _Decal6_SDF_Threshold("SDF threshold", Range(0, 1)) = 0.5
+              [MaterialToggle] _Decal6_SDF_Invert("SDF invert", Float) = 0
+              _Decal6_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
+              _Decal6_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal6_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal6_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL6_CMYK_WARPING_PLANES)] _Decal6_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal6_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal6_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal6_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal6_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal6_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+            [HideInInspector] m_end_Decal6_SDF("SDF", Float) = 0
+            //endex
+            //endex
+            //ifex _Decal6_Mask_Enabled==0
+            [HideInInspector] m_start_Decal6_Mask("Mask", Float) = 0
+              [ThryToggle(_DECAL6_MASK)] _Decal6_Mask_Enabled("Enable", Float) = 0
+              _Decal6_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Decal6_Mask("Mask", Float) = 0
+            //endex
+          [HideInInspector] m_end_Decal6("Decal 6", Float) = 0
+          //endex
+          //ifex _Decal7_Enabled==0
+          [HideInInspector] m_start_Decal7("Decal 7", Float) = 0
+            [ThryToggle(_DECAL7)] _Decal7_Enabled("Enable", Float) = 0
+            _Decal7_Color("Tint", Color) = (1, 1, 1, 1)
+            _Decal7_MainTex("Base color", 2D) = "white" {}
+            _Decal7_Opacity("Opacity", Range(0, 1)) = 1.0
+            _Decal7_Angle("Angle", Range(0, 1)) = 0.0
+            _Decal7_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [ThryToggle(_DECAL7_TILING_MODE)] _Decal7_Tiling_Mode("Tiling mode", Float) = 0
+            [ThryToggle(_DECAL7_REPLACE_ALPHA)] _Decal7_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            //ifex _Decal7_Normal_Enabled==0
+            [HideInInspector] m_start_Decal7_Normal("Normal", Float) = 0
+              [ThryToggle(_DECAL7_NORMAL)] _Decal7_Normal_Enabled("Enable", Float) = 0
+              [Normal]_Decal7_Normal("Normal", 2D) = "bump" {}
+              _Decal7_Normal_Scale("Normal scale", Float) = 1.0
+            [HideInInspector] m_end_Decal7_Normal("Normal", Float) = 0
+            //endex
+            //ifex _Decal7_Reflections_Enabled==0
+            [HideInInspector] m_start_Decal7_Reflections("Reflections", Float) = 0
+              [ThryToggle(_DECAL7_REFLECTIONS)] _Decal7_Reflections_Enabled("Enable", Float) = 0
+              _Decal7_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+              _Decal7_Smoothness("Smoothness", Range(0, 1)) = 0.5
+              _Decal7_Metallic("Metallic", Range(0, 1)) = 0.0
+            [HideInInspector] m_end_Decal7_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal7_Domain_Warping_Enabled==0
+            [HideInInspector] m_start_Decal7_Domain_Warping("Domain warping", Float) = 0
+              [ThryToggle(_DECAL7_DOMAIN_WARPING)] _Decal7_Domain_Warping_Enabled("Enable", Float) = 0
+              _Decal7_Domain_Warping_Noise("Noise", 2D) = "black" {}
+              _Decal7_Domain_Warping_Octaves("Octaves", Float) = 1
+              _Decal7_Domain_Warping_Strength("Strength", Float) = 0.1
+              _Decal7_Domain_Warping_Scale("Scale", Float) = 0.1
+              _Decal7_Domain_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Decal7_Domain_Warping("Domain warping", Float) = 0
+            //endex
+            //ifex _Decal7_SDF_Enabled==0
+            [HideInInspector] m_start_Decal7_SDF("SDF mode", Float) = 0
+              [ThryToggle(_DECAL7_SDF)] _Decal7_SDF_Enabled("Enable", Float) = 0
+              _Decal7_SDF_Threshold("SDF threshold", Range(0, 1)) = 0.5
+              [MaterialToggle] _Decal7_SDF_Invert("SDF invert", Float) = 0
+              _Decal7_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
+              _Decal7_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal7_CMYK_Warping_Planes_Enabled==0
+              [HideInInspector] m_start_Decal7_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+                [ThryToggle(_DECAL7_CMYK_WARPING_PLANES)] _Decal7_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
+                _Decal7_CMYK_Warping_Planes_Noise("Noise", 2D) = "black" {}
+                _Decal7_CMYK_Warping_Planes_Strength("Strength", Float) = 0.1
+                _Decal7_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
+                _Decal7_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
+              [HideInInspector] m_end_Decal7_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+            [HideInInspector] m_end_Decal7_SDF("SDF", Float) = 0
+            //endex
+            //endex
+            //ifex _Decal7_Mask_Enabled==0
+            [HideInInspector] m_start_Decal7_Mask("Mask", Float) = 0
+              [ThryToggle(_DECAL7_MASK)] _Decal7_Mask_Enabled("Enable", Float) = 0
+              _Decal7_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Decal7_Mask("Mask", Float) = 0
+            //endex
+          [HideInInspector] m_end_Decal7("Decal 7", Float) = 0
+          //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
 
         //ifex _3D_SDF_Enabled==0
@@ -541,7 +785,7 @@ Shader "yum_food/2ner"
           [ThryToggle(_3D_SDF)] _3D_SDF_Enabled("Enable", Float) = 0
           _3D_SDF_Texture("Texture", 3D) = "white" {}
           _3D_SDF_ST("Scale and offset", Vector) = (1, 1, 0, 0)
-          _3D_SDF_UV_Channel("UV channel", Range(0, 3)) = 0
+          _3D_SDF_UV_Channel("UV channel", Range(0, 3.1)) = 0
           _3D_SDF_Thresholds("Thresholds", Vector) = (0.2, 0.4, 0.6, 0.8)
           _3D_SDF_Color_0("Color 0", Color) = (1, 0, 0, 1)
           _3D_SDF_Color_1("Color 1", Color) = (0, 1, 0, 1)

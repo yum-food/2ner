@@ -8,6 +8,7 @@
 #include "globals.cginc"
 #include "interpolators.cginc"
 #include "math.cginc"
+#include "oklab.cginc"
 #include "texture_utils.cginc"
 
 // ULG = unigram letter grid
@@ -1017,9 +1018,10 @@ void GetBlock(uint which_block, out uint data[ULG_BLOCK_WIDTH]) {
 // location where this block of tokens begins.
 void GetTokens(uint screen_ptr,
     out uint block_ptr,
-    out uint tokens[ULG_BLOCK_WIDTH]) {
+    out uint tokens[ULG_BLOCK_WIDTH],
+    out uint which_block) {
   block_ptr = floor(_Unigram_Letter_Visual_Pointers[0]+FUDGE_AMOUNT);
-  uint which_block = 0;
+  which_block = 0;
   [loop]
   for (uint i = 1; i < ULG_NUM_BLOCKS; i++) {
     uint next_ptr = floor(_Unigram_Letter_Visual_Pointers[i]+FUDGE_AMOUNT);
@@ -1094,10 +1096,10 @@ uint GetTokenChar(uint token_offset, uint nth)
 
 #if defined(ULG_VP) && defined(ULG_D0) && defined(ULG_D1)
 // Get the character which covers the screen position.
-uint GetChar(uint screen_ptr) {
+uint GetChar(uint screen_ptr, out uint which_block, out uint which_datum) {
   uint block_ptr;
   uint tokens[ULG_BLOCK_WIDTH];
-  GetTokens(screen_ptr, block_ptr, tokens);
+  GetTokens(screen_ptr, block_ptr, tokens, which_block);
   // Begin scanning at the start of the block.
   uint start = block_ptr;
   // The current token is rendered starting at this location.
@@ -1111,6 +1113,7 @@ uint GetChar(uint screen_ptr) {
   bool got_match = false;
   [loop]
   for (uint i = 0; i < ULG_BLOCK_WIDTH; i++) {
+    which_datum = i;
     TokenLengthOffset(tokens[i], token_length, token_offset);
     if (token_length == 0) {
       continue;
@@ -1164,53 +1167,8 @@ UnigramLetterGridOutput UnigramLetterGrid(v2f i, bool facing) {
 
   uint flat_cell_pos = UnfoldIndex(cell_pos, grid_res);
 
-#if 1
-  float c = GetChar(flat_cell_pos);
-#elif 0
-  float token_offset=65536;
-  float c = GetTokenChar(token_offset, cell_pos.x);
-#elif 0
-  float offset = 0;
-  [branch]
-  if (i.uv01.x < 0) {
-    offset = 1;
-  }
-  float c0 = _Unigram_Letter_Visual_Pointers[cell_pos.x+offset] + '0';
-  float c1 = _Unigram_Letter_Data_Byte00[cell_pos.x+offset] + '0';
-  float c2 = _Unigram_Letter_Data_Byte01[cell_pos.x+offset] + '0';
-  float c;
-  switch (cell_pos.y % 3) {
-    case 0:
-      c = c0;
-      break;
-    case 1:
-      c = c1;
-      break;
-    case 2:
-      c = c2;
-      break;
-  }
-#else
-  // DEBUG: show the token offset and length for the first 4 tokens.
-  uint tok_len, tok_off;
-  TokenLengthOffset(cell_pos.y, tok_len, tok_off);
-  float c;
-  switch (cell_pos.x % 4) {
-    case 0:
-      c = tok_off & 0xff;
-      break;
-    case 1:
-      c = (tok_off >> 8) & 0xff;
-      break;
-    case 2:
-      c = (tok_off >> 16) & 0xff;
-      break;
-    case 3:
-      c = tok_len;
-      break;
-  }
-  c += '0';
-#endif
+  uint which_block, which_datum;
+  float c = GetChar(flat_cell_pos, which_block, which_datum);
 
   float3 msd = renderInBox(c, uv, cell_uv, _Unigram_Letter_Grid_Glyphs, font_res).rgb;
   float sd = median(msd);
@@ -1235,6 +1193,21 @@ UnigramLetterGridOutput UnigramLetterGrid(v2f i, bool facing) {
   output.metallic = 0;
   output.roughness = 1;
   output.emission = 0;
+
+  // Visualize which block is being rendered.
+  {
+    float eps = 1.2E-1;
+    bool in_range = (cell_uv.x < eps || cell_uv.y < eps || 1.0 - cell_uv.x < eps || 1.0 - cell_uv.y < eps);
+    if (in_range)
+    {
+      float hue = which_datum * 0.3f;
+      hue += (which_block % 2) * 0.5f;
+      hue = frac(hue);
+      hue *= TAU;
+      output.albedo.rgb = OKLCHtoLRGB(float3(0.8, 0.2, hue));
+      output.albedo.a = 1;
+    }
+  }
 
   return output;
 }

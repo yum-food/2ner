@@ -155,6 +155,50 @@
 #pragma shader_feature_local _DECAL3_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL3_DOMAIN_WARPING
 //endex
+//ifex _Decal4_Enabled==0
+#pragma shader_feature_local _DECAL4
+#pragma shader_feature_local _DECAL4_NORMAL
+#pragma shader_feature_local _DECAL4_REFLECTIONS
+#pragma shader_feature_local _DECAL4_SDF
+#pragma shader_feature_local _DECAL4_MASK
+#pragma shader_feature_local _DECAL4_TILING_MODE
+#pragma shader_feature_local _DECAL4_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL4_CMYK_WARPING_PLANES
+#pragma shader_feature_local _DECAL4_DOMAIN_WARPING
+//endex
+//ifex _Decal5_Enabled==0
+#pragma shader_feature_local _DECAL5
+#pragma shader_feature_local _DECAL5_NORMAL
+#pragma shader_feature_local _DECAL5_REFLECTIONS
+#pragma shader_feature_local _DECAL5_SDF
+#pragma shader_feature_local _DECAL5_MASK
+#pragma shader_feature_local _DECAL5_TILING_MODE
+#pragma shader_feature_local _DECAL5_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL5_CMYK_WARPING_PLANES
+#pragma shader_feature_local _DECAL5_DOMAIN_WARPING
+//endex
+//ifex _Decal6_Enabled==0
+#pragma shader_feature_local _DECAL6
+#pragma shader_feature_local _DECAL6_NORMAL
+#pragma shader_feature_local _DECAL6_REFLECTIONS
+#pragma shader_feature_local _DECAL6_SDF
+#pragma shader_feature_local _DECAL6_MASK
+#pragma shader_feature_local _DECAL6_TILING_MODE
+#pragma shader_feature_local _DECAL6_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL6_CMYK_WARPING_PLANES
+#pragma shader_feature_local _DECAL6_DOMAIN_WARPING
+//endex
+//ifex _Decal7_Enabled==0
+#pragma shader_feature_local _DECAL7
+#pragma shader_feature_local _DECAL7_NORMAL
+#pragma shader_feature_local _DECAL7_REFLECTIONS
+#pragma shader_feature_local _DECAL7_SDF
+#pragma shader_feature_local _DECAL7_MASK
+#pragma shader_feature_local _DECAL7_TILING_MODE
+#pragma shader_feature_local _DECAL7_REPLACE_ALPHA
+#pragma shader_feature_local _DECAL7_CMYK_WARPING_PLANES
+#pragma shader_feature_local _DECAL7_DOMAIN_WARPING
+//endex
 
 //ifex _3D_SDF_Enabled==0
 #pragma shader_feature_local _3D_SDF

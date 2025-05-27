@@ -7,6 +7,7 @@
 #include "UnityLightingCommon.cginc"
 
 #include "features.cginc"
+#include "LightVolumes.cginc"
 #include "poi.cginc"
 #include "yum_pbr.cginc"
 
@@ -55,6 +56,10 @@ struct YumLighting {
 	float NoL_wrapped_d;  // diffuse
 #endif
   float attenuation;
+  float3 L00;
+  float3 L01r;
+  float3 L01g;
+  float3 L01b;
 };
 
 float getShadowAttenuation(v2f i)
@@ -152,7 +157,7 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
 #endif
 }
 
-float3 yumSH9(float4 n) {
+float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 #if defined(YUM_SH9_STANDARD)
   // Unity gives us the first three bands (L0-L2) of SH coefficients as follows:
   //   unity_SHA*.w:   L0 coefficients
@@ -184,29 +189,49 @@ float3 yumSH9(float4 n) {
     L21 * n.x * n.z +
     L22 * (n.x * n.x - n.y * n.y);
 
+  light.L00 = L00;
+  light.L01r = unity_SHAr.xyz;
+  light.L01g = unity_SHAg.xyz;
+  light.L01b = unity_SHAb.xyz;
+
   return L0 + L1 + L2;
+#elif 1
+  // Light volumes. We omit the L01 contribution since flat shading looks
+  // better on avatars.
+  LightVolumeSH(worldPos, light.L00, light.L01r, light.L01g, light.L01b);
+  return LightVolumeEvaluate(n.xyz, light.L00,
+      _UdonLightVolumeEnabled ? light.L01r : 0,
+      _UdonLightVolumeEnabled ? light.L01g : 0,
+      _UdonLightVolumeEnabled ? light.L01b : 0);
 #else
   // On non-photorealistic avatars, simply using the diffuse component looks
   // better. *shruge*
   float3 L00  = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
+
+  light.L00 = L00;
+  light.L01r = unity_SHAr.xyz;
+  light.L01g = unity_SHAg.xyz;
+  light.L01b = unity_SHAb.xyz;
+
   return L00;
 #endif
 }
 
-float4 getIndirectDiffuse(v2f i, float4 vertexLightColor) {
+float4 getIndirectDiffuse(v2f i, float4 vertexLightColor,
+    inout YumLighting light) {
 	float4 diffuse = vertexLightColor;
 #if defined(FORWARD_BASE_PASS)
 #if defined(LIGHTMAP_ON)
 	diffuse.xyz = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 #else
-	diffuse.xyz += max(0, yumSH9(float4(0, 0, 0, 1)));
+	diffuse.xyz += max(0, yumSH9(float4(i.normal, 0), i.worldPos, light));
 #endif
 #endif
 	return diffuse;
 }
 
 YumLighting GetYumLighting(v2f i, YumPbr pbr) {
-	YumLighting light;
+	YumLighting light = (YumLighting) 0;
 
   // normalize has no visibile impact in test scene
   light.view_dir = -i.eyeVec.xyz;
@@ -216,7 +241,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	light.direct = _LightColor0.rgb;
 	// TODO filament's spherical harmonics look nicer than this.
 	// See FilamentLightIndirect.cginc::UnityGI_Irradiance in filamented.
-  light.diffuse = getIndirectDiffuse(i, /*vertexLightColor=*/0);
+  light.diffuse = getIndirectDiffuse(i, /*vertexLightColor=*/0, light);
 #if defined(_MIN_BRIGHTNESS)
   light.diffuse = max(_Min_Brightness, light.diffuse);
 #endif

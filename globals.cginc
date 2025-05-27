@@ -283,17 +283,26 @@ float _Decal##n##_Domain_Warping_Speed;
 #if defined(_DECAL0)
 DECLARE_DECAL_VARIABLES(0)
 #endif
-
 #if defined(_DECAL1)
 DECLARE_DECAL_VARIABLES(1)
 #endif
-
 #if defined(_DECAL2)
 DECLARE_DECAL_VARIABLES(2)
 #endif
-
 #if defined(_DECAL3)
 DECLARE_DECAL_VARIABLES(3)
+#endif
+#if defined(_DECAL4)
+DECLARE_DECAL_VARIABLES(4)
+#endif
+#if defined(_DECAL5)
+DECLARE_DECAL_VARIABLES(5)
+#endif
+#if defined(_DECAL6)
+DECLARE_DECAL_VARIABLES(6)
+#endif
+#if defined(_DECAL7)
+DECLARE_DECAL_VARIABLES(7)
 #endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)
