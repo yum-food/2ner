@@ -294,7 +294,15 @@
 //ifex _Custom30_Enabled==0
 #pragma shader_feature_local _CUSTOM30
 #pragma shader_feature_local _CUSTOM30_BASICCUBE
+#pragma shader_feature_local _CUSTOM30_BASICCUBE_CHAMFER
 #pragma shader_feature_local _CUSTOM30_BASICWEDGE
+#pragma shader_feature_local _CUSTOM30_BASICPLATFORM
+#pragma shader_feature_local _CUSTOM30_BASICPLATFORM_CHAMFER
+#pragma shader_feature_local _CUSTOM30_BASICPLATFORM_Y_ALIGNED
+//endex
+
+//ifex _Depth_Prepass_Enabled==0
+#pragma shader_feature_local _DEPTH_PREPASS
 //endex
 
 #endif  // __FEATURES_INC

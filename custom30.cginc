@@ -8,6 +8,8 @@
 #if defined(_CUSTOM30)
 
 #define CUSTOM30_MAX_STEPS 30
+#define SQRT_2     1.414213562
+#define RCP_SQRT_2 0.707106781
 
 struct Custom30Output {
   float3 objPos;
@@ -26,8 +28,8 @@ float cut_with_box(float3 p, float d, float3 box_size) {
   float2 pp_yz = p.yz;
 
   // Rotate by 45 degrees
-  float c = 0.70710678;
-  float s = 0.70710678;
+  float c = RCP_SQRT_2;
+  float s = RCP_SQRT_2;
   pp_xy = float2(c * p.x - s * p.y, s * p.x + c * p.y);
   d = max(d, distance_from_box(float3(pp_xy, p.z), box_size));
 
@@ -46,7 +48,9 @@ float BasicCube_map(float3 p) {
   float core_d = distance_from_box(p, 0.95);
   float d = min(box_d, core_d);
 
+#if defined(_CUSTOM30_BASICCUBE_CHAMFER)
   d = cut_with_box(p, d, 1.3);
+#endif
 
   return d;
 }
@@ -85,14 +89,19 @@ Custom30Output BasicCube(v2f i) {
   }
 
   Custom30Output o;
+#if !defined(_DEPTH_PREPASS)
   clip(epsilon - d);
+#endif
   float3 objPos = ro + rd * d_acc;
   o.objPos = objPos;
   // Transform from SDF space back to object space
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
-  o.normal = BasicCube_normal(objPos);
+  
+  float3 sdfNormal = BasicCube_normal(objPos) * float3(-1, 1, 1);
+  o.normal = UnityObjectToWorldNormal(sdfNormal);
+  
   return o;
 }
 #endif
@@ -103,7 +112,6 @@ float BasicWedge_map(float3 p) {
   float cut_plane_d = distance_from_plane(p - float3(0, 0, 0), -normalize(float3(1, 0, 1)), 0);
 
   float d = op_sub(box_d, cut_plane_d);
-  //d = cut_with_box(p, d, 1.3);
   return d;
 }
 
@@ -141,14 +149,100 @@ Custom30Output BasicWedge(v2f i) {
   }
 
   Custom30Output o;
-  clip(epsilon - d);
+  //clip(epsilon - d);
   float3 objPos = ro + rd * d_acc;
   o.objPos = objPos;
   // Transform from SDF space back to object space
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
-  o.normal = BasicWedge_normal(objPos);
+  
+  float3 sdfNormal = BasicWedge_normal(objPos) * float3(-1, 1, 1);
+  o.normal = UnityObjectToWorldNormal(sdfNormal);
+  
+  return o;
+}
+#endif
+
+#if defined(_CUSTOM30_BASICPLATFORM)
+float BasicPlatform_map(float3 p) {
+  #if defined(_CUSTOM30_BASICPLATFORM_Y_ALIGNED)
+    p.xy = p.yx;
+  #endif
+
+  float3 platform_size = float3(1.0, 0.4, 0.2);
+  float box_d = distance_from_box_frame(p, platform_size, .08);
+  float core_d = distance_from_box(p, platform_size - 0.05);
+  float d = min(box_d, core_d);
+
+#if defined(_CUSTOM30_BASICPLATFORM_CHAMFER)
+  {
+    float3 pp = p;
+    pp.xy = float2(RCP_SQRT_2 * p.x - RCP_SQRT_2 * p.y, RCP_SQRT_2 * p.x + RCP_SQRT_2 * p.y);
+    d = max(d, distance_from_box(pp, 0.9));
+  }
+  {
+    float3 pp = p;
+    pp.xz = float2(RCP_SQRT_2 * p.x - RCP_SQRT_2 * p.z, RCP_SQRT_2 * p.x + RCP_SQRT_2 * p.z);
+    d = max(d, distance_from_box(pp, 0.78));
+  }
+  {
+    float3 pp = p;
+    pp.yz = float2(RCP_SQRT_2 * p.y - RCP_SQRT_2 * p.z, RCP_SQRT_2 * p.y + RCP_SQRT_2 * p.z);
+    float c = 0.36;
+    d = max(d, distance_from_box(pp, float3(1.0, c, c)));
+  }
+#endif
+
+  return d;
+}
+
+float3 BasicPlatform_normal(float3 p) {
+  float epsilon = 1E-3;
+  float center_d = BasicPlatform_map(p);
+  float3 n = float3(
+    BasicPlatform_map(p + float3(epsilon, 0, 0)) - center_d,
+    BasicPlatform_map(p + float3(0, epsilon, 0)) - center_d,
+    BasicPlatform_map(p + float3(0, 0, epsilon)) - center_d);
+  return normalize(n);
+}
+
+Custom30Output BasicPlatform(v2f i) {
+  float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+
+  float3 frag_to_origin = GetFragToOrigin(i);
+
+  float3 ro = -frag_to_origin;
+  float3 rd = normalize(i.objPos - objSpaceCameraPos);
+
+  float d;
+  float d_acc = 0;
+  float epsilon = 5E-3;
+  // Max distance for platform bounding sphere
+  float max_d = length(float3(1.0, 0.4, 0.2)) * 2.0f;
+  [loop]
+  for (uint ii = 0; ii < CUSTOM30_MAX_STEPS; ++ii) {
+    float3 p = ro + rd * d_acc;
+    d = BasicPlatform_map(p);
+    d_acc += d;
+    if (d < epsilon) break;
+    if (d_acc > max_d) break;
+  }
+
+  Custom30Output o;
+#if !defined(_DEPTH_PREPASS)
+  clip(epsilon - d);
+#endif
+  float3 objPos = ro + rd * d_acc;
+  o.objPos = objPos;
+  // Transform from SDF space back to object space
+  float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  float4 clipPos = UnityObjectToClipPos(objSpacePos);
+  o.depth = clipPos.z / clipPos.w;
+  
+  float3 sdfNormal = BasicPlatform_normal(objPos) * float3(-1, 1, 1);
+  o.normal = UnityObjectToWorldNormal(sdfNormal);
+  
   return o;
 }
 #endif

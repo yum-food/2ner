@@ -167,7 +167,7 @@ v2f vert(appdata v) {
 }
 
 float4 frag(v2f i, uint facing : SV_IsFrontFace
-#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || defined(_CUSTOM30)
+#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || (defined(_CUSTOM30) && !defined(_DEPTH_PREPASS))
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
@@ -217,18 +217,33 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
+#if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS)
 #if defined(_CUSTOM30_BASICCUBE)
   Custom30Output basic_cube_output = BasicCube(i);
   i.pos = UnityObjectToClipPos(basic_cube_output.objPos);
   i.normal = basic_cube_output.normal;
+#if !defined(_DEPTH_PREPASS)
   depth = basic_cube_output.depth;
+#endif
 #endif
 
 #if defined(_CUSTOM30_BASICWEDGE)
   Custom30Output basic_wedge_output = BasicWedge(i);
   i.pos = UnityObjectToClipPos(basic_wedge_output.objPos);
   i.normal = basic_wedge_output.normal;
+#if !defined(_DEPTH_PREPASS)
   depth = basic_wedge_output.depth;
+#endif
+#endif
+#endif  // FORWARD_BASE_PASS
+
+#if defined(_CUSTOM30_BASICPLATFORM)
+  Custom30Output basic_platform_output = BasicPlatform(i);
+  i.pos = UnityObjectToClipPos(basic_platform_output.objPos);
+  i.normal = basic_platform_output.normal;
+#if !defined(_DEPTH_PREPASS)
+  depth = basic_platform_output.depth;
+#endif
 #endif
 
   YumPbr pbr = GetYumPbr(i);
@@ -334,7 +349,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   UNITY_APPLY_FOG(_unity_fogCoord, lit.rgb);
 
   return lit;
-#elif defined(SHADOW_CASTER_PASS) || defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS)
+#elif defined(SHADOW_CASTER_PASS) || defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS) || defined(DEPTH_PREPASS)
   return 0;
 #endif
 }

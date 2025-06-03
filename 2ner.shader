@@ -111,6 +111,7 @@ Shader "yum_food/2ner"
         //ifex _Custom30_BasicCube_Enabled==0
         [HideInInspector] m_start_Custom30_BasicCube("Basic cube", Float) = 0
         [ThryToggle(_CUSTOM30_BASICCUBE)]_Custom30_BasicCube_Enabled("Enable", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICCUBE_CHAMFER)]_Custom30_BasicCube_Chamfer("Chamfer", Float) = 0
         [HideInInspector] m_end_Custom30_BasicCube("Basic cube", Float) = 0
         //endex
 
@@ -118,6 +119,14 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Custom30_BasicWedge("Basic wedge", Float) = 0
         [ThryToggle(_CUSTOM30_BASICWEDGE)]_Custom30_BasicWedge_Enabled("Enable", Float) = 0
         [HideInInspector] m_end_Custom30_BasicWedge("Basic wedge", Float) = 0
+        //endex
+
+        //ifex _Custom30_BasicPlatform_Enabled==0
+        [HideInInspector] m_start_Custom30_BasicPlatform("Basic platform", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICPLATFORM)]_Custom30_BasicPlatform_Enabled("Enable", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICPLATFORM_CHAMFER)]_Custom30_BasicPlatform_Chamfer("Chamfer", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICPLATFORM_Y_ALIGNED)]_Custom30_BasicPlatform_Y_Aligned("Y aligned", Float) = 0
+        [HideInInspector] m_end_Custom30_BasicPlatform("Basic platform", Float) = 0
         //endex
 
         [HideInInspector] m_end_Custom30("Custom 30", Float) = 0
@@ -1806,11 +1815,19 @@ Shader "yum_food/2ner"
         //endex
 
       [HideInInspector] m_renderingOptions("Rendering Options", Float) = 0
+
       [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2
       [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4
       [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 1
       [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 0
       [Enum(Off, 0, On, 1)] _ZWrite("ZWrite", Int) = 1
+
+      //ifex _Depth_Prepass_Enabled==0
+      [HideInInspector] m_start_Depth_Prepass("Depth Prepass", Float) = 0
+        [ThryToggle(_DEPTH_PREPASS)] _Depth_Prepass_Enabled("Enable", Float) = 0
+      [HideInInspector] m_end_Depth_Prepass("Depth Prepass", Float) = 0
+      //endex
+
       [HideInInspector] m_start_blending ("Blending--{button_help:{text:Tutorial,action:{type:URL,data:https://www.poiyomi.com/rendering/blending},hover:Documentation}}", Float) = 0
       [DoNotAnimate][Enum(Thry.BlendOp)]_BlendOp ("RGB Blend Op", Int) = 0
       [DoNotAnimate][Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("RGB Source Blend", Int) = 1
@@ -1867,6 +1884,33 @@ Shader "yum_food/2ner"
   SubShader {
 		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "VRCFallback" = "Standard" }
 
+    //ifex _Depth_Prepass_Enabled==0
+    Pass {
+      Name "DEPTHPREPASS"
+      Tags { }
+      
+      ColorMask 0
+      ZWrite On
+      ZTest LEqual
+      Cull [_Cull]
+
+      CGPROGRAM
+      #pragma target 5.0
+      #pragma multi_compile_instancing
+      #pragma vertex vert
+      #pragma fragment frag
+
+      //ifex _Tessellation_Enabled==0
+      #pragma hull hull
+      #pragma domain domain
+      //endex
+
+      #define DEPTH_PREPASS
+
+      #include "2ner.cginc"
+      ENDCG
+    }
+    //endex
     //ifex _Masked_Stencil1_Enabled==0
     Pass {
       Name "MASKEDSTENCIL1"
@@ -2062,7 +2106,12 @@ Shader "yum_food/2ner"
       Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
       Cull [_Cull]
       ZWrite [_ZWrite]
+      //ifex _Depth_Prepass_Enabled==0
+      ZTest LEqual
+      //endex
+      //ifex _Depth_Prepass_Enabled!=0
       ZTest [_ZTest]
+      //endex
 
       //ifex _Stencil_Enabled==0
 			Stencil
