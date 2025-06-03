@@ -86,7 +86,7 @@ float distance_from_box_frame(float3 p, float3 b, float e)
       length(max(float3(q.x,q.y,p.z),0.0))+min(max(q.x,max(q.y,p.z)),0.0));
 }
 
-float distance_from_pyramid(float3 p, float h, bool invert)
+float distance_from_pyramid(float3 p, float h)
 {
   float m2 = h*h + 0.25;
 
@@ -155,20 +155,15 @@ float distance_from_ellipsoid(float3 p, float3 r)
     return k1*(k1-1.0)/k2;
 }
 
-/*
-float sdHexPrism( vec3 p, vec2 h )
-{
-}
-*/
-
 float3 op_rep(in float3 p, in float3 c)
 {
   return glsl_mod(p+0.5*c,c)-0.5*c;
 }
 
+// compute d1 - d2
 float op_sub(float d1, float d2)
 {
-  return max(-d1,d2);
+  return max(d1,-d2);
 }
 
 // End licensed section

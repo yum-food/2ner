@@ -104,6 +104,25 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Outlines("Outlines", Float) = 0
         //endex
 
+        //ifex _Custom30_Enabled==0
+        [HideInInspector] m_start_Custom30("Custom 30", Float) = 0
+        [ThryToggle(_CUSTOM30)]_Custom30_Enabled("Enable", Float) = 0
+
+        //ifex _Custom30_BasicCube_Enabled==0
+        [HideInInspector] m_start_Custom30_BasicCube("Basic cube", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICCUBE)]_Custom30_BasicCube_Enabled("Enable", Float) = 0
+        [HideInInspector] m_end_Custom30_BasicCube("Basic cube", Float) = 0
+        //endex
+
+        //ifex _Custom30_BasicWedge_Enabled==0
+        [HideInInspector] m_start_Custom30_BasicWedge("Basic wedge", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICWEDGE)]_Custom30_BasicWedge_Enabled("Enable", Float) = 0
+        [HideInInspector] m_end_Custom30_BasicWedge("Basic wedge", Float) = 0
+        //endex
+
+        [HideInInspector] m_end_Custom30("Custom 30", Float) = 0
+        //endex
+
         [HideInInspector] m_start_Matcaps("Matcaps", Float) = 0
           //ifex _Matcap0_Enabled==0
           [HideInInspector] m_start_Matcap0("Matcap 0", Float) = 0

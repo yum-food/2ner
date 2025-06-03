@@ -4,6 +4,7 @@
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 
+#include "custom30.cginc"
 #include "eyes.cginc"
 #include "face_me.cginc"
 #include "false_color_visualization.cginc"
@@ -159,11 +160,14 @@ v2f vert(appdata v) {
 #if defined(SHADOW_CASTER_PASS)
 	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
 #endif
+
+  // Vertex color
+  o.color = v.color;
   return o;
 }
 
 float4 frag(v2f i, uint facing : SV_IsFrontFace
-#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING)
+#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || defined(_CUSTOM30)
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
@@ -211,6 +215,20 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #if defined(_EYE_EFFECT_00)
   EyeEffectOutput eye_effect_00 = EyeEffect_00(i);
   i.uv01.xy = eye_effect_00.uv;
+#endif
+
+#if defined(_CUSTOM30_BASICCUBE)
+  Custom30Output basic_cube_output = BasicCube(i);
+  i.pos = UnityObjectToClipPos(basic_cube_output.objPos);
+  i.normal = basic_cube_output.normal;
+  depth = basic_cube_output.depth;
+#endif
+
+#if defined(_CUSTOM30_BASICWEDGE)
+  Custom30Output basic_wedge_output = BasicWedge(i);
+  i.pos = UnityObjectToClipPos(basic_wedge_output.objPos);
+  i.normal = basic_wedge_output.normal;
+  depth = basic_wedge_output.depth;
 #endif
 
   YumPbr pbr = GetYumPbr(i);

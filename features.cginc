@@ -291,5 +291,11 @@
 #pragma shader_feature_local _SPHERIZE
 //endex
 
+//ifex _Custom30_Enabled==0
+#pragma shader_feature_local _CUSTOM30
+#pragma shader_feature_local _CUSTOM30_BASICCUBE
+#pragma shader_feature_local _CUSTOM30_BASICWEDGE
+//endex
+
 #endif  // __FEATURES_INC
 
