@@ -189,7 +189,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
 
-#if defined(_RAYMARCHED_FOG)
+#if defined(_RAYMARCHED_FOG) && defined(FORWARD_BASE_PASS)
   {
     FogParams fog_params = {
       _Raymarched_Fog_Steps,
@@ -199,6 +199,10 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
       _Raymarched_Fog_Dithering_Noise_TexelSize,
       _Raymarched_Fog_Density_Noise,
       _Raymarched_Fog_Density_Noise_Scale,
+      _Raymarched_Fog_Velocity.xyz,
+      #if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+      _Raymarched_Fog_Density_Exponent,
+      #endif
       #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
       _Raymarched_Fog_Height_Density_Min,
       _Raymarched_Fog_Height_Density_Max,

@@ -19,6 +19,12 @@ public class WhiteNoiseTextureGenerator : EditorWindow
     private int textureDepth = 32;
     private string textureName = "WhiteNoiseTexture";
     private NoiseType noiseType = NoiseType.ThreeDimensional;
+    
+    // Domain warping parameters
+    private bool enableDomainWarping = false;
+    private int domainWarpingOctaves = 2;
+    private float domainWarpingStrength = 0.1f;
+    private float domainWarpingScale = 0.5f;
 
     [MenuItem("Tools/yum_food/White Noise Texture Generator")]
     public static void ShowWindow()
@@ -35,6 +41,19 @@ public class WhiteNoiseTextureGenerator : EditorWindow
         textureDepth = EditorGUILayout.IntField("Texture Depth", textureDepth);
         textureName = EditorGUILayout.TextField("Texture Name", textureName);
         noiseType = (NoiseType)EditorGUILayout.EnumPopup("Noise Type", noiseType);
+        
+        EditorGUILayout.Space();
+        GUILayout.Label("Domain Warping", EditorStyles.boldLabel);
+        enableDomainWarping = EditorGUILayout.Toggle("Enable Domain Warping", enableDomainWarping);
+        
+        if (enableDomainWarping)
+        {
+            EditorGUI.indentLevel++;
+            domainWarpingOctaves = EditorGUILayout.IntSlider("Octaves", domainWarpingOctaves, 1, 10);
+            domainWarpingStrength = EditorGUILayout.Slider("Strength", domainWarpingStrength, 0f, 10f);
+            domainWarpingScale = EditorGUILayout.Slider("Scale", domainWarpingScale, 0.1f, 10f);
+            EditorGUI.indentLevel--;
+        }
 
         if (GUILayout.Button("Generate Texture"))
         {
@@ -52,6 +71,43 @@ public class WhiteNoiseTextureGenerator : EditorWindow
     {
         TextureFormat format = GetTextureFormat();
         Texture3D texture = new Texture3D(textureWidth, textureHeight, textureDepth, format, false);
+        
+        if (enableDomainWarping)
+        {
+            GenerateWithDomainWarping(texture);
+        }
+        else
+        {
+            GenerateSimpleNoise(texture);
+        }
+
+        texture.Apply();
+
+        string path = $"Assets/{textureName}.asset";
+        
+        // Check if asset already exists
+        Texture3D existingTexture = AssetDatabase.LoadAssetAtPath<Texture3D>(path);
+        if (existingTexture != null)
+        {
+            // Copy new texture data to existing asset to preserve GUID
+            EditorUtility.CopySerialized(texture, existingTexture);
+            EditorUtility.SetDirty(existingTexture);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            EditorUtility.DisplayDialog("Success", $"White noise texture updated at {path}", "OK");
+        }
+        else
+        {
+            // Create new asset
+            AssetDatabase.CreateAsset(texture, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            EditorUtility.DisplayDialog("Success", $"White noise texture generated and saved at {path}", "OK");
+        }
+    }
+    
+    private void GenerateSimpleNoise(Texture3D texture)
+    {
         Color[] colors = new Color[textureWidth * textureHeight * textureDepth];
 
         for (int z = 0; z < textureDepth; z++)
@@ -67,14 +123,102 @@ public class WhiteNoiseTextureGenerator : EditorWindow
         }
 
         texture.SetPixels(colors);
-        texture.Apply();
-
-        string path = $"Assets/{textureName}.asset";
-        AssetDatabase.CreateAsset(texture, path);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-
-        EditorUtility.DisplayDialog("Success", $"White noise texture generated and saved at {path}", "OK");
+    }
+    
+    private void GenerateWithDomainWarping(Texture3D texture)
+    {
+        // First pass: generate base noise
+        Color[] baseColors = new Color[textureWidth * textureHeight * textureDepth];
+        for (int i = 0; i < baseColors.Length; i++)
+        {
+            baseColors[i] = GenerateColor();
+        }
+        
+        // Second pass: apply domain warping
+        Color[] warpedColors = new Color[textureWidth * textureHeight * textureDepth];
+        
+        for (int z = 0; z < textureDepth; z++)
+        {
+            for (int y = 0; y < textureHeight; y++)
+            {
+                for (int x = 0; x < textureWidth; x++)
+                {
+                    Vector3 coord = new Vector3(
+                        (float)x / textureWidth,
+                        (float)y / textureHeight,
+                        (float)z / textureDepth
+                    );
+                    
+                    // Apply domain warping
+                    for (int octave = 0; octave < domainWarpingOctaves; octave++)
+                    {
+                        Vector3 sampleCoord = coord * domainWarpingScale;
+                        Color warpValue = SampleTexture(baseColors, sampleCoord);
+                        
+                        // Convert color to offset vector
+                        Vector3 offset = new Vector3(
+                            warpValue.r * 2f - 1f,
+                            warpValue.g * 2f - 1f,
+                            warpValue.b * 2f - 1f
+                        ) * domainWarpingStrength;
+                        
+                        coord += offset;
+                    }
+                    
+                    // Sample final color at warped coordinate
+                    int index = x + y * textureWidth + z * textureWidth * textureHeight;
+                    warpedColors[index] = SampleTexture(baseColors, coord);
+                }
+            }
+        }
+        
+        texture.SetPixels(warpedColors);
+    }
+    
+    private Color SampleTexture(Color[] colors, Vector3 coord)
+    {
+        // Wrap coordinates
+        coord.x = Mathf.Repeat(coord.x, 1f);
+        coord.y = Mathf.Repeat(coord.y, 1f);
+        coord.z = Mathf.Repeat(coord.z, 1f);
+        
+        // Convert to texture space
+        float fx = coord.x * (textureWidth - 1);
+        float fy = coord.y * (textureHeight - 1);
+        float fz = coord.z * (textureDepth - 1);
+        
+        // Trilinear interpolation
+        int x0 = Mathf.FloorToInt(fx);
+        int y0 = Mathf.FloorToInt(fy);
+        int z0 = Mathf.FloorToInt(fz);
+        int x1 = (x0 + 1) % textureWidth;
+        int y1 = (y0 + 1) % textureHeight;
+        int z1 = (z0 + 1) % textureDepth;
+        
+        float dx = fx - x0;
+        float dy = fy - y0;
+        float dz = fz - z0;
+        
+        // Sample 8 corners
+        Color c000 = colors[x0 + y0 * textureWidth + z0 * textureWidth * textureHeight];
+        Color c001 = colors[x0 + y0 * textureWidth + z1 * textureWidth * textureHeight];
+        Color c010 = colors[x0 + y1 * textureWidth + z0 * textureWidth * textureHeight];
+        Color c011 = colors[x0 + y1 * textureWidth + z1 * textureWidth * textureHeight];
+        Color c100 = colors[x1 + y0 * textureWidth + z0 * textureWidth * textureHeight];
+        Color c101 = colors[x1 + y0 * textureWidth + z1 * textureWidth * textureHeight];
+        Color c110 = colors[x1 + y1 * textureWidth + z0 * textureWidth * textureHeight];
+        Color c111 = colors[x1 + y1 * textureWidth + z1 * textureWidth * textureHeight];
+        
+        // Interpolate
+        Color c00 = Color.Lerp(c000, c001, dz);
+        Color c01 = Color.Lerp(c010, c011, dz);
+        Color c10 = Color.Lerp(c100, c101, dz);
+        Color c11 = Color.Lerp(c110, c111, dz);
+        
+        Color c0 = Color.Lerp(c00, c01, dy);
+        Color c1 = Color.Lerp(c10, c11, dy);
+        
+        return Color.Lerp(c0, c1, dx);
     }
 
     private TextureFormat GetTextureFormat()

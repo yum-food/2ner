@@ -544,9 +544,15 @@ float4 _Raymarched_Fog_Dithering_Noise_TexelSize;
 texture3D _Raymarched_Fog_Density_Noise;
 float4 _Raymarched_Fog_Density_Noise_Scale;
 float _Raymarched_Fog_Y_Cutoff;
+float3 _Raymarched_Fog_Velocity;
+#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+float _Raymarched_Fog_Density_Exponent;
+#endif
+#if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
 float _Raymarched_Fog_Height_Density_Min;
 float _Raymarched_Fog_Height_Density_Max;
 float _Raymarched_Fog_Height_Density_Power;
+#endif
 #endif  // _RAYMARCHED_FOG
 
 #endif  // __GLOBALS_INC

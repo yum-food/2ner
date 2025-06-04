@@ -319,5 +319,9 @@
 #pragma shader_feature_local _RAYMARCHED_FOG_HEIGHT_DENSITY
 //endex
 
+//ifex _Raymarched_Fog_Density_Exponent_Enabled==0
+#pragma shader_feature_local _RAYMARCHED_FOG_DENSITY_EXPONENT
+//endex
+
 #endif  // __FEATURES_INC
 

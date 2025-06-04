@@ -826,6 +826,12 @@ Shader "yum_food/2ner"
           _Raymarched_Fog_Density_Noise("Density noise", 3D) = "black" {}
           _Raymarched_Fog_Density_Noise_Scale("Density noise scale", Vector) = (1, 1, 1, 0)
           _Raymarched_Fog_Y_Cutoff("Y cutoff", Float) = -1000
+          _Raymarched_Fog_Velocity("Velocity", Vector) = (1, -.2, 0, 0)
+
+          [HideInInspector] m_start_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
+            [ThryToggle(_RAYMARCHED_FOG_DENSITY_EXPONENT)] _Raymarched_Fog_Density_Exponent_Enabled("Enable", Float) = 0
+            _Raymarched_Fog_Density_Exponent("Exponent", Float) = 1
+          [HideInInspector] m_end_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
 
           [HideInInspector] m_start_Raymarched_Fog_Height_Density("Height density", Float) = 0
             [ThryToggle(_RAYMARCHED_FOG_HEIGHT_DENSITY)] _Raymarched_Fog_Height_Density_Enabled("Enable", Float) = 0

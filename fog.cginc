@@ -16,6 +16,10 @@ struct FogParams {
     float4 dithering_noise_texelsize;
     texture3D density_noise;
     float4 density_noise_scale;
+    float3 velocity;
+#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+    float density_exponent;
+#endif
 #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
     float height_density_min;
     float height_density_max;
@@ -68,8 +72,15 @@ FogResult raymarched_fog(v2f i, FogParams p)
   [loop]
   for (uint ii = 0; ii < p.steps; ++ii) {
     pp += step_size * rd;
+
+    float3 noise_coord = (pp + _Time[0] * p.velocity) * p.density_noise_scale.xyz;
+
     float cur_d = p.density_noise.SampleLevel(linear_repeat_s,
-        pp * p.density_noise_scale.xyz, 0);
+        noise_coord, 0);
+
+#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+    cur_d = pow(cur_d, p.density_exponent);
+#endif
 
     cur_d *= p.density * step_size;
 
@@ -77,8 +88,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
     // Apply height-based density (branchless)
     float t = saturate((pp.y - p.height_density_min) /
                       (p.height_density_max - p.height_density_min));
-    float height_factor = pow(1.0 - t, p.height_density_power);
-    cur_d *= height_factor;
+    cur_d *= 1.0 - t;
 #endif
 
     cur_d = saturate(cur_d);
