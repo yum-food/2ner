@@ -690,7 +690,7 @@ Shader "yum_food/2ner"
               _Decal5_Mask("Mask", 2D) = "white" {}
             [HideInInspector] m_end_Decal5_Mask("Mask", Float) = 0
             //endex
-          [HideInInspector] m_end_Decal6("Decal 5", Float) = 0
+          [HideInInspector] m_end_Decal5("Decal 5", Float) = 0
           //endex
           //ifex _Decal6_Enabled==0
           [HideInInspector] m_start_Decal6("Decal 6", Float) = 0
@@ -1073,7 +1073,7 @@ Shader "yum_food/2ner"
           _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00_Animated("Block 09, Datum 03, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01_Animated("Block 09, Datum 03, Byte 01", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00_Animated("Block 09, Datum 04, Byte 00", Range(0,255)) = 255
-          _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01_Animated("Block 09, iatum 04, Byte 01", Range(0,255)) = 255
+          _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01_Animated("Block 09, Datum 04, Byte 01", Range(0,255)) = 255
 
           _Unigram_Letter_Grid_Data_Block10_Datum00_Byte00_Animated("Block 10, Datum 00, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block10_Datum00_Byte01_Animated("Block 10, Datum 00, Byte 01", Range(0,255)) = 255
@@ -1183,7 +1183,7 @@ Shader "yum_food/2ner"
           _Unigram_Letter_Grid_Data_Block19_Datum03_Byte00_Animated("Block 19, Datum 03, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block19_Datum03_Byte01_Animated("Block 19, Datum 03, Byte 01", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block19_Datum04_Byte00_Animated("Block 19, Datum 04, Byte 00", Range(0,255)) = 255
-          _Unigram_Letter_Grid_Data_Block19_Datum04_Byte01_Animated("Block 19, iatum 04, Byte 01", Range(0,255)) = 255
+          _Unigram_Letter_Grid_Data_Block19_Datum04_Byte01_Animated("Block 19, Datum 04, Byte 01", Range(0,255)) = 255
 
           _Unigram_Letter_Grid_Data_Block20_Datum00_Byte00_Animated("Block 20, Datum 00, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block20_Datum00_Byte01_Animated("Block 20, Datum 00, Byte 01", Range(0,255)) = 255
@@ -1293,7 +1293,7 @@ Shader "yum_food/2ner"
           _Unigram_Letter_Grid_Data_Block29_Datum03_Byte00_Animated("Block 29, Datum 03, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block29_Datum03_Byte01_Animated("Block 29, Datum 03, Byte 01", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block29_Datum04_Byte00_Animated("Block 29, Datum 04, Byte 00", Range(0,255)) = 255
-          _Unigram_Letter_Grid_Data_Block29_Datum04_Byte01_Animated("Block 29, iatum 04, Byte 01", Range(0,255)) = 255
+          _Unigram_Letter_Grid_Data_Block29_Datum04_Byte01_Animated("Block 29, Datum 04, Byte 01", Range(0,255)) = 255
 
           _Unigram_Letter_Grid_Data_Block30_Datum00_Byte00_Animated("Block 30, Datum 00, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block30_Datum00_Byte01_Animated("Block 30, Datum 00, Byte 01", Range(0,255)) = 255
@@ -1403,7 +1403,7 @@ Shader "yum_food/2ner"
           _Unigram_Letter_Grid_Data_Block39_Datum03_Byte00_Animated("Block 39, Datum 03, Byte 00", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block39_Datum03_Byte01_Animated("Block 39, Datum 03, Byte 01", Range(0,255)) = 255
           _Unigram_Letter_Grid_Data_Block39_Datum04_Byte00_Animated("Block 39, Datum 04, Byte 00", Range(0,255)) = 255
-          _Unigram_Letter_Grid_Data_Block39_Datum04_Byte01_Animated("Block 39, iatum 04, Byte 01", Range(0,255)) = 255
+          _Unigram_Letter_Grid_Data_Block39_Datum04_Byte01_Animated("Block 39, Datum 04, Byte 01", Range(0,255)) = 255
 
         [HideInInspector] m_end_Unigram_Letter_Grid("Unigram letter grid", Float) = 0
         //endex

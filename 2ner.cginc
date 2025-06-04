@@ -194,10 +194,10 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
     FogParams fog_params = {
       _Raymarched_Fog_Steps,
       _Raymarched_Fog_Density,
+      _Raymarched_Fog_Y_Cutoff,
       _Raymarched_Fog_Dithering_Noise,
       _Raymarched_Fog_Density_Noise,
-      _Raymarched_Fog_Density_Noise_Scale,
-      _Raymarched_Fog_Y_Cutoff
+      _Raymarched_Fog_Density_Noise_Scale
     };
     FogResult fog_result = raymarched_fog(i, fog_params);
     depth = fog_result.depth;

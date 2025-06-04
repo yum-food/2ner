@@ -35,7 +35,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
   linearZ = min(1E3, linearZ);
 
   // Get intersection with plane at elevation y.
-  float plane_y = -10;
+  float plane_y = p.y_cutoff;
   float distance_to_y = 1E3;
   if (abs(rd.y) > 1E-6) {
     float t = (plane_y - ro.y) / rd.y;
@@ -48,6 +48,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
   float step_size = linearZ / p.steps;
   float3 pp = ro;
   float d = 0;
+  [loop]
   for (uint ii = 0; ii < p.steps; ++ii) {
     pp += step_size * rd;
     float cur_d = p.density_noise.SampleLevel(linear_repeat_s,
@@ -59,9 +60,9 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
   FogResult r;
   r.color.rgb = 1;
-  r.color.rgb = saturate(log(linearZ) / 5.0);
-  //r.color.a = saturate(d);
-  r.color.a = 1;
+  //r.color.rgb = saturate(log(linearZ) / 5.0);
+  r.color.a = saturate(d);
+  //r.color.a = 1;
   r.depth = 0.0001;  // Very small depth value to render in front
   return r;
 }
