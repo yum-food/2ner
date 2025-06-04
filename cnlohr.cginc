@@ -76,10 +76,9 @@ float GetLinearZFromZDepth_WorksWithMirrors(float zDepthFromMap, float2 screenUV
 
 void GetScreenUVAndPerspectiveFactor(float3 worldPos, float4 clipPos, out float2 screen_uv, out float perspective_factor) {
     float3 full_vec_eye_to_geometry = worldPos - _WorldSpaceCameraPos;
-    float3 world_dir = normalize(worldPos - _WorldSpaceCameraPos);
     float perspective_divide = 1.0f / clipPos.w;
     perspective_factor = length(full_vec_eye_to_geometry * perspective_divide);
-    screen_uv = clipPos.xy * perspective_divide;
+    screen_uv = ComputeScreenPos(clipPos).xy;
 }
 
 #if defined(_SSAO)

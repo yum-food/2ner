@@ -3,6 +3,7 @@
 
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
+#include "AutoLight.cginc"
 
 #include "custom30.cginc"
 #include "eyes.cginc"
@@ -162,13 +163,17 @@ v2f vert(appdata v) {
 	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
 #endif
 
+#if defined(SHADOWS_SCREEN)
+  TRANSFER_SHADOW(o);
+#endif
+
   // Vertex color
   o.color = v.color;
   return o;
 }
 
 float4 frag(v2f i, uint facing : SV_IsFrontFace
-#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || (defined(_CUSTOM30) && !defined(_DEPTH_PREPASS))
+#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || (defined(_CUSTOM30) && !defined(_DEPTH_PREPASS)) || defined(_RAYMARCHED_FOG)
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
@@ -185,15 +190,19 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.binormal = UnityObjectToWorldNormal(i.binormal);
 
 #if defined(_RAYMARCHED_FOG)
-  FogParams fog_params = {
-    _Raymarched_Fog_Steps,
-    _Raymarched_Fog_Density,
-    _Raymarched_Fog_Dithering_Noise,
-    _Raymarched_Fog_Density_Noise,
-    _Raymarched_Fog_Density_Noise_Scale
-  };
-  FogResult fog_result = raymarched_fog(i, fog_params);
-  return fog_result.color;
+  {
+    FogParams fog_params = {
+      _Raymarched_Fog_Steps,
+      _Raymarched_Fog_Density,
+      _Raymarched_Fog_Dithering_Noise,
+      _Raymarched_Fog_Density_Noise,
+      _Raymarched_Fog_Density_Noise_Scale,
+      _Raymarched_Fog_Y_Cutoff
+    };
+    FogResult fog_result = raymarched_fog(i, fog_params);
+    depth = fog_result.depth;
+    return fog_result.color;
+  }
 #endif
 
 #if defined(_SHATTER_WAVE) || defined(_TESSELLATION_HEIGHTMAP)
@@ -230,7 +239,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
-#if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS)
+#if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
   Custom30Output basic_cube_output = BasicCube(i);
   i.pos = UnityObjectToClipPos(basic_cube_output.objPos);

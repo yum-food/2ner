@@ -824,6 +824,7 @@ Shader "yum_food/2ner"
           _Raymarched_Fog_Dithering_Noise("Dithering noise", 2D) = "black" {}
           _Raymarched_Fog_Density_Noise("Density noise", 3D) = "black" {}
           _Raymarched_Fog_Density_Noise_Scale("Density noise scale", Vector) = (1, 1, 1, 0)
+          _Raymarched_Fog_Y_Cutoff("Y cutoff", Float) = -1000
         [HideInInspector] m_end_Raymarched_Fog("Raymarched fog", Float) = 0
         //endex
 
@@ -2173,6 +2174,7 @@ Shader "yum_food/2ner"
 
       CGPROGRAM
       #pragma target 5.0
+      #pragma multi_compile_fwdbase
       #pragma multi_compile_fullshadows
       #pragma multi_compile_instancing
       #pragma multi_compile_fog
@@ -2330,6 +2332,7 @@ Shader "yum_food/2ner"
 
       CGPROGRAM
       #pragma target 5.0
+      #pragma multi_compile_fwdbase
       #pragma multi_compile_fullshadows
       #pragma multi_compile_instancing
       #pragma multi_compile_fog

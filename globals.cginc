@@ -3,7 +3,7 @@
 
 #include "features.cginc"
 
-#if defined(_SSAO)
+#if defined(_SSAO) || defined(_RAYMARCHED_FOG)
 UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 float4 _CameraDepthTexture_TexelSize;
 #endif
@@ -541,6 +541,7 @@ float _Raymarched_Fog_Density;
 texture2D _Raymarched_Fog_Dithering_Noise;
 texture3D _Raymarched_Fog_Density_Noise;
 float4 _Raymarched_Fog_Density_Noise_Scale;
+float _Raymarched_Fog_Y_Cutoff;
 #endif  // _RAYMARCHED_FOG
 
 #endif  // __GLOBALS_INC

@@ -214,7 +214,9 @@ Custom30Output BasicWedge(v2f i) {
   }
 
   Custom30Output o;
-  //clip(epsilon - d);
+#if !defined(_DEPTH_PREPASS)
+  clip(epsilon - d);
+#endif
   float3 objPos = ro + rd * d_acc;
   o.objPos = objPos;
   // Transform from SDF space back to object space
