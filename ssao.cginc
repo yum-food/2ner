@@ -7,29 +7,37 @@
 
 #if defined(_SSAO)
 float get_ssao(v2f i, float3x3 tangentToWorld, out float2 debug) {
+  float3 objPos = mul(unity_WorldToObject, float4(i.worldPos, 1));
+  float4 clipPos = UnityObjectToClipPos(objPos);
+  float4 screenPos = ComputeScreenPos(clipPos);
+  const float2 screen_uv = screenPos.xy / screenPos.w;
+  const float2 screen_px = screen_uv * _ScreenParams.xy;
+
   const float fragment_depth = GetDepthOfWorldPos(i.worldPos, debug);
-  const float2 screen_px = (i.pos.xy + 0.5);
-  const float2 screen_uv = (i.pos.xy + 0.5) / _ScreenParams.xy;
-  const float ssao_theta = _SSAO_Noise.SampleLevel(point_repeat_s, screen_px * _SSAO_Noise_TexelSize.xy, 0) * TAU;
+  const float3 noise = _SSAO_Noise.SampleLevel(point_repeat_s, screen_px * _SSAO_Noise_TexelSize.xy, 0);
+  float ssao_theta = noise.x;
+  const float frame = ((float) AudioLinkData(ALPASS_GENERALVU + int2(1, 0)).x);
+  ssao_theta += frame * PHI;
+  ssao_theta *= TAU;
   const float2x2 ssao_rot = float2x2(
       cos(ssao_theta), -sin(ssao_theta),
       sin(ssao_theta),  cos(ssao_theta));
 
-  const float frame = ((float) AudioLinkData(ALPASS_GENERALVU + int2(1, 0)).x);
-
   float ssao_occlusion = 0;
   const float ssao_eps = 1E-5;
   [loop]
-  for (uint ii = 0; ii < _SSAO_Samples; ii++) {
+  for (uint ii = 0; ii < round(_SSAO_Samples); ii++) {
     // Compute random vector in tangent space.
     // Get the index of the current pixels, on the range [0, screen_width] x
     // [0, screen_height].
     // Map that onto the noise texture's pixels. Add an offset for each
     // index.
     float2 noise_uv = (float2(ii % _ScreenParams.x, ii * (_ScreenParams.z - 1.0f))) * _SSAO_Noise_TexelSize.xy;
+#if 1
     float3 sample_point = _SSAO_Noise.SampleLevel(point_repeat_s, noise_uv, 0).rgb;
-    // Use a low discrepancy sequence to transform each sample over time.
-    //sample_point = frac(sample_point + PHI * frame);
+#else
+    float3 sample_point = frac(noise + PHI * ii);
+#endif
     sample_point.xy = 2.0 * sample_point.xy - 1.0;
     sample_point.xy = mul(ssao_rot, sample_point.xy);
 

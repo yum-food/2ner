@@ -84,12 +84,11 @@ void GetScreenUVAndPerspectiveFactor(float3 worldPos, float4 clipPos, out float2
 #if defined(_SSAO)
 float GetDepthOfWorldPos(float3 worldPos, out float2 debug)
 {
-  float3 full_vec_eye_to_geometry = worldPos - _WorldSpaceCameraPos;
   float3 objPos = mul(unity_WorldToObject, float4(worldPos, 1));
   float4 clipPos = UnityObjectToClipPos(objPos);
   float4 screenPos = ComputeScreenPos(clipPos);
-
   const float2 screen_uv = screenPos.xy / screenPos.w;
+
   float zDepthFromMap = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screen_uv);
   float linearZ =
     GetLinearZFromZDepth_WorksWithMirrors(zDepthFromMap, screen_uv);

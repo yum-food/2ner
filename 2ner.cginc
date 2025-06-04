@@ -250,13 +250,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
-  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
-  float ssao = 1;
-#if defined(_SSAO)
-	float2 debug;
-	ssao = get_ssao(i, tangentToWorld, debug);
-#endif
-
 #if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
   Custom30Output c30_out = BasicCube(i);
@@ -266,9 +259,20 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   Custom30Output c30_out = BasicPlatform(i);
 #endif
   i.normal = c30_out.normal;
+  i.worldPos = mul(unity_ObjectToWorld, float4(c30_out.objPos, 1));
+  float4 c30_clipPos = UnityObjectToClipPos(i.objPos);
+  float4 c30_screenPos = ComputeScreenPos(c30_clipPos);
+  i.pos = c30_screenPos;
 #if !defined(_DEPTH_PREPASS)
   depth = c30_out.depth;
 #endif
+#endif
+
+  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
+  float ssao = 1;
+#if defined(_SSAO)
+	float2 debug;
+	ssao = get_ssao(i, tangentToWorld, debug);
 #endif
 
   tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);

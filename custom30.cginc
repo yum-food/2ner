@@ -58,7 +58,24 @@ float distance_from_hex_comb(
 
   float half_period = period * 0.5;
   float3 which = abs(floor((p_hex + half_period) / period));
-  p_hex = glsl_mod(p_hex + half_period, period) - half_period;
+
+  // The original code here was this:
+  //   p_hex = glsl_mod(p_hex + half_period, period) - half_period;
+  //
+  // But you can simplify it. Given the definition of glsl_mod:
+  //   #define glsl_mod(x,y) (((x)-(y)*floor((x)/(y))))
+  //
+  // You can plug in terms:
+  //  (p_hex + half_period) - (period) * floor((p_hex + half_period) / period)
+  //  = p_hex + half_period - period * floor(p_hex/period + 0.5)
+  //
+  // For all x,
+  //  round(x) = floor(x + 0.5)
+  //
+  // Continuing to simplify:
+  //  (p_hex + half_period - period * round(p_hex/period)) - half_period
+  //  = p_hex - period * round(p_hex / period)
+  p_hex = p_hex - period * round(p_hex / period);
 
   p.xy = hex_to_cart(p_hex);
 
@@ -181,13 +198,13 @@ Custom30Output BasicCube(v2f i) {
   clip(epsilon - d);
 #endif
   float3 objPos = ro + rd * d_acc;
-  o.objPos = objPos;
   // Transform from SDF space back to object space
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  o.objPos = objSpacePos;
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
 
-  float3 sdfNormal = BasicCube_normal(objPos) * float3(-1, 1, 1);
+  float3 sdfNormal = BasicCube_normal(objPos);
   o.normal = UnityObjectToWorldNormal(sdfNormal);
 
   return o;
@@ -242,9 +259,9 @@ Custom30Output BasicWedge(v2f i) {
   clip(epsilon - d);
 #endif
   float3 objPos = ro + rd * d_acc;
-  o.objPos = objPos;
   // Transform from SDF space back to object space
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  o.objPos = objSpacePos;
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
 
@@ -327,9 +344,8 @@ Custom30Output BasicPlatform(v2f i) {
   clip(epsilon - d);
 #endif
   float3 objPos = ro + rd * d_acc;
-  o.objPos = objPos;
-  // Transform from SDF space back to object space
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  o.objPos = objSpacePos;
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
   
