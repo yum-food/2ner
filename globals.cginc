@@ -535,4 +535,12 @@ float4 _SSAO_Noise_TexelSize;
 float _SSAO_Bias;
 #endif  // _SSAO
 
+#if defined(_RAYMARCHED_FOG)
+float _Raymarched_Fog_Steps;
+float _Raymarched_Fog_Density;
+texture2D _Raymarched_Fog_Dithering_Noise;
+texture3D _Raymarched_Fog_Density_Noise;
+float4 _Raymarched_Fog_Density_Noise_Scale;
+#endif  // _RAYMARCHED_FOG
+
 #endif  // __GLOBALS_INC

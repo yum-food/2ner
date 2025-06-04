@@ -311,5 +311,9 @@
 #pragma shader_feature_local _DEPTH_PREPASS
 //endex
 
+//ifex _Raymarched_Fog_Enabled==0
+#pragma shader_feature_local _RAYMARCHED_FOG
+//endex
+
 #endif  // __FEATURES_INC
 

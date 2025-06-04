@@ -816,6 +816,17 @@ Shader "yum_food/2ner"
           //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
 
+        //ifex _Raymarched_Fog_Enabled==0
+        [HideInInspector] m_start_Raymarched_Fog("Raymarched fog", Float) = 0
+          [ThryToggle(_RAYMARCHED_FOG)] _Raymarched_Fog_Enabled("Enable", Float) = 0
+          _Raymarched_Fog_Steps("Steps", Range(1, 32)) = 32
+          _Raymarched_Fog_Density("Density", Float) = 1.0
+          _Raymarched_Fog_Dithering_Noise("Dithering noise", 2D) = "black" {}
+          _Raymarched_Fog_Density_Noise("Density noise", 3D) = "black" {}
+          _Raymarched_Fog_Density_Noise_Scale("Density noise scale", Vector) = (1, 1, 1, 0)
+        [HideInInspector] m_end_Raymarched_Fog("Raymarched fog", Float) = 0
+        //endex
+
         //ifex _3D_SDF_Enabled==0
         [HideInInspector] m_start_3D_SDF("3D SDF", Float) = 0
           [ThryToggle(_3D_SDF)] _3D_SDF_Enabled("Enable", Float) = 0

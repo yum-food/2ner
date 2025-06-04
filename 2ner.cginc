@@ -9,6 +9,7 @@
 #include "face_me.cginc"
 #include "false_color_visualization.cginc"
 #include "features.cginc"
+#include "fog.cginc"
 #include "globals.cginc"
 #include "harnack_tracing.cginc"
 #include "interpolators.cginc"
@@ -182,6 +183,18 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.normal = UnityObjectToWorldNormal(i.normal);
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
+
+#if defined(_RAYMARCHED_FOG)
+  FogParams fog_params = {
+    _Raymarched_Fog_Steps,
+    _Raymarched_Fog_Density,
+    _Raymarched_Fog_Dithering_Noise,
+    _Raymarched_Fog_Density_Noise,
+    _Raymarched_Fog_Density_Noise_Scale
+  };
+  FogResult fog_result = raymarched_fog(i, fog_params);
+  return fog_result.color;
+#endif
 
 #if defined(_SHATTER_WAVE) || defined(_TESSELLATION_HEIGHTMAP)
   calcNormalInScreenSpace(i.normal, i.objPos);
