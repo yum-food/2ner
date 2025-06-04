@@ -103,8 +103,8 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     const float3 energy_compensation = energyCompensation(dfg, f0);
 
     float3 Fd = pbr.albedo / PI;
-    Fd *= (1.0 - pbr.metallic) * light.attenuation;
-    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s);
+    Fd *= (1.0 - pbr.metallic) * light.attenuation * pbr.ao;
+    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * pbr.ao;
 
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
     direct_standard = color * light.direct;
@@ -118,12 +118,12 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     // makers suck shit and don't use enough reflection probes.
     float3 Fr = _Cloth_Sheen_Color * light.specular * light.diffuse_luminance;
     float3 Fd = pbr.albedo * light.diffuse * pbr.ao;
-    
+
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // Apply subsurface color to indirect diffuse
       Fd *= _Cloth_Subsurface_Color;
     #endif
-    
+
     indirect_cloth = (Fr + Fd) * _Cloth_Indirect_Multiplier;
   }
 #endif
@@ -136,9 +136,9 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     const float3 E = specularDFG(dfg, f0);
     const float3 energy_compensation = energyCompensation(dfg, f0);
 
-    float3 Fr = E * light.specular * energy_compensation;
+    float3 Fr = E * light.specular * energy_compensation * pbr.ao;
     float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao;
-    
+
     indirect_standard = Fr + Fd;
   }
 

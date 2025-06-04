@@ -283,4 +283,23 @@ float3 cmykToRgb(float4 cmyk) {
     (1 - cmyk[2]) * (1 - cmyk[3]));
 }
 
+// Cartesian to cube hexagonal coordinates.
+// Based on this: https://backdrifting.net/post/064_hex_grids
+#define TWO_OVER_THREE  0.6666666666666666f
+#define SQRT_3_OVER_2   0.8660254037844386f
+
+float3 cart_to_hex(float2 cart) {
+  float p = cart.x;
+  float q = dot(cart, float2(0.5f, SQRT_3_OVER_2));
+  float r = dot(cart, float2(0.5f, -SQRT_3_OVER_2));
+
+  return float3(p, q, r) * TWO_OVER_THREE;
+}
+
+float2 hex_to_cart(float3 cart) {
+  return float2(
+      cart[0] + (cart[1] + cart[2]) * 0.5f,
+      (cart[1] - cart[2]) * SQRT_3_OVER_2);
+}
+
 #endif  // __MATH_INC

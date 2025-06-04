@@ -1929,7 +1929,7 @@ Shader "yum_food/2ner"
   }
 
   SubShader {
-		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "VRCFallback" = "Standard" }
+		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "VRCFallback" = "Standard" "DisableBatching" = "True" }
 
     //ifex _Depth_Prepass_Enabled==0
     Pass {

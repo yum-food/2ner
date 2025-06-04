@@ -19,6 +19,7 @@
 #include "math.cginc"
 #include "poi.cginc"
 #include "shatter_wave.cginc"
+#include "ssao.cginc"
 #include "ssfd.cginc"
 #include "tessellation.cginc"
 #include "unigram_letter_grid.cginc"
@@ -188,6 +189,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.normal = UnityObjectToWorldNormal(i.normal);
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
+  const float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
 
 #if defined(_RAYMARCHED_FOG) && defined(FORWARD_BASE_PASS)
   {
@@ -249,6 +251,12 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
+  float ssao = 1;
+#if defined(_SSAO)
+	float2 debug;
+	ssao = get_ssao(i, tangentToWorld, debug);
+#endif
+
 #if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
   Custom30Output basic_cube_output = BasicCube(i);
@@ -278,7 +286,8 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #endif
 
-  YumPbr pbr = GetYumPbr(i);
+  YumPbr pbr = GetYumPbr(i, tangentToWorld);
+	pbr.ao *= ssao;
 
 #if defined(_HARNACK_TRACING)
   HarnackTracingOutput harnack_output = HarnackTracing(i);

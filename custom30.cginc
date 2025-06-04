@@ -2,6 +2,7 @@
 #define __CUSTOM30_INC
 
 #include "globals.cginc"
+#include "math.cginc"
 #include "pema99.cginc"
 #include "quilez.cginc"
 #include "interpolators.cginc"
@@ -47,9 +48,29 @@ float cut_with_box(float3 p, float d, float3 box_size) {
   return d;
 }
 
+float distance_from_hex_comb(
+    float3 p,
+    float3 period,
+    float hex_sc,
+    float zoff,
+    float count) {
+  float3 p_hex = cart_to_hex(p.xy);
+
+  float half_period = period * 0.5;
+  float3 which = abs(floor((p_hex + half_period) / period));
+  p_hex = glsl_mod(p_hex + half_period, period) - half_period;
+
+  p.xy = hex_to_cart(p_hex);
+
+  float hex_d = distance_from_hex_prism(p -
+      float3(0, 0, zoff), hex_sc);
+  hex_d = any(which > count) ? 1E9 : hex_d;
+  return hex_d;
+}
+
 float distance_from_hex_grid(
     float3 p,
-    float period,
+    float2 period,
     float hex_sc,
     float zoff,
     float count) {
@@ -82,8 +103,8 @@ float BasicCube_map(float3 p) {
   float hex_grip_scale = scale * 10;
   [branch]
   if (hex_grip_scale < 1) {
-    float period = 0.05;
-    float hex_sc = period * 0.4;
+    float period = 0.1;
+    float hex_sc = period * 0.2;
     float count = 13;
 
     float zoff = core_dim - (hex_sc * 0.2) - hex_grip_scale * hex_sc;
@@ -92,7 +113,10 @@ float BasicCube_map(float3 p) {
     pp = pp.z > pp.x && pp.z > pp.y ? pp.xyz : pp;
     pp = pp.y > pp.x && pp.y > pp.z ? pp.zxy : pp;
     pp = pp.x > pp.y && pp.x > pp.z ? pp.yzx : pp;
-    d = min(d, distance_from_hex_grid(pp, period, hex_sc, zoff, count));
+
+    float hex_d = distance_from_hex_comb(pp, period, hex_sc, zoff, count);
+    hex_d = any(pp.xy > 0.85) ? 1E9 : hex_d;
+    d = min(d, hex_d);
   }
 #endif
 
@@ -118,7 +142,7 @@ float BasicCube_map(float3 p) {
 }
 
 float3 BasicCube_normal(float3 p) {
-  float epsilon = 1E-3;
+  float epsilon = 5E-3;
   float center_d = BasicCube_map(p);
   float3 n = float3(
     BasicCube_map(p + float3(epsilon, 0, 0)) - center_d,
@@ -139,7 +163,7 @@ Custom30Output BasicCube(v2f i) {
 
   float d;
   float d_acc = 0;
-  float epsilon = 5E-3;
+  float epsilon = 1E-3;
   // 1.73... = sqrt(3)
   // our cube has an edge length of 2, so mult by 2
   float max_d = 1.73205081f * 2.0f;

@@ -40,7 +40,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
   const float ro_epsilon = 1E-3;
   ro += rd * ro_epsilon;
 
-  float2 screen_uv = (i.pos.xy + 0.5) / _ScreenParams.xy;
+  const float2 screen_uv = (i.pos.xy + 0.5) / _ScreenParams.xy;
   float zDepthFromMap = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screen_uv);
   float linearZ =
     GetLinearZFromZDepth_WorksWithMirrors(zDepthFromMap, screen_uv);
@@ -96,10 +96,10 @@ FogResult raymarched_fog(v2f i, FogParams p)
   }
 
   FogResult r;
-  r.color.rgb = _Raymarched_Fog_Color;
+  //r.color.rgb = _Raymarched_Fog_Color;
   //r.color.rgb = saturate(log(linearZ) / 5.0);
+  r.color.rgb = float3(screen_uv, 0);
   r.color.a = d;
-  //r.color.a = 1;
   r.depth = 0.0001;  // Very small depth value to render in front
   return r;
 }

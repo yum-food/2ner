@@ -82,24 +82,21 @@ void GetScreenUVAndPerspectiveFactor(float3 worldPos, float4 clipPos, out float2
 }
 
 #if defined(_SSAO)
-float GetDepthOfWorldPos(float3 worldPos)
+float GetDepthOfWorldPos(float3 worldPos, out float2 debug)
 {
   float3 full_vec_eye_to_geometry = worldPos - _WorldSpaceCameraPos;
-  float4 objPos = mul(unity_WorldToObject, float4(worldPos, 1));
+  float3 objPos = mul(unity_WorldToObject, float4(worldPos, 1));
   float4 clipPos = UnityObjectToClipPos(objPos);
+  float4 screenPos = ComputeScreenPos(clipPos);
 
-	float2 suv = clipPos * float2(0.5, 0.5 * _ProjectionParams.x);
-  float2 screenPos = TransformStereoScreenSpaceTex(suv + 0.5 * clipPos.w, clipPos.w);
+  const float2 screen_uv = screenPos.xy / screenPos.w;
+  float zDepthFromMap = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screen_uv);
+  float linearZ =
+    GetLinearZFromZDepth_WorksWithMirrors(zDepthFromMap, screen_uv);
+  linearZ = min(1E3, linearZ);
 
-  float perspective_divide = 1.0f / clipPos.w;
-  float perspective_factor = length(full_vec_eye_to_geometry * perspective_divide);
-  float2 screen_uv = screenPos.xy * perspective_divide;
-
-  float eye_depth_world =
-    GetLinearZFromZDepth_WorksWithMirrors(
-        SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screen_uv),
-        screen_uv) * perspective_factor;
-  return eye_depth_world;
+	debug = screen_uv;
+  return linearZ;
 }
 #endif
 
