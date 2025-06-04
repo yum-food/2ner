@@ -295,6 +295,8 @@
 #pragma shader_feature_local _CUSTOM30
 #pragma shader_feature_local _CUSTOM30_BASICCUBE
 #pragma shader_feature_local _CUSTOM30_BASICCUBE_CHAMFER
+#pragma shader_feature_local _CUSTOM30_BASICCUBE_HEX_GRIP
+#pragma shader_feature_local _CUSTOM30_BASICCUBE_HEX_BOLTS
 #pragma shader_feature_local _CUSTOM30_BASICWEDGE
 #pragma shader_feature_local _CUSTOM30_BASICPLATFORM
 #pragma shader_feature_local _CUSTOM30_BASICPLATFORM_CHAMFER

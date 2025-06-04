@@ -108,9 +108,13 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Custom30("Custom 30", Float) = 0
         [ThryToggle(_CUSTOM30)]_Custom30_Enabled("Enable", Float) = 0
 
+        _Custom30_ro_Offset("ro offset", Float) = 0.0
+
         //ifex _Custom30_BasicCube_Enabled==0
         [HideInInspector] m_start_Custom30_BasicCube("Basic cube", Float) = 0
         [ThryToggle(_CUSTOM30_BASICCUBE)]_Custom30_BasicCube_Enabled("Enable", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICCUBE_HEX_GRIP)]_Custom30_BasicCube_Hex_Grip("Hex grip", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICCUBE_HEX_BOLTS)]_Custom30_BasicCube_Hex_Bolts("Hex bolts", Float) = 0
         [ThryToggle(_CUSTOM30_BASICCUBE_CHAMFER)]_Custom30_BasicCube_Chamfer("Chamfer", Float) = 0
         [HideInInspector] m_end_Custom30_BasicCube("Basic cube", Float) = 0
         //endex
@@ -124,7 +128,11 @@ Shader "yum_food/2ner"
         //ifex _Custom30_BasicPlatform_Enabled==0
         [HideInInspector] m_start_Custom30_BasicPlatform("Basic platform", Float) = 0
         [ThryToggle(_CUSTOM30_BASICPLATFORM)]_Custom30_BasicPlatform_Enabled("Enable", Float) = 0
+        _Custom30_BasicPlatform_Size("Size", Vector) = (1.0, 0.4, 0.2)
+        _Custom30_BasicPlatform_Frame_D("Frame dimension", Float) = 0.08
+        _Custom30_BasicPlatform_Core_D("Core dimension", Float) = 0.05
         [ThryToggle(_CUSTOM30_BASICPLATFORM_CHAMFER)]_Custom30_BasicPlatform_Chamfer("Chamfer", Float) = 0
+        _Custom30_BasicPlatform_Chamfer_Size("Size", Vector) = (0.36, 0.78, 0.9)
         [ThryToggle(_CUSTOM30_BASICPLATFORM_Y_ALIGNED)]_Custom30_BasicPlatform_Y_Aligned("Y aligned", Float) = 0
         [HideInInspector] m_end_Custom30_BasicPlatform("Basic platform", Float) = 0
         //endex

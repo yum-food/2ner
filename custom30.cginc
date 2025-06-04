@@ -2,12 +2,17 @@
 #define __CUSTOM30_INC
 
 #include "globals.cginc"
+#include "pema99.cginc"
 #include "quilez.cginc"
 #include "interpolators.cginc"
 
 #if defined(_CUSTOM30)
 
+#if defined(_DEPTH_PREPASS)
+#define CUSTOM30_MAX_STEPS 10
+#else
 #define CUSTOM30_MAX_STEPS 30
+#endif
 #define SQRT_2     1.414213562
 #define RCP_SQRT_2 0.707106781
 
@@ -42,14 +47,71 @@ float cut_with_box(float3 p, float d, float3 box_size) {
   return d;
 }
 
+float distance_from_hex_grid(
+    float3 p,
+    float period,
+    float hex_sc,
+    float zoff,
+    float count) {
+  float half_period = period * 0.5;
+  float2 which = abs(floor((p.xy + half_period) / period));
+  p.xy = glsl_mod(p.xy + half_period, period) - half_period;
+
+  float hex_d = distance_from_hex_prism(p -
+      float3(0, 0, zoff), hex_sc);
+  hex_d = any(which > count) ? 1E9 : hex_d;
+  hex_d = any(which % 2 == 0) ? 1E9 : hex_d;
+  return hex_d;
+}
+
 #if defined(_CUSTOM30_BASICCUBE)
 float BasicCube_map(float3 p) {
   float box_d = distance_from_box_frame(p, .995, .15);
-  float core_d = distance_from_box(p, 0.95);
+  float core_dim = 0.95;
+  float core_d = distance_from_box(p, core_dim);
   float d = min(box_d, core_d);
 
 #if defined(_CUSTOM30_BASICCUBE_CHAMFER)
   d = cut_with_box(p, d, 1.3);
+#endif
+
+  // High rate of change = small size on screen = fade out grip.
+  float scale = length(fwidth(p));
+
+#if defined(_CUSTOM30_BASICCUBE_HEX_GRIP)
+  float hex_grip_scale = scale * 10;
+  [branch]
+  if (hex_grip_scale < 1) {
+    float period = 0.05;
+    float hex_sc = period * 0.4;
+    float count = 13;
+
+    float zoff = core_dim - (hex_sc * 0.2) - hex_grip_scale * hex_sc;
+
+    float3 pp = abs(p);
+    pp = pp.z > pp.x && pp.z > pp.y ? pp.xyz : pp;
+    pp = pp.y > pp.x && pp.y > pp.z ? pp.zxy : pp;
+    pp = pp.x > pp.y && pp.x > pp.z ? pp.yzx : pp;
+    d = min(d, distance_from_hex_grid(pp, period, hex_sc, zoff, count));
+  }
+#endif
+
+#if defined(_CUSTOM30_BASICCUBE_HEX_BOLTS)
+  float hex_bolt_scale = scale * 1;
+  [branch]
+  if (hex_bolt_scale < 1) {
+    float period = 0.83;
+    float hex_sc = period * 0.1;
+    float count = 3;
+
+    float zoff = core_dim - hex_sc * hex_bolt_scale;
+
+    float3 pp = abs(p);
+    pp = pp.z > pp.x && pp.z > pp.y ? pp.xyz : pp;
+    pp = pp.y > pp.x && pp.y > pp.z ? pp.zxy : pp;
+    pp = pp.x > pp.y && pp.x > pp.z ? pp.yzx : pp;
+    d = min(d, distance_from_hex_grid(pp, period, hex_sc, zoff, count));
+  }
 #endif
 
   return d;
@@ -72,6 +134,8 @@ Custom30Output BasicCube(v2f i) {
 
   float3 ro = -frag_to_origin;
   float3 rd = normalize(i.objPos - objSpaceCameraPos);
+
+  ro -= rd * _Custom30_ro_Offset;
 
   float d;
   float d_acc = 0;
@@ -98,10 +162,10 @@ Custom30Output BasicCube(v2f i) {
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
-  
+
   float3 sdfNormal = BasicCube_normal(objPos) * float3(-1, 1, 1);
   o.normal = UnityObjectToWorldNormal(sdfNormal);
-  
+
   return o;
 }
 #endif
@@ -112,6 +176,7 @@ float BasicWedge_map(float3 p) {
   float cut_plane_d = distance_from_plane(p - float3(0, 0, 0), -normalize(float3(1, 0, 1)), 0);
 
   float d = op_sub(box_d, cut_plane_d);
+
   return d;
 }
 
@@ -156,10 +221,10 @@ Custom30Output BasicWedge(v2f i) {
   float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
-  
+
   float3 sdfNormal = BasicWedge_normal(objPos) * float3(-1, 1, 1);
   o.normal = UnityObjectToWorldNormal(sdfNormal);
-  
+
   return o;
 }
 #endif
@@ -170,27 +235,29 @@ float BasicPlatform_map(float3 p) {
     p.xy = p.yx;
   #endif
 
-  float3 platform_size = float3(1.0, 0.4, 0.2);
-  float box_d = distance_from_box_frame(p, platform_size, .08);
-  float core_d = distance_from_box(p, platform_size - 0.05);
+  float3 platform_size = _Custom30_BasicPlatform_Size;
+  float box_d = distance_from_box_frame(p, platform_size, _Custom30_BasicPlatform_Frame_D);
+  float core_d = distance_from_box(p, platform_size - _Custom30_BasicPlatform_Core_D);
   float d = min(box_d, core_d);
 
 #if defined(_CUSTOM30_BASICPLATFORM_CHAMFER)
   {
     float3 pp = p;
-    pp.xy = float2(RCP_SQRT_2 * p.x - RCP_SQRT_2 * p.y, RCP_SQRT_2 * p.x + RCP_SQRT_2 * p.y);
-    d = max(d, distance_from_box(pp, 0.9));
+    pp.yz = float2(RCP_SQRT_2 * p.y - RCP_SQRT_2 * p.z, RCP_SQRT_2 * p.y + RCP_SQRT_2 * p.z);
+    float c = _Custom30_BasicPlatform_Chamfer_Size.x;
+    d = max(d, distance_from_box(pp, float3(1.0, c, c)));
   }
   {
     float3 pp = p;
     pp.xz = float2(RCP_SQRT_2 * p.x - RCP_SQRT_2 * p.z, RCP_SQRT_2 * p.x + RCP_SQRT_2 * p.z);
-    d = max(d, distance_from_box(pp, 0.78));
+    float c = _Custom30_BasicPlatform_Chamfer_Size.y;
+    d = max(d, distance_from_box(pp, float3(c, 1.0, c)));
   }
   {
     float3 pp = p;
-    pp.yz = float2(RCP_SQRT_2 * p.y - RCP_SQRT_2 * p.z, RCP_SQRT_2 * p.y + RCP_SQRT_2 * p.z);
-    float c = 0.36;
-    d = max(d, distance_from_box(pp, float3(1.0, c, c)));
+    pp.xy = float2(RCP_SQRT_2 * p.x - RCP_SQRT_2 * p.y, RCP_SQRT_2 * p.x + RCP_SQRT_2 * p.y);
+    float c = _Custom30_BasicPlatform_Chamfer_Size.z;
+    d = max(d, distance_from_box(pp, float3(c, c, 1.0)));
   }
 #endif
 

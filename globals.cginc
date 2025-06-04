@@ -507,4 +507,18 @@ float _3D_SDF_Z;
 float _3D_SDF_Z_Speed;
 #endif  // _3D_SDF
 
+#if defined(_CUSTOM30)
+float _Custom30_ro_Offset;
+#endif
+
+#if defined(_CUSTOM30_BASICPLATFORM)
+float3 _Custom30_BasicPlatform_Size;
+float _Custom30_BasicPlatform_Frame_D;
+float _Custom30_BasicPlatform_Core_D;
+#endif  // _CUSTOM30_BASICPLATFORM
+
+#if defined(_CUSTOM30_BASICPLATFORM_CHAMFER)
+float3 _Custom30_BasicPlatform_Chamfer_Size;
+#endif  // _CUSTOM30_BASICPLATFORM_CHAMFER
+
 #endif  // __GLOBALS_INC
