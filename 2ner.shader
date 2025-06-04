@@ -2,7 +2,7 @@ Shader "yum_food/2ner"
 {
   // Certain parts of the Properties below are derived from Poiyomi's toon
   // shader. The license is available in this repository at the top of
-  // poi.cginc.
+  // poi.cginc. B.
 	Properties
   {
       [HideInInspector] shader_master_label("<color=#de719bff>2ner</color>", Float) = 0
@@ -376,8 +376,8 @@ Shader "yum_food/2ner"
                 _Decal0_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal0_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal0_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal0_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal0_Mask_Enabled==0
             [HideInInspector] m_start_Decal0_Mask("Mask", Float) = 0
@@ -437,8 +437,8 @@ Shader "yum_food/2ner"
                 _Decal1_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal1_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal1_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal1_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal1_Mask_Enabled==0
             [HideInInspector] m_start_Decal1_Mask("Mask", Float) = 0
@@ -498,8 +498,8 @@ Shader "yum_food/2ner"
                 _Decal2_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal2_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal2_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal2_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal2_Mask_Enabled==0
             [HideInInspector] m_start_Decal2_Mask("Mask", Float) = 0
@@ -559,8 +559,8 @@ Shader "yum_food/2ner"
                 _Decal3_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal3_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal3_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal3_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal3_Mask_Enabled==0
             [HideInInspector] m_start_Decal3_Mask("Mask", Float) = 0
@@ -620,8 +620,8 @@ Shader "yum_food/2ner"
                 _Decal4_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal4_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal4_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal4_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal4_Mask_Enabled==0
             [HideInInspector] m_start_Decal4_Mask("Mask", Float) = 0
@@ -681,14 +681,14 @@ Shader "yum_food/2ner"
                 _Decal5_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal5_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal5_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal5_SDF("SDF", Float) = 0
             //endex
-            //endex
-            //ifex _Decal6_Mask_Enabled==0
-            [HideInInspector] m_start_Decal6_Mask("Mask", Float) = 0
-              [ThryToggle(_DECAL6_MASK)] _Decal6_Mask_Enabled("Enable", Float) = 0
-              _Decal6_Mask("Mask", 2D) = "white" {}
-            [HideInInspector] m_end_Decal6_Mask("Mask", Float) = 0
+            //ifex _Decal5_Mask_Enabled==0
+            [HideInInspector] m_start_Decal5_Mask("Mask", Float) = 0
+              [ThryToggle(_DECAL5_MASK)] _Decal5_Mask_Enabled("Enable", Float) = 0
+              _Decal5_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Decal5_Mask("Mask", Float) = 0
             //endex
           [HideInInspector] m_end_Decal6("Decal 5", Float) = 0
           //endex
@@ -742,8 +742,8 @@ Shader "yum_food/2ner"
                 _Decal6_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal6_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal6_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal6_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal6_Mask_Enabled==0
             [HideInInspector] m_start_Decal6_Mask("Mask", Float) = 0
@@ -803,8 +803,8 @@ Shader "yum_food/2ner"
                 _Decal7_CMYK_Warping_Planes_Scale("Scale", Float) = 0.1
                 _Decal7_CMYK_Warping_Planes_Speed("Speed", Float) = 1.0
               [HideInInspector] m_end_Decal7_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
+              //endex
             [HideInInspector] m_end_Decal7_SDF("SDF", Float) = 0
-            //endex
             //endex
             //ifex _Decal7_Mask_Enabled==0
             [HideInInspector] m_start_Decal7_Mask("Mask", Float) = 0
