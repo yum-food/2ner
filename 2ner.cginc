@@ -147,7 +147,7 @@ v2f vert(appdata v) {
 #endif
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;
-  o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
+  o.eyeVec.xyz = o.worldPos - _WorldSpaceCameraPos;
   o.eyeVec.w = 1;
 
   // These are used to convert normals from tangent space to world space.

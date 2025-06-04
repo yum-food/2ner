@@ -149,7 +149,7 @@ v2f domain(
 
   o.pos      = UnityObjectToClipPos(o.objPos);
   o.worldPos = mul(unity_ObjectToWorld, o.objPos).xyz;
-  o.eyeVec.xyz = normalize(o.worldPos - _WorldSpaceCameraPos);
+  o.eyeVec.xyz = o.worldPos - _WorldSpaceCameraPos;
   o.eyeVec.w = 1;
 
   // TODO what about UNITY_LIGHTING_COORDS(7,8) and instance id and shit?

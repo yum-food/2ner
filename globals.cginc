@@ -3,6 +3,11 @@
 
 #include "features.cginc"
 
+#if defined(_SSAO)
+UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
+float4 _CameraDepthTexture_TexelSize;
+#endif
+
 SamplerState point_repeat_s;
 SamplerState linear_repeat_s;
 SamplerState linear_clamp_s;
@@ -520,5 +525,14 @@ float _Custom30_BasicPlatform_Core_D;
 #if defined(_CUSTOM30_BASICPLATFORM_CHAMFER)
 float3 _Custom30_BasicPlatform_Chamfer_Size;
 #endif  // _CUSTOM30_BASICPLATFORM_CHAMFER
+
+#if defined(_SSAO)
+float _SSAO_Radius;
+float _SSAO_Samples;
+float _SSAO_Strength;
+texture2D _SSAO_Noise;
+float4 _SSAO_Noise_TexelSize;
+float _SSAO_Bias;
+#endif  // _SSAO
 
 #endif  // __GLOBALS_INC

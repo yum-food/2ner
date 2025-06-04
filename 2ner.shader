@@ -847,6 +847,18 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_False_Color_Visualization("False color", Float) = 0
         //endex
 
+        //ifex _SSAO_Enabled==0
+        [HideInInspector] m_start_SSAO("SSAO", Float) = 0
+          [ThryToggle(_SSAO)] _SSAO_Enabled("Enable", Float) = 0
+          _SSAO_Radius("Radius", Float) = 1.0
+          _SSAO_Samples("Samples", Float) = 5
+          _SSAO_Strength("Strength", Float) = 1
+          _SSAO_Noise("Noise", 2D) = "black" {}
+          _SSAO_Bias("Bias", Float) = 0.0
+          _SSAO_Frame_Counter("Frame counter", Float) = 0.0
+        [HideInInspector] m_end_SSAO("SSAO", Float) = 0
+        //endex
+
         //ifex _Letter_Grid_Enabled==0
         [HideInInspector] m_start_Letter_Grid("Letter grid", Float) = 0
           [ThryToggle(_LETTER_GRID)] _Letter_Grid_Enabled("Enable", Float) = 0

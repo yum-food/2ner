@@ -204,6 +204,10 @@
 #pragma shader_feature_local _3D_SDF
 //endex
 
+//ifex _SSAO_Enabled==0
+#pragma shader_feature_local _SSAO
+//endex
+
 //ifex _False_Color_Visualization_Enabled==0
 #pragma shader_feature_local _FALSE_COLOR_VISUALIZATION
 //endex

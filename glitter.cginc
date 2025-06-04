@@ -69,7 +69,7 @@ float4 getGlitter(v2f i, GlitterParams params, float3 normal) {
     c_acc = c + (1 - c) * c_acc;
   }
 #if defined(_GLITTER_ANGLE_LIMIT)
-  float VdotN = dot(-i.eyeVec.xyz, normal);
+  float VdotN = dot(-normalize(i.eyeVec.xyz), normal);
   float angle_mask = smoothstep(
     cos(params.angle_limit * PI), 
     cos(params.angle_limit * (1 - params.angle_limit_transition_width) * PI), 

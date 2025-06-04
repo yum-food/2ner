@@ -234,7 +234,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	YumLighting light = (YumLighting) 0;
 
   // normalize has no visibile impact in test scene
-  light.view_dir = -i.eyeVec.xyz;
+  light.view_dir = -normalize(i.eyeVec.xyz);
 
   light.dir = getDirectLightDirection(i);
 
