@@ -96,9 +96,9 @@ FogResult raymarched_fog(v2f i, FogParams p)
   }
 
   FogResult r;
-  //r.color.rgb = _Raymarched_Fog_Color;
+  r.color.rgb = _Raymarched_Fog_Color;
   //r.color.rgb = saturate(log(linearZ) / 5.0);
-  r.color.rgb = float3(screen_uv, 0);
+  //r.color.rgb = float3(screen_uv, 0);
   r.color.a = d;
   r.depth = 0.0001;  // Very small depth value to render in front
   return r;

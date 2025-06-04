@@ -189,7 +189,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.normal = UnityObjectToWorldNormal(i.normal);
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
-  const float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
 
 #if defined(_RAYMARCHED_FOG) && defined(FORWARD_BASE_PASS)
   {
@@ -251,6 +250,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
+  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   float ssao = 1;
 #if defined(_SSAO)
 	float2 debug;
@@ -259,33 +259,19 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
 #if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
-  Custom30Output basic_cube_output = BasicCube(i);
-  i.pos = UnityObjectToClipPos(basic_cube_output.objPos);
-  i.normal = basic_cube_output.normal;
+  Custom30Output c30_out = BasicCube(i);
+#elif defined(_CUSTOM30_BASICWEDGE)
+  Custom30Output c30_out = BasicWedge(i);
+#elif defined(_CUSTOM30_BASICPLATFORM)
+  Custom30Output c30_out = BasicPlatform(i);
+#endif
+  i.normal = c30_out.normal;
 #if !defined(_DEPTH_PREPASS)
-  depth = basic_cube_output.depth;
+  depth = c30_out.depth;
 #endif
 #endif
 
-#if defined(_CUSTOM30_BASICWEDGE)
-  Custom30Output basic_wedge_output = BasicWedge(i);
-  i.pos = UnityObjectToClipPos(basic_wedge_output.objPos);
-  i.normal = basic_wedge_output.normal;
-#if !defined(_DEPTH_PREPASS)
-  depth = basic_wedge_output.depth;
-#endif
-#endif
-#endif  // FORWARD_BASE_PASS
-
-#if defined(_CUSTOM30_BASICPLATFORM)
-  Custom30Output basic_platform_output = BasicPlatform(i);
-  i.pos = UnityObjectToClipPos(basic_platform_output.objPos);
-  i.normal = basic_platform_output.normal;
-#if !defined(_DEPTH_PREPASS)
-  depth = basic_platform_output.depth;
-#endif
-#endif
-
+  tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   YumPbr pbr = GetYumPbr(i, tangentToWorld);
 	pbr.ao *= ssao;
 
