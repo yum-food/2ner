@@ -820,11 +820,19 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Raymarched_Fog("Raymarched fog", Float) = 0
           [ThryToggle(_RAYMARCHED_FOG)] _Raymarched_Fog_Enabled("Enable", Float) = 0
           _Raymarched_Fog_Steps("Steps", Range(1, 32)) = 32
+          _Raymarched_Fog_Color("Color", Color) = (0.3, 0.3, 0.3, 1)
           _Raymarched_Fog_Density("Density", Float) = 1.0
           _Raymarched_Fog_Dithering_Noise("Dithering noise", 2D) = "black" {}
           _Raymarched_Fog_Density_Noise("Density noise", 3D) = "black" {}
           _Raymarched_Fog_Density_Noise_Scale("Density noise scale", Vector) = (1, 1, 1, 0)
           _Raymarched_Fog_Y_Cutoff("Y cutoff", Float) = -1000
+
+          [HideInInspector] m_start_Raymarched_Fog_Height_Density("Height density", Float) = 0
+            [ThryToggle(_RAYMARCHED_FOG_HEIGHT_DENSITY)] _Raymarched_Fog_Height_Density_Enabled("Enable", Float) = 0
+            _Raymarched_Fog_Height_Density_Min("Height density min", Float) = 0
+            _Raymarched_Fog_Height_Density_Max("Height density max", Float) = 100
+            _Raymarched_Fog_Height_Density_Power("Height density power", Float) = 1
+          [HideInInspector] m_end_Raymarched_Fog_Height_Density("Height density", Float) = 0
         [HideInInspector] m_end_Raymarched_Fog("Raymarched fog", Float) = 0
         //endex
 
@@ -1806,6 +1814,7 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Shadow_Casting("Cast shadows", Float) = 0
         [ThryToggle(_)] _Cast_Shadows_Enabled("Enable", Float) = 1
         [HideInInspector] m_end_Shadow_Casting("Cast shadows", Float) = 0
+        //endex
         //ifex _Wrapped_Lighting_Enabled==0
         [HideInInspector] m_start_WrappedLighting("Wrapped lighting", Float) = 0
         [ThryToggle(_WRAPPED_LIGHTING)] _Wrapped_Lighting_Enabled("Enable", Float) = 1

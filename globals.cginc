@@ -536,12 +536,17 @@ float _SSAO_Bias;
 #endif  // _SSAO
 
 #if defined(_RAYMARCHED_FOG)
+float3 _Raymarched_Fog_Color;
 float _Raymarched_Fog_Steps;
 float _Raymarched_Fog_Density;
 texture2D _Raymarched_Fog_Dithering_Noise;
+float4 _Raymarched_Fog_Dithering_Noise_TexelSize;
 texture3D _Raymarched_Fog_Density_Noise;
 float4 _Raymarched_Fog_Density_Noise_Scale;
 float _Raymarched_Fog_Y_Cutoff;
+float _Raymarched_Fog_Height_Density_Min;
+float _Raymarched_Fog_Height_Density_Max;
+float _Raymarched_Fog_Height_Density_Power;
 #endif  // _RAYMARCHED_FOG
 
 #endif  // __GLOBALS_INC

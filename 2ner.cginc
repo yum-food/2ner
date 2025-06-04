@@ -196,8 +196,14 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
       _Raymarched_Fog_Density,
       _Raymarched_Fog_Y_Cutoff,
       _Raymarched_Fog_Dithering_Noise,
+      _Raymarched_Fog_Dithering_Noise_TexelSize,
       _Raymarched_Fog_Density_Noise,
-      _Raymarched_Fog_Density_Noise_Scale
+      _Raymarched_Fog_Density_Noise_Scale,
+      #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
+      _Raymarched_Fog_Height_Density_Min,
+      _Raymarched_Fog_Height_Density_Max,
+      _Raymarched_Fog_Height_Density_Power,
+      #endif
     };
     FogResult fog_result = raymarched_fog(i, fog_params);
     depth = fog_result.depth;
