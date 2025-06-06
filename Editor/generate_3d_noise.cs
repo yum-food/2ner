@@ -26,6 +26,12 @@ public class WhiteNoiseTextureGenerator : EditorWindow
     private float domainWarpingStrength = 0.1f;
     private float domainWarpingScale = 0.5f;
 
+    // FBM parameters
+    private bool enableFBM = false;
+    private int fbmOctaves = 4;
+    private float fbmLacunarity = 2.0f;
+    private float fbmGain = 0.5f;
+
     [MenuItem("Tools/yum_food/White Noise Texture Generator")]
     public static void ShowWindow()
     {
@@ -55,6 +61,19 @@ public class WhiteNoiseTextureGenerator : EditorWindow
             EditorGUI.indentLevel--;
         }
 
+        EditorGUILayout.Space();
+        GUILayout.Label("FBM (Fractal Brownian Motion)", EditorStyles.boldLabel);
+        enableFBM = EditorGUILayout.Toggle("Enable FBM", enableFBM);
+        
+        if (enableFBM)
+        {
+            EditorGUI.indentLevel++;
+            fbmOctaves = EditorGUILayout.IntSlider("Octaves", fbmOctaves, 1, 10);
+            fbmLacunarity = EditorGUILayout.Slider("Lacunarity", fbmLacunarity, 1.0f, 4.0f);
+            fbmGain = EditorGUILayout.Slider("Gain", fbmGain, 0.1f, 1.0f);
+            EditorGUI.indentLevel--;
+        }
+
         if (GUILayout.Button("Generate Texture"))
         {
             if (textureWidth <= 0 || textureHeight <= 0 || textureDepth <= 0)
@@ -72,7 +91,11 @@ public class WhiteNoiseTextureGenerator : EditorWindow
         TextureFormat format = GetTextureFormat();
         Texture3D texture = new Texture3D(textureWidth, textureHeight, textureDepth, format, false);
         
-        if (enableDomainWarping)
+        if (enableFBM)
+        {
+            GenerateWithFBM(texture);
+        }
+        else if (enableDomainWarping)
         {
             GenerateWithDomainWarping(texture);
         }
@@ -199,6 +222,11 @@ public class WhiteNoiseTextureGenerator : EditorWindow
         float dy = fy - y0;
         float dz = fz - z0;
         
+        // Apply smoothstep to interpolation parameters
+        float sx = Mathf.SmoothStep(0, 1, dx);
+        float sy = Mathf.SmoothStep(0, 1, dy);
+        float sz = Mathf.SmoothStep(0, 1, dz);
+        
         // Sample 8 corners
         Color c000 = colors[x0 + y0 * textureWidth + z0 * textureWidth * textureHeight];
         Color c001 = colors[x0 + y0 * textureWidth + z1 * textureWidth * textureHeight];
@@ -209,16 +237,104 @@ public class WhiteNoiseTextureGenerator : EditorWindow
         Color c110 = colors[x1 + y1 * textureWidth + z0 * textureWidth * textureHeight];
         Color c111 = colors[x1 + y1 * textureWidth + z1 * textureWidth * textureHeight];
         
-        // Interpolate
-        Color c00 = Color.Lerp(c000, c001, dz);
-        Color c01 = Color.Lerp(c010, c011, dz);
-        Color c10 = Color.Lerp(c100, c101, dz);
-        Color c11 = Color.Lerp(c110, c111, dz);
+        // Interpolate with smoothstepped values
+        Color c00 = Color.Lerp(c000, c001, sz);
+        Color c01 = Color.Lerp(c010, c011, sz);
+        Color c10 = Color.Lerp(c100, c101, sz);
+        Color c11 = Color.Lerp(c110, c111, sz);
         
-        Color c0 = Color.Lerp(c00, c01, dy);
-        Color c1 = Color.Lerp(c10, c11, dy);
+        Color c0 = Color.Lerp(c00, c01, sy);
+        Color c1 = Color.Lerp(c10, c11, sy);
         
-        return Color.Lerp(c0, c1, dx);
+        return Color.Lerp(c0, c1, sx);
+    }
+
+    private Color SampleTextureCustomSize(Color[] colors, Vector3 coord, int width, int height, int depth)
+    {
+        // Convert to texture space
+        float fx = coord.x * (width);
+        float fy = coord.y * (height);
+        float fz = coord.z * (depth);
+        
+        // Trilinear interpolation
+        int x0 = Mathf.FloorToInt(fx);
+        int y0 = Mathf.FloorToInt(fy);
+        int z0 = Mathf.FloorToInt(fz);
+        int x1 = (x0 + 1) % width;
+        int y1 = (y0 + 1) % height;
+        int z1 = (z0 + 1) % depth;
+        
+        float dx = fx - x0;
+        float dy = fy - y0;
+        float dz = fz - z0;
+        
+        // Apply smoothstep to interpolation parameters
+        float sx = Mathf.SmoothStep(0, 1, dx);
+        float sy = Mathf.SmoothStep(0, 1, dy);
+        float sz = Mathf.SmoothStep(0, 1, dz);
+        
+        // Sample 8 corners
+        Color c000 = colors[x0 + y0 * width + z0 * width * height];
+        Color c001 = colors[x0 + y0 * width + z1 * width * height];
+        Color c010 = colors[x0 + y1 * width + z0 * width * height];
+        Color c011 = colors[x0 + y1 * width + z1 * width * height];
+        Color c100 = colors[x1 + y0 * width + z0 * width * height];
+        Color c101 = colors[x1 + y0 * width + z1 * width * height];
+        Color c110 = colors[x1 + y1 * width + z0 * width * height];
+        Color c111 = colors[x1 + y1 * width + z1 * width * height];
+        
+        // Interpolate with smoothstepped values
+        Color c00 = Color.Lerp(c000, c001, sz);
+        Color c01 = Color.Lerp(c010, c011, sz);
+        Color c10 = Color.Lerp(c100, c101, sz);
+        Color c11 = Color.Lerp(c110, c111, sz);
+        
+        Color c0 = Color.Lerp(c00, c01, sy);
+        Color c1 = Color.Lerp(c10, c11, sy);
+        
+        return Color.Lerp(c0, c1, sx);
+    }
+
+    private Color[] ApplyDomainWarpingToColors(Color[] baseColors, int width, int height, int depth)
+    {
+        Color[] warpedColors = new Color[baseColors.Length];
+        
+        for (int z = 0; z < depth; z++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    Vector3 coord = new Vector3(
+                        (float)x / width,
+                        (float)y / height,
+                        (float)z / depth
+                    );
+                    
+                    // Apply domain warping
+                    for (int octave = 0; octave < domainWarpingOctaves; octave++)
+                    {
+                        Vector3 sampleCoord = coord * domainWarpingScale;
+                        Color warpValue = SampleTextureCustomSize(baseColors, sampleCoord, width, height, depth);
+                        
+                        // Convert color to offset vector
+                        Vector3 offset = new Vector3(
+                            warpValue.r * 2f - 1f,
+                            warpValue.g * 2f - 1f,
+                            warpValue.b * 2f - 1f
+                        ) * domainWarpingStrength;
+                        
+                        coord += offset;
+                    }
+                    
+                    // Sample final color at warped coordinate
+                    int index = x + y * width + z * width * height;
+                    warpedColors[index] = SampleTextureCustomSize(baseColors, coord, width, height, depth);
+                }
+            }
+        }
+        
+        return warpedColors;
     }
 
     private TextureFormat GetTextureFormat()
@@ -254,6 +370,129 @@ public class WhiteNoiseTextureGenerator : EditorWindow
             case NoiseType.NormalizedThreeDimensional:
                 Vector3 normalizedColor = Random.insideUnitSphere.normalized;
                 return new Color(normalizedColor.x * 0.5f + 0.5f, normalizedColor.y * 0.5f + 0.5f, normalizedColor.z * 0.5f + 0.5f, 1);
+            default:
+                return Color.white;
+        }
+    }
+
+    private void GenerateWithFBM(Texture3D texture)
+    {
+        // Calculate starting resolution based on target size and octaves
+        float scaleFactor = Mathf.Pow(fbmLacunarity, fbmOctaves - 1);
+        int currentWidth = Mathf.Max(1, Mathf.RoundToInt(textureWidth / scaleFactor));
+        int currentHeight = Mathf.Max(1, Mathf.RoundToInt(textureHeight / scaleFactor));
+        int currentDepth = Mathf.Max(1, Mathf.RoundToInt(textureDepth / scaleFactor));
+        
+        // Track previous dimensions
+        int prevWidth = currentWidth;
+        int prevHeight = currentHeight;
+        int prevDepth = currentDepth;
+        
+        Color[] baseColors = null;
+        float amplitude = 1.0f;
+        float maxAmplitude = 0.0f;
+        
+        for (int octave = 0; octave < fbmOctaves; octave++)
+        {
+            // Generate noise at current resolution
+            Color[] octaveColors = new Color[currentWidth * currentHeight * currentDepth];
+            for (int i = 0; i < octaveColors.Length; i++) {
+                octaveColors[i] = GenerateColor();
+            }
+            
+            if (baseColors == null) {
+                baseColors = octaveColors;
+            } else {
+                for (int z = 0; z < currentDepth; z++)
+                for (int y = 0; y < currentHeight; y++)
+                for (int x = 0; x < currentWidth; x++)
+                {
+                    int index = x + y * currentWidth + z * currentWidth * currentHeight;
+                    Vector3 coord = new Vector3(
+                        (float)x / currentWidth,
+                        (float)y / currentHeight,
+                        (float)z / currentDepth
+                    );
+                    Color prevColor = SampleTextureCustomSize(baseColors, coord, prevWidth, prevHeight, prevDepth);
+                    octaveColors[index] = prevColor + octaveColors[index] * amplitude;
+                }
+            }
+            
+            baseColors = octaveColors;
+            
+            maxAmplitude += amplitude;
+            amplitude *= fbmGain;
+            
+            // Store current dimensions as previous before updating
+            prevWidth = currentWidth;
+            prevHeight = currentHeight;
+            prevDepth = currentDepth;
+            
+            // Increase resolution for next octave
+            if (octave < fbmOctaves - 1)
+            {
+                currentWidth = Mathf.Min(textureWidth, Mathf.RoundToInt(currentWidth * fbmLacunarity));
+                currentHeight = Mathf.Min(textureHeight, Mathf.RoundToInt(currentHeight * fbmLacunarity));
+                currentDepth = Mathf.Min(textureDepth, Mathf.RoundToInt(currentDepth * fbmLacunarity));
+            }
+        }
+        
+        // Ensure final resolution matches target
+        if (currentWidth != textureWidth || currentHeight != textureHeight || currentDepth != textureDepth)
+        {
+            Color[] finalColors = new Color[textureWidth * textureHeight * textureDepth];
+            for (int z = 0; z < textureDepth; z++)
+            {
+                for (int y = 0; y < textureHeight; y++)
+                {
+                    for (int x = 0; x < textureWidth; x++)
+                    {
+                        int index = x + y * textureWidth + z * textureWidth * textureHeight;
+                        Vector3 coord = new Vector3(
+                            (float)x / textureWidth,
+                            (float)y / textureHeight,
+                            (float)z / textureDepth
+                        );
+                        finalColors[index] = SampleTextureCustomSize(baseColors, coord, currentWidth, currentHeight, currentDepth);
+                    }
+                }
+            }
+            baseColors = finalColors;
+        }
+        
+        // Normalize
+        for (int i = 0; i < baseColors.Length; i++)
+        {
+            baseColors[i] /= maxAmplitude;
+            baseColors[i].a = 1.0f;
+        }
+        
+        texture.SetPixels(baseColors);
+    }
+
+    private Color GeneratePerlinColor(float x, float y, float z, float scale = 1f)
+    {
+        switch (noiseType)
+        {
+            case NoiseType.OneDimensional:
+                return new Color(Mathf.PerlinNoise(x * scale, 0), 0, 0, 1);
+            case NoiseType.TwoDimensional:
+                return new Color(
+                    Mathf.PerlinNoise(x * scale, y * scale), 
+                    Mathf.PerlinNoise(x * scale + 100, y * scale + 100), 
+                    0, 1);
+            case NoiseType.ThreeDimensional:
+                return new Color(
+                    Mathf.PerlinNoise(x * scale, y * scale),
+                    Mathf.PerlinNoise(x * scale + 100, z * scale),
+                    Mathf.PerlinNoise(y * scale + 200, z * scale + 200),
+                    1);
+            case NoiseType.FourDimensional:
+                return new Color(
+                    Mathf.PerlinNoise(x * scale, y * scale),
+                    Mathf.PerlinNoise(x * scale + 100, z * scale),
+                    Mathf.PerlinNoise(y * scale + 200, z * scale + 200),
+                    Mathf.PerlinNoise(x * scale + 300, y * scale + 300));
             default:
                 return Color.white;
         }

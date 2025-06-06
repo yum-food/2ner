@@ -8,6 +8,10 @@
 #define HALF_PI (PI * 0.5)
 #define PHI 1.618033989
 #define SQRT_2_RCP 0.707106781
+#define TWO_OVER_THREE  0.6666666666666666f
+#define SQRT_3_OVER_2   0.8660254037844386f
+#define EULERS_CONSTANT 2.718281828
+
 
 float pow5(float x)
 {
@@ -285,9 +289,6 @@ float3 cmykToRgb(float4 cmyk) {
 
 // Cartesian to cube hexagonal coordinates.
 // Based on this: https://backdrifting.net/post/064_hex_grids
-#define TWO_OVER_THREE  0.6666666666666666f
-#define SQRT_3_OVER_2   0.8660254037844386f
-
 float3 cart_to_hex(float2 cart) {
   float p = cart.x;
   float q = dot(cart, float2(0.5f, SQRT_3_OVER_2));

@@ -205,9 +205,8 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
       _Raymarched_Fog_Density_Exponent,
       #endif
       #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-      _Raymarched_Fog_Height_Density_Min,
-      _Raymarched_Fog_Height_Density_Max,
-      _Raymarched_Fog_Height_Density_Power,
+      _Raymarched_Fog_Height_Density_Start,
+      _Raymarched_Fog_Height_Density_Half_Life,
       #endif
     };
     FogResult fog_result = raymarched_fog(i, fog_params);
@@ -250,13 +249,16 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
-#if defined(_CUSTOM30) && defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
+#if defined(_CUSTOM30)
+#if defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
   Custom30Output c30_out = BasicCube(i);
 #elif defined(_CUSTOM30_BASICWEDGE)
   Custom30Output c30_out = BasicWedge(i);
 #elif defined(_CUSTOM30_BASICPLATFORM)
   Custom30Output c30_out = BasicPlatform(i);
+#else
+  Custom30Output c30_out = (Custom30Output) 0;
 #endif
   i.normal = c30_out.normal;
   i.worldPos = mul(unity_ObjectToWorld, float4(c30_out.objPos, 1));
@@ -265,6 +267,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.pos = c30_screenPos;
 #if !defined(_DEPTH_PREPASS)
   depth = c30_out.depth;
+#endif
 #endif
 #endif
 

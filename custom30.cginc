@@ -277,6 +277,9 @@ float BasicPlatform_map(float3 p) {
   #if defined(_CUSTOM30_BASICPLATFORM_Y_ALIGNED)
     p.xy = p.yx;
   #endif
+  #if defined(_CUSTOM30_BASICPLATFORM_VERTICAL)
+    p.xz = p.zx;
+  #endif
 
   float3 platform_size = _Custom30_BasicPlatform_Size;
   float box_d = distance_from_box_frame(p, platform_size, _Custom30_BasicPlatform_Frame_D);

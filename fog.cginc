@@ -21,9 +21,8 @@ struct FogParams {
     float density_exponent;
 #endif
 #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-    float height_density_min;
-    float height_density_max;
-    float height_density_power;
+    float height_density_start;
+    float height_density_half_life;
 #endif
 };
 
@@ -40,8 +39,13 @@ FogResult raymarched_fog(v2f i, FogParams p)
   const float ro_epsilon = 1E-3;
   ro += rd * ro_epsilon;
 
+  // TODO maybe we can accelerate this?
+  float perspective_divide = 1.0f / i.pos.w;
+  float perspective_factor = length(i.eyeVec.xyz * perspective_divide);
+
   const float2 screen_uv = (i.pos.xy + 0.5) / _ScreenParams.xy;
   float zDepthFromMap = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screen_uv);
+
   float linearZ =
     GetLinearZFromZDepth_WorksWithMirrors(zDepthFromMap, screen_uv);
   linearZ = min(1E3, linearZ);
@@ -75,7 +79,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
     float3 noise_coord = (pp + _Time[0] * p.velocity) * p.density_noise_scale.xyz;
 
-    float cur_d = p.density_noise.SampleLevel(linear_repeat_s,
+    float cur_d = p.density_noise.SampleLevel(bilinear_repeat_s,
         noise_coord, 0);
 
 #if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
@@ -85,10 +89,18 @@ FogResult raymarched_fog(v2f i, FogParams p)
     cur_d *= p.density * step_size;
 
 #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-    // Apply height-based density (branchless)
-    float t = saturate((pp.y - p.height_density_min) /
-                      (p.height_density_max - p.height_density_min));
-    cur_d *= 1.0 - t;
+    float height_clamped = max(pp.y - p.height_density_start, 0);
+    // if half_life = 2 and start = 0, then
+    //   y=2 -> density = 1/2
+    //   y=4 -> density = 1/4
+    //   y=6 -> density = 1/8
+    // if half_life = 3 and start = 0, then
+    //   y=3 -> density = 1/2
+    //   y=6 -> density = 1/4
+    //   y=9 -> density = 1/8
+    float exponent = height_clamped / p.height_density_half_life;
+    float factor = pow(2, -exponent);
+    cur_d *= factor;
 #endif
 
     cur_d = saturate(cur_d);

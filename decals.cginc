@@ -89,7 +89,15 @@ float4 getDecalColor(DecalParams params, float2 uv) {
     float4 sdf_sample = params.mainTex.SampleLevel(linear_repeat_s, uv, 0);
     float sd = sdf_sample.r;
     sd = params.sdf_invert ? 1 - sd : sd;
-    sd = (sd > params.sdf_threshold ? 1 : 0);
+    // The fwidth+smoothstep anti-aliases the glyph outline. See
+    // "Noise is Beautiful" by Gustavson around page 34 for an
+    // explanation of this trick.
+#if 1
+    float step_wd = fwidth(sd) * 0.5;
+    sd = smoothstep(params.sdf_threshold - step_wd, params.sdf_threshold + step_wd, sd);
+#else
+    sd = step(params.sdf_threshold, sd);
+#endif
     return params.color * sd;
 }
 

@@ -134,6 +134,7 @@ Shader "yum_food/2ner"
         [ThryToggle(_CUSTOM30_BASICPLATFORM_CHAMFER)]_Custom30_BasicPlatform_Chamfer("Chamfer", Float) = 0
         _Custom30_BasicPlatform_Chamfer_Size("Size", Vector) = (0.36, 0.78, 0.9)
         [ThryToggle(_CUSTOM30_BASICPLATFORM_Y_ALIGNED)]_Custom30_BasicPlatform_Y_Aligned("Y aligned", Float) = 0
+        [ThryToggle(_CUSTOM30_BASICPLATFORM_VERTICAL)]_Custom30_BasicPlatform_Vertical("Vertical", Float) = 0
         [HideInInspector] m_end_Custom30_BasicPlatform("Basic platform", Float) = 0
         //endex
 
@@ -835,9 +836,8 @@ Shader "yum_food/2ner"
 
           [HideInInspector] m_start_Raymarched_Fog_Height_Density("Height density", Float) = 0
             [ThryToggle(_RAYMARCHED_FOG_HEIGHT_DENSITY)] _Raymarched_Fog_Height_Density_Enabled("Enable", Float) = 0
-            _Raymarched_Fog_Height_Density_Min("Height density min", Float) = 0
-            _Raymarched_Fog_Height_Density_Max("Height density max", Float) = 100
-            _Raymarched_Fog_Height_Density_Power("Height density power", Float) = 1
+            _Raymarched_Fog_Height_Density_Start("Start elevation", Float) = 0
+            _Raymarched_Fog_Height_Density_Half_Life("Half life", Float) = 1
           [HideInInspector] m_end_Raymarched_Fog_Height_Density("Height density", Float) = 0
         [HideInInspector] m_end_Raymarched_Fog("Raymarched fog", Float) = 0
         //endex

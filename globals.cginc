@@ -10,6 +10,7 @@ float4 _CameraDepthTexture_TexelSize;
 
 SamplerState point_repeat_s;
 SamplerState linear_repeat_s;
+SamplerState bilinear_repeat_s;
 SamplerState linear_clamp_s;
 SamplerState trilinear_repeat_s;
 
@@ -549,9 +550,8 @@ float3 _Raymarched_Fog_Velocity;
 float _Raymarched_Fog_Density_Exponent;
 #endif
 #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-float _Raymarched_Fog_Height_Density_Min;
-float _Raymarched_Fog_Height_Density_Max;
-float _Raymarched_Fog_Height_Density_Power;
+float _Raymarched_Fog_Height_Density_Start;
+float _Raymarched_Fog_Height_Density_Half_Life;
 #endif
 #endif  // _RAYMARCHED_FOG
 

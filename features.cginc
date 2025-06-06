@@ -305,6 +305,7 @@
 #pragma shader_feature_local _CUSTOM30_BASICPLATFORM
 #pragma shader_feature_local _CUSTOM30_BASICPLATFORM_CHAMFER
 #pragma shader_feature_local _CUSTOM30_BASICPLATFORM_Y_ALIGNED
+#pragma shader_feature_local _CUSTOM30_BASICPLATFORM_VERTICAL
 //endex
 
 //ifex _Depth_Prepass_Enabled==0
