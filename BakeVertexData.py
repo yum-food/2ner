@@ -674,6 +674,341 @@ class MESH_OT_deduplicate_submeshes(Operator):
         layout.label(text="Set to 0 for exact matching", icon='INFO')
 
 
+class MESH_OT_pack_uv_islands_by_submesh(Operator):
+    bl_idname = "mesh.pack_uv_islands_by_submesh"
+    bl_label = "Pack UV Islands by Submesh Z"
+    bl_description = "Pack UV islands vertically sorted by submesh Z position"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    padding: FloatProperty(
+        name="Island Padding",
+        description="Padding between UV islands",
+        default=0.02,
+        min=0.0,
+        max=0.1,
+        precision=3
+    )
+    
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return (obj is not None and
+                obj.type == 'MESH' and
+                context.mode == 'EDIT_MESH' and
+                obj.data.uv_layers.active is not None)
+    
+    def get_uv_islands(self, bm, uv_layer):
+        """Find all UV islands in the mesh"""
+        # Build UV edge connectivity
+        uv_vert_map = {}  # Maps UV coordinates to vertex indices
+        uv_edges = set()  # Set of UV edges as frozensets of UV coords
+        
+        for face in bm.faces:
+            if not face.select:
+                continue
+                
+            face_uvs = []
+            for loop in face.loops:
+                uv = loop[uv_layer].uv
+                uv_key = (round(uv.x, 6), round(uv.y, 6))
+                face_uvs.append(uv_key)
+                
+                if uv_key not in uv_vert_map:
+                    uv_vert_map[uv_key] = set()
+                uv_vert_map[uv_key].add(loop.vert.index)  # Store index instead of BMVert
+            
+            # Create UV edges
+            for i in range(len(face_uvs)):
+                j = (i + 1) % len(face_uvs)
+                edge = frozenset([face_uvs[i], face_uvs[j]])
+                uv_edges.add(edge)
+        
+        # Find UV islands using connected components
+        uv_adjacency = {uv: set() for uv in uv_vert_map}
+        
+        for edge in uv_edges:
+            uv_list = list(edge)
+            if len(uv_list) == 2:
+                uv_adjacency[uv_list[0]].add(uv_list[1])
+                uv_adjacency[uv_list[1]].add(uv_list[0])
+        
+        # Find connected components
+        visited = set()
+        islands = []
+        
+        for start_uv in uv_vert_map:
+            if start_uv in visited:
+                continue
+                
+            island_uvs = set()
+            island_vert_indices = set()  # Store indices instead of BMVerts
+            queue = [start_uv]
+            
+            while queue:
+                current_uv = queue.pop(0)
+                if current_uv in visited:
+                    continue
+                    
+                visited.add(current_uv)
+                island_uvs.add(current_uv)
+                island_vert_indices.update(uv_vert_map[current_uv])
+                
+                for neighbor in uv_adjacency[current_uv]:
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+            
+            # Store island data with vertex indices
+            islands.append({
+                'uvs': island_uvs,
+                'vert_indices': island_vert_indices,  # Store indices
+                'loops': []  # Will be filled later
+            })
+        
+        # We'll assign loops later when we have a valid BMesh
+        return islands
+    
+    def get_island_bounds(self, island, uv_layer):
+        """Get bounding box of UV island"""
+        if not island['loops']:
+            return 0, 0, 0, 0
+            
+        min_u = min_v = float('inf')
+        max_u = max_v = float('-inf')
+        
+        for loop in island['loops']:
+            uv = loop[uv_layer].uv
+            min_u = min(min_u, uv.x)
+            max_u = max(max_u, uv.x)
+            min_v = min(min_v, uv.y)
+            max_v = max(max_v, uv.y)
+        
+        return min_u, min_v, max_u, max_v
+    
+    def get_submesh_of_island(self, island_vert_indices, submeshes):
+        """Find which submesh an island belongs to"""
+        # island_vert_indices is already a set of indices
+        
+        # Find submesh with most overlap
+        best_submesh = None
+        best_overlap = 0
+        
+        for i, submesh in enumerate(submeshes):
+            overlap = len(island_vert_indices & submesh)
+            if overlap > best_overlap:
+                best_overlap = overlap
+                best_submesh = i
+        
+        return best_submesh
+    
+    def get_submesh_avg_z(self, mesh, submesh_indices):
+        """Calculate average Z position of a submesh"""
+        if not submesh_indices:
+            return 0.0
+            
+        total_z = 0.0
+        for idx in submesh_indices:
+            total_z += mesh.vertices[idx].co.z
+        
+        return total_z / len(submesh_indices)
+    
+    def execute(self, context):
+        obj = context.active_object
+        mesh = obj.data
+        
+        # Get UV layer
+        uv_layer = mesh.uv_layers.active
+        if not uv_layer:
+            self.report({'ERROR'}, "No active UV layer")
+            return {'CANCELLED'}
+        
+        # Create BMesh
+        bm = bmesh.from_edit_mesh(mesh)
+        bm_uv_layer = bm.loops.layers.uv.active
+        
+        # Get UV islands from selected faces
+        uv_islands = self.get_uv_islands(bm, bm_uv_layer)
+        
+        if not uv_islands:
+            self.report({'WARNING'}, "No UV islands found in selection")
+            return {'CANCELLED'}
+        
+        # Get submeshes (vertex islands)
+        bpy.ops.object.mode_set(mode='OBJECT')
+        
+        # Get selected vertices for submesh detection
+        selected_indices = {v.index for v in mesh.vertices if v.select}
+        
+        # Build submeshes (reusing logic from other operators)
+        adjacency = {idx: set() for idx in selected_indices}
+        for edge in mesh.edges:
+            v0, v1 = edge.vertices
+            if v0 in selected_indices and v1 in selected_indices:
+                adjacency[v0].add(v1)
+                adjacency[v1].add(v0)
+        
+        submeshes = []
+        visited = set()
+        
+        for start_idx in selected_indices:
+            if start_idx in visited:
+                continue
+                
+            submesh = set()
+            queue = [start_idx]
+            
+            while queue:
+                current = queue.pop(0)
+                if current in visited:
+                    continue
+                    
+                visited.add(current)
+                submesh.add(current)
+                
+                for neighbor in adjacency[current]:
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+            
+            submeshes.append(submesh)
+        
+        # Calculate average Z for each submesh
+        submesh_z_values = []
+        for submesh in submeshes:
+            avg_z = self.get_submesh_avg_z(mesh, submesh)
+            submesh_z_values.append(avg_z)
+        
+        # Return to edit mode to work with BMesh
+        bpy.ops.object.mode_set(mode='EDIT')
+        bm = bmesh.from_edit_mesh(mesh)
+        bm_uv_layer = bm.loops.layers.uv.active
+        
+        # Assign loops to islands now that we're back in edit mode
+        for island in uv_islands:
+            for face in bm.faces:
+                if not face.select:
+                    continue
+                    
+                for loop in face.loops:
+                    uv = loop[bm_uv_layer].uv
+                    uv_key = (round(uv.x, 6), round(uv.y, 6))
+                    
+                    if uv_key in island['uvs']:
+                        island['loops'].append(loop)
+        
+        # Assign UV islands to submeshes and get bounds
+        island_data = []
+        for island in uv_islands:
+            submesh_idx = self.get_submesh_of_island(island['vert_indices'], submeshes)
+            if submesh_idx is not None and island['loops']:  # Make sure we have loops
+                bounds = self.get_island_bounds(island, bm_uv_layer)
+                width = bounds[2] - bounds[0]
+                height = bounds[3] - bounds[1]
+                
+                island_data.append({
+                    'island': island,
+                    'submesh_idx': submesh_idx,
+                    'submesh_z': submesh_z_values[submesh_idx],
+                    'bounds': bounds,
+                    'width': width,
+                    'height': height,
+                    'min_u': bounds[0],
+                    'min_v': bounds[1]
+                })
+        
+        # Sort islands by submesh Z (descending, so higher Z is at top of UV space)
+        island_data.sort(key=lambda x: x['submesh_z'], reverse=True)
+        
+        # Calculate total area needed
+        total_area = 0
+        max_island_size = 0
+        for data in island_data:
+            area = (data['width'] + self.padding) * (data['height'] + self.padding)
+            total_area += area
+            max_island_size = max(max_island_size, max(data['width'], data['height']))
+        
+        # Calculate optimal square dimensions
+        # Start with square root of total area, but ensure it's at least as wide as largest island
+        target_size = max(math.sqrt(total_area) * 1.2, max_island_size + 2 * self.padding)  # 1.2 for some extra space
+        
+        # Scale to fit in UV space (0-1)
+        if target_size > 1.0:
+            scale_factor = 0.95 / target_size  # Leave some margin
+            # Scale all islands
+            for data in island_data:
+                data['width'] *= scale_factor
+                data['height'] *= scale_factor
+            target_size = 0.95
+        else:
+            scale_factor = 1.0
+        
+        # Pack islands using a simple shelf packing algorithm
+        rows = []
+        current_row = []
+        current_row_height = 0
+        current_row_width = 0
+        
+        for data in island_data:
+            width = data['width']
+            height = data['height']
+            
+            # Check if island fits in current row
+            if current_row_width + width + self.padding <= target_size or not current_row:
+                # Add to current row
+                current_row.append(data)
+                current_row_width += width + self.padding
+                current_row_height = max(current_row_height, height)
+            else:
+                # Start new row
+                rows.append((current_row, current_row_height))
+                current_row = [data]
+                current_row_width = width + self.padding
+                current_row_height = height
+        
+        # Add last row
+        if current_row:
+            rows.append((current_row, current_row_height))
+        
+        # Calculate actual bounding box height
+        total_height = sum(row[1] for row in rows) + self.padding * (len(rows) + 1)
+        
+        # Center the packed result in UV space
+        start_u = (1.0 - target_size) / 2.0
+        start_v = (1.0 - min(total_height, 1.0)) / 2.0 + min(total_height, 1.0)
+        
+        # Place islands
+        current_v = start_v
+        
+        for row_islands, row_height in rows:
+            # Center row horizontally
+            row_actual_width = sum(data['width'] for data in row_islands) + self.padding * (len(row_islands) - 1)
+            current_u = start_u + (target_size - row_actual_width) / 2.0
+            
+            for data in row_islands:
+                # Calculate offset, accounting for the scale factor
+                offset_u = current_u - data['min_u'] * scale_factor
+                offset_v = (current_v - row_height) - data['min_v'] * scale_factor
+                
+                # Move all UVs in this island
+                for loop in data['island']['loops']:
+                    uv = loop[bm_uv_layer].uv
+                    uv.x = uv.x * scale_factor + offset_u
+                    uv.y = uv.y * scale_factor + offset_v
+                
+                current_u += data['width'] + self.padding
+            
+            current_v -= row_height + self.padding
+        
+        # Update mesh
+        bmesh.update_edit_mesh(mesh)
+        
+        self.report({'INFO'}, f"Packed {len(island_data)} UV islands from {len(submeshes)} submeshes")
+        return {'FINISHED'}
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "padding")
+        layout.label(text="Higher Z submeshes → Higher V position", icon='INFO')
+
+
 class MESH_OT_merge_by_distance_in_submeshes(Operator):
     bl_idname = "mesh.merge_by_distance_in_submeshes"
     bl_label = "Merge by Distance (Per Submesh)"
@@ -875,6 +1210,7 @@ class MESH_PT_bake_vertex_panel(Panel):
                 col.operator("mesh.select_linked_across_boundaries", icon='LINKED')
                 col.operator("mesh.deduplicate_submeshes", icon='DUPLICATE')
                 col.operator("mesh.merge_by_distance_in_submeshes", icon='AUTOMERGE_ON')
+                col.operator("mesh.pack_uv_islands_by_submesh", icon='UV')
                 col.separator()
                 col.operator("mesh.bake_vertex_vectors", icon='EXPORT')
                 
@@ -884,6 +1220,7 @@ class MESH_PT_bake_vertex_panel(Panel):
                 box.label(text="Select Linked Cross: Select linked across boundaries")
                 box.label(text="Deduplicate: Remove duplicate selected submeshes")
                 box.label(text="Merge: Merge vertices within submeshes")
+                box.label(text="Pack UV Islands: Sort UV islands by submesh Z position")
                 box.label(text="Bake: Auto-scale selected vertices")
                 box.label(text="Toggle Contiguous Groups for separate islands")
                 box.label(text="Scale factor stored in alpha channel")
@@ -903,6 +1240,7 @@ classes = [
     MESH_OT_select_all_linked_submeshes,
     MESH_OT_select_linked_across_boundaries,
     MESH_OT_deduplicate_submeshes,
+    MESH_OT_pack_uv_islands_by_submesh,
     MESH_OT_merge_by_distance_in_submeshes,
     MESH_PT_bake_vertex_panel
 ]
@@ -914,6 +1252,7 @@ def menu_func(self, context):
     self.layout.operator("mesh.select_linked_across_boundaries", icon='LINKED')
     self.layout.operator("mesh.deduplicate_submeshes", icon='DUPLICATE')
     self.layout.operator("mesh.merge_by_distance_in_submeshes", icon='AUTOMERGE_ON')
+    self.layout.operator("mesh.pack_uv_islands_by_submesh", icon='UV')
     self.layout.operator("mesh.bake_vertex_vectors", icon='EXPORT')
 
 
