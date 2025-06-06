@@ -39,11 +39,8 @@ FogResult raymarched_fog(v2f i, FogParams p)
   const float ro_epsilon = 1E-3;
   ro += rd * ro_epsilon;
 
-  // TODO maybe we can accelerate this?
-  float perspective_divide = 1.0f / i.pos.w;
-  float perspective_factor = length(i.eyeVec.xyz * perspective_divide);
-
-  const float2 screen_uv = (i.pos.xy + 0.5) / _ScreenParams.xy;
+  float4 clipPos = UnityObjectToClipPos(i.objPos);
+  float2 screen_uv = ComputeScreenPos(clipPos) / clipPos.w;
   float zDepthFromMap = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screen_uv);
 
   float linearZ =
