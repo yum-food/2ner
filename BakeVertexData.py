@@ -11,8 +11,29 @@ import bpy
 import mathutils
 import bmesh
 import math
-from bpy.props import BoolProperty, FloatProperty, IntProperty
-from bpy.types import Panel, Operator
+from bpy.props import BoolProperty, FloatProperty, IntProperty, PointerProperty
+from bpy.types import Panel, Operator, PropertyGroup
+
+
+class BakeVertexSettings(PropertyGroup):
+    correction_angle_x: FloatProperty(
+        name="X",
+        description="Correction angle for the X-axis",
+        default=math.pi,
+        subtype='ANGLE'
+    )
+    correction_angle_y: FloatProperty(
+        name="Y",
+        description="Correction angle for the Y-axis",
+        default=0.0,
+        subtype='ANGLE'
+    )
+    correction_angle_z: FloatProperty(
+        name="Z",
+        description="Correction angle for the Z-axis",
+        default=0.0,
+        subtype='ANGLE'
+    )
 
 
 class MESH_OT_select_all_linked_submeshes(Operator):
@@ -1215,7 +1236,7 @@ class MESH_OT_bake_vertex_and_rotation_combined(Operator):
     contiguous_mode: BoolProperty(
         name="Contiguous Groups",
         description="Process each contiguous group of vertices separately with its own center and scale",
-        default=False
+        default=True
     )
 
     normal_epsilon: FloatProperty(
@@ -1500,6 +1521,14 @@ class MESH_OT_bake_vertex_and_rotation_combined(Operator):
                 if quaternion.w < 0:
                     quaternion.negate()
 
+                # Apply user-defined rotation correction from scene properties
+                settings = context.scene.bake_vertex_settings
+                correction_euler = mathutils.Euler(
+                    (settings.correction_angle_x, settings.correction_angle_y, settings.correction_angle_z), 'XYZ'
+                )
+                unity_correction = correction_euler.to_quaternion()
+                quaternion = unity_correction @ quaternion
+
                 center_world = source_matrix @ center
 
                 # Collect all polygons that contain vertices from this island
@@ -1591,6 +1620,14 @@ class MESH_OT_bake_vertex_and_rotation_combined(Operator):
             if quaternion.w < 0:
                 quaternion.negate()
 
+            # Apply user-defined rotation correction from scene properties
+            settings = context.scene.bake_vertex_settings
+            correction_euler = mathutils.Euler(
+                (settings.correction_angle_x, settings.correction_angle_y, settings.correction_angle_z), 'XYZ'
+            )
+            unity_correction = correction_euler.to_quaternion()
+            quaternion = unity_correction @ quaternion
+
             center_world = source_matrix @ center
 
             updated_count = 0
@@ -1643,6 +1680,15 @@ class MESH_OT_bake_vertex_and_rotation_combined(Operator):
         layout = self.layout
         layout.prop(self, "contiguous_mode")
         layout.prop(self, "normal_epsilon")
+
+        settings = context.scene.bake_vertex_settings
+        box = layout.box()
+        box.label(text="Bake Rotation Correction (Degrees)")
+        row = box.row(align=True)
+        row.prop(settings, "correction_angle_x")
+        row.prop(settings, "correction_angle_y")
+        row.prop(settings, "correction_angle_z")
+
         layout.label(text="Vectors relative to orthonormal basis", icon='INFO')
         layout.label(text="Stores quaternion in UV maps:", icon='INFO')
         layout.label(text="  BakedOriginAngle0: X, Y components")
@@ -1671,7 +1717,15 @@ class MESH_PT_bake_vertex_panel(Panel):
                 col.operator("mesh.pack_uv_islands_by_submesh", icon='UV')
                 col.separator()
                 
-                # Combined operator
+                # Correction settings
+                settings = context.scene.bake_vertex_settings
+                box = col.box()
+                box.label(text="Bake Rotation Correction (Degrees)")
+                row = box.row(align=True)
+                row.prop(settings, "correction_angle_x")
+                row.prop(settings, "correction_angle_y")
+                row.prop(settings, "correction_angle_z")
+
                 col.operator("mesh.bake_vertex_and_rotation_combined", icon='EXPORT', text="Bake Vectors & Rotation")
 
                 box = col.box()
@@ -1698,6 +1752,7 @@ class MESH_PT_bake_vertex_panel(Panel):
 
 
 classes = [
+    BakeVertexSettings,
     MESH_OT_bake_vertex_and_rotation_combined,
     MESH_OT_select_all_linked_submeshes,
     MESH_OT_select_linked_across_boundaries,
@@ -1722,10 +1777,12 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
     bpy.types.VIEW3D_MT_edit_mesh.append(menu_func)
+    bpy.types.Scene.bake_vertex_settings = PointerProperty(type=BakeVertexSettings)
 
 
 def unregister():
     bpy.types.VIEW3D_MT_edit_mesh.remove(menu_func)
+    del bpy.types.Scene.bake_vertex_settings
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
 
