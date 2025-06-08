@@ -553,6 +553,17 @@ float _Raymarched_Fog_Density_Exponent;
 float _Raymarched_Fog_Height_Density_Start;
 float _Raymarched_Fog_Height_Density_Half_Life;
 #endif
+#if defined(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)
+float _Custom30_Fog_Height_Density_Minimum;
+#endif
+#if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
+texture2D _Raymarched_Fog_Emitter_Texture;
+float4 _Raymarched_Fog_Emitter_Texture_TexelSize;
+float3 _Raymarched_Fog_Emitter_Texture_World_Pos;
+float3 _Raymarched_Fog_Emitter_Texture_World_Normal;
+float3 _Raymarched_Fog_Emitter_Texture_World_Tangent;
+float2 _Raymarched_Fog_Emitter_Texture_World_Scale;
+#endif
 #endif  // _RAYMARCHED_FOG
 
 #endif  // __GLOBALS_INC

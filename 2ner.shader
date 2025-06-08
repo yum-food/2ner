@@ -138,6 +138,12 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Custom30_BasicPlatform("Basic platform", Float) = 0
         //endex
 
+        //ifex _Custom30_Rainbow_Enabled==0
+        [HideInInspector] m_start_Custom30_Rainbow("Rainbow", Float) = 0
+        [ThryToggle(_CUSTOM30_RAINBOW)]_Custom30_Rainbow_Enabled("Enable", Float) = 0
+        [HideInInspector] m_end_Custom30_Rainbow("Rainbow", Float) = 0
+        //endex
+
         [HideInInspector] m_end_Custom30("Custom 30", Float) = 0
         //endex
 
@@ -829,16 +835,40 @@ Shader "yum_food/2ner"
           _Raymarched_Fog_Y_Cutoff("Y cutoff", Float) = -1000
           _Raymarched_Fog_Velocity("Velocity", Vector) = (1, -.2, 0, 0)
 
+          //ifex _Raymarched_Fog_Density_Exponent_Enabled==0
           [HideInInspector] m_start_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
             [ThryToggle(_RAYMARCHED_FOG_DENSITY_EXPONENT)] _Raymarched_Fog_Density_Exponent_Enabled("Enable", Float) = 0
             _Raymarched_Fog_Density_Exponent("Exponent", Float) = 1
           [HideInInspector] m_end_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
+          //endex
 
+          //ifex _Raymarched_Fog_Height_Density_Enabled==0
           [HideInInspector] m_start_Raymarched_Fog_Height_Density("Height density", Float) = 0
             [ThryToggle(_RAYMARCHED_FOG_HEIGHT_DENSITY)] _Raymarched_Fog_Height_Density_Enabled("Enable", Float) = 0
             _Raymarched_Fog_Height_Density_Start("Start elevation", Float) = 0
             _Raymarched_Fog_Height_Density_Half_Life("Half life", Float) = 1
+
+            //ifex _Custom30_Fog_Height_Density_Minimum_Enabled==0
+            [HideInInspector] m_start_Custom30_Fog_Height_Density_Minimum("Minimum", Float) = 0
+              [ThryToggle(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)] _Custom30_Fog_Height_Density_Minimum_Enabled("Enable", Float) = 0
+              _Custom30_Fog_Height_Density_Minimum("Minimum factor", Float) = 0
+            [HideInInspector] m_end_Custom30_Fog_Height_Density_Minimum("Minimum", Float) = 0
+              //endex
           [HideInInspector] m_end_Raymarched_Fog_Height_Density("Height density", Float) = 0
+          //endex
+
+          //ifex _Raymarched_Fog_Emitter_Texture_Enabled==0
+          [HideInInspector] m_start_Raymarched_Fog_Emitter_Texture("Emitter texture", Float) = 0
+            [ThryToggle(_RAYMARCHED_FOG_EMITTER_TEXTURE)] _Raymarched_Fog_Emitter_Texture_Enabled("Enable", Float) = 0
+            _Raymarched_Fog_Emitter_Texture("Texture", 2D) = "black" {}
+            _Raymarched_Fog_Emitter_Texture_World_Pos("World position", Vector) = (0, 0, 0, 0)
+            _Raymarched_Fog_Emitter_Texture_World_Normal("World normal", Vector) = (0, 0, 0, 0)
+            _Raymarched_Fog_Emitter_Texture_World_Tangent("World tangent", Vector) = (0, 0, 0, 0)
+            _Raymarched_Fog_Emitter_Texture_World_Scale("World scale", Vector) = (1, 1, 0, 0)
+            _Raymarched_Fog_Emitter_Texture_World_Scale_Rcp("World scale reciprocal", Vector) = (1, 1, 0, 0)
+          [HideInInspector] m_end_Raymarched_Fog_Emitter_Texture("Emitter texture", Float) = 0
+          //endex
+
         [HideInInspector] m_end_Raymarched_Fog("Raymarched fog", Float) = 0
         //endex
 
@@ -1873,6 +1903,12 @@ Shader "yum_food/2ner"
       [HideInInspector] m_start_Depth_Prepass("Depth Prepass", Float) = 0
         [ThryToggle(_DEPTH_PREPASS)] _Depth_Prepass_Enabled("Enable", Float) = 0
       [HideInInspector] m_end_Depth_Prepass("Depth Prepass", Float) = 0
+      //endex
+
+      //ifex _Unlit_Enabled==0
+      [HideInInspector] m_start_Unlit("Unlit", Float) = 0
+        [ThryToggle(_UNLIT)] _Unlit_Enabled("Enable", Float) = 0
+      [HideInInspector] m_end_Unlit("Unlit", Float) = 0
       //endex
 
       [HideInInspector] m_start_blending ("Blending--{button_help:{text:Tutorial,action:{type:URL,data:https://www.poiyomi.com/rendering/blending},hover:Documentation}}", Float) = 0

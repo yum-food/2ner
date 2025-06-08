@@ -24,7 +24,7 @@ float3 domainWarpVertexPosition(float3 objPos) {
 
   for (uint i = 0; i < octaves; i++) {
     float3 uv = objPos * scale + speed * _Time[0];
-    float3 noise = _Vertex_Domain_Warping_Noise.SampleLevel(trilinear_repeat_s, uv, 0);
+    float3 noise = _Vertex_Domain_Warping_Noise.SampleLevel(linear_repeat_s, uv, 0);
     objPos += (noise * 2 - 1) * strength;
   }
 #endif  // _VERTEX_DOMAIN_WARPING

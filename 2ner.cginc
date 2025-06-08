@@ -65,6 +65,9 @@ v2f vert(appdata v) {
 #if defined(EXTRA_STENCIL_COLOR_PASS) && !defined(_EXTRA_STENCIL_COLOR_PASS)
 	return (v2f) (0.0/0.0);
 #endif
+#if defined(FORWARD_ADD_PASS) & defined(_UNLIT)
+  return (v2f) (0.0/0.0);
+#endif
 
   v2f o;
 
@@ -178,12 +181,18 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
+#if defined(_CUSTOM30) && defined(_DEPTH_PREPASS) && !defined(FORWARD_BASE_PASS)
+  return 0;
+#endif
+
   UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
   UNITY_SETUP_INSTANCE_ID(i);
   UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
+  i.tangent = normalize(i.tangent);
+  i.binormal = normalize(i.binormal);
 
   i.normal *= facing ? 1 : -1;
   i.normal = UnityObjectToWorldNormal(i.normal);
@@ -192,7 +201,12 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
 #if defined(_RAYMARCHED_FOG) && defined(FORWARD_BASE_PASS)
   {
+    // Many fields are overspecified as .rgb or .xyz. This is because thry's
+    // shader locker will inline those fields (incorrectly) as float4. Unity's
+    // shader compiler doesn't like that, demanding exact type correspondence.
+    // Overspecifying gets around the issue.
     FogParams fog_params = {
+      _Raymarched_Fog_Color.rgb,
       _Raymarched_Fog_Steps,
       _Raymarched_Fog_Density,
       _Raymarched_Fog_Y_Cutoff,
@@ -207,6 +221,19 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
       #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
       _Raymarched_Fog_Height_Density_Start,
       _Raymarched_Fog_Height_Density_Half_Life,
+      #endif
+      #if defined(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)
+      _Custom30_Fog_Height_Density_Minimum,
+      #endif
+      #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
+      _Raymarched_Fog_Emitter_Texture,
+      _Raymarched_Fog_Emitter_Texture_TexelSize,
+      _Raymarched_Fog_Emitter_Texture_World_Pos.xyz,
+      normalize(_Raymarched_Fog_Emitter_Texture_World_Normal).xyz,
+      normalize(_Raymarched_Fog_Emitter_Texture_World_Tangent).xyz,
+      normalize(cross(_Raymarched_Fog_Emitter_Texture_World_Normal, _Raymarched_Fog_Emitter_Texture_World_Tangent)).xyz,
+      _Raymarched_Fog_Emitter_Texture_World_Scale.xy,
+      1.0f / _Raymarched_Fog_Emitter_Texture_World_Scale.xy,
       #endif
     };
     FogResult fog_result = raymarched_fog(i, fog_params);
@@ -249,14 +276,22 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
+  float4x4 tangentToWorld = float4x4(
+    float4(i.tangent.x, i.binormal.x, i.normal.x, 0),
+    float4(i.tangent.y, i.binormal.y, i.normal.y, 0),
+    float4(i.tangent.z, i.binormal.z, i.normal.z, 0),
+    float4(0, 0, 0, 1)
+  );
 #if defined(_CUSTOM30)
 #if defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
-  Custom30Output c30_out = BasicCube(i);
+  Custom30Output c30_out = BasicCube(i, tangentToWorld);
 #elif defined(_CUSTOM30_BASICWEDGE)
-  Custom30Output c30_out = BasicWedge(i);
+  Custom30Output c30_out = BasicWedge(i, tangentToWorld);
 #elif defined(_CUSTOM30_BASICPLATFORM)
-  Custom30Output c30_out = BasicPlatform(i);
+  Custom30Output c30_out = BasicPlatform(i, tangentToWorld);
+#elif defined(_CUSTOM30_RAINBOW)
+  Custom30Output c30_out = Rainbow(i, tangentToWorld);
 #else
   Custom30Output c30_out = (Custom30Output) 0;
 #endif
@@ -271,14 +306,18 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #endif
 
-  float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
   float ssao = 1;
 #if defined(_SSAO)
 	float2 debug;
 	ssao = get_ssao(i, tangentToWorld, debug);
 #endif
 
-  tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
+  tangentToWorld = float4x4(
+    float4(i.tangent, 0),
+    float4(i.binormal, 0),
+    float4(i.normal, 0),
+    float4(0, 0, 0, 1)
+  );
   YumPbr pbr = GetYumPbr(i, tangentToWorld);
 	pbr.ao *= ssao;
 
@@ -345,7 +384,11 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
   pbr.albedo.rgb = visualizeInFalseColor(pbr.albedo.rgb);
 
+#if defined(_UNLIT)
+  float4 lit = pbr.albedo;
+#else
   float4 lit = YumBRDF(i, l, pbr);
+#endif
 
   lit.rgb += LightVolumeSpecular(pbr.albedo, pbr.smoothness, pbr.metallic,
       pbr.normal, l.view_dir, l.L00, l.L01r, l.L01g, l.L01b);

@@ -23,9 +23,12 @@ struct Custom30Output {
   float depth;
 };
 
-float3 GetFragToOrigin(v2f i) {
-  // Vector from fragment to origin
-  return float3(-1, 1, 1) * (i.color * 2.0f - 1.0f) / i.color.a;
+float3 GetFragToOrigin(v2f i, float3x3 tangentToWorld) {
+  // Vector from fragment to origin (tangent space)
+  float3 vec_tan = (i.color * 2.0f - 1.0f) / i.color.a;
+  float3 vec_world = mul(tangentToWorld, vec_tan);
+  float3 vec_obj = mul((float3x3)unity_WorldToObject, vec_world);
+  return vec_obj;
 }
 
 float cut_with_box(float3 p, float d, float3 box_size) {
@@ -168,13 +171,20 @@ float3 BasicCube_normal(float3 p) {
   return normalize(n);
 }
 
-Custom30Output BasicCube(v2f i) {
-  float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+Custom30Output BasicCube(v2f i, float4x4 tangentToWorld) {
+  float4x4 worldToTangent = transpose(tangentToWorld);
+  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
+  float4x4 tangentToObject = transpose(objectToTangent);
 
-  float3 frag_to_origin = GetFragToOrigin(i);
+  // Vector from fragment to origin in tangent space.
+  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
+
+  float3 tanSpaceCameraPos = mul(worldToTangent,
+      float4(_WorldSpaceCameraPos, 1.0));
 
   float3 ro = -frag_to_origin;
-  float3 rd = normalize(i.objPos - objSpaceCameraPos);
+  float3 rd = normalize(
+      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
 
   ro -= rd * _Custom30_ro_Offset;
 
@@ -199,13 +209,14 @@ Custom30Output BasicCube(v2f i) {
 #endif
   float3 objPos = ro + rd * d_acc;
   // Transform from SDF space back to object space
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
+  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
   o.objPos = objSpacePos;
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
 
   float3 sdfNormal = BasicCube_normal(objPos);
-  o.normal = UnityObjectToWorldNormal(sdfNormal);
+  o.normal = mul(tangentToWorld, sdfNormal);
 
   return o;
 }
@@ -231,13 +242,22 @@ float3 BasicWedge_normal(float3 p) {
   return normalize(n);
 }
 
-Custom30Output BasicWedge(v2f i) {
-  float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+Custom30Output BasicWedge(v2f i, float4x4 tangentToWorld) {
+  float4x4 worldToTangent = transpose(tangentToWorld);
+  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
+  float4x4 tangentToObject = transpose(objectToTangent);
 
-  float3 frag_to_origin = GetFragToOrigin(i);
+  // Vector from fragment to origin in tangent space.
+  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
+
+  float3 tanSpaceCameraPos = mul(worldToTangent,
+      float4(_WorldSpaceCameraPos, 1.0));
 
   float3 ro = -frag_to_origin;
-  float3 rd = normalize(i.objPos - objSpaceCameraPos);
+  float3 rd = normalize(
+      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
+
+  ro -= rd * _Custom30_ro_Offset;
 
   float d;
   float d_acc = 0;
@@ -260,13 +280,14 @@ Custom30Output BasicWedge(v2f i) {
 #endif
   float3 objPos = ro + rd * d_acc;
   // Transform from SDF space back to object space
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
+  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
   o.objPos = objSpacePos;
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
 
-  float3 sdfNormal = BasicWedge_normal(objPos) * float3(-1, 1, 1);
-  o.normal = UnityObjectToWorldNormal(sdfNormal);
+  float3 sdfNormal = BasicWedge_normal(objPos);
+  o.normal = mul(tangentToWorld, sdfNormal);
 
   return o;
 }
@@ -320,13 +341,22 @@ float3 BasicPlatform_normal(float3 p) {
   return normalize(n);
 }
 
-Custom30Output BasicPlatform(v2f i) {
-  float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+Custom30Output BasicPlatform(v2f i, float4x4 tangentToWorld) {
+  float4x4 worldToTangent = transpose(tangentToWorld);
+  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
+  float4x4 tangentToObject = transpose(objectToTangent);
 
-  float3 frag_to_origin = GetFragToOrigin(i);
+  // Vector from fragment to origin in tangent space.
+  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
+
+  float3 tanSpaceCameraPos = mul(worldToTangent,
+      float4(_WorldSpaceCameraPos, 1.0));
 
   float3 ro = -frag_to_origin;
-  float3 rd = normalize(i.objPos - objSpaceCameraPos);
+  float3 rd = normalize(
+      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
+
+  ro -= rd * _Custom30_ro_Offset;
 
   float d;
   float d_acc = 0;
@@ -347,13 +377,79 @@ Custom30Output BasicPlatform(v2f i) {
   clip(epsilon - d);
 #endif
   float3 objPos = ro + rd * d_acc;
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin);
+  // Transform from SDF space back to object space
+  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
+  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
   o.objPos = objSpacePos;
   float4 clipPos = UnityObjectToClipPos(objSpacePos);
   o.depth = clipPos.z / clipPos.w;
   
-  float3 sdfNormal = BasicPlatform_normal(objPos) * float3(-1, 1, 1);
-  o.normal = UnityObjectToWorldNormal(sdfNormal);
+  float3 sdfNormal = BasicPlatform_normal(objPos);
+  o.normal = mul(tangentToWorld, sdfNormal);
+  
+  return o;
+}
+#endif
+
+#if defined(_CUSTOM30_RAINBOW)
+float Rainbow_map(float3 p) {
+  return length(p) - 2;
+}
+
+float3 Rainbow_normal(float3 p) {
+  float epsilon = 1E-3;
+  float center_d = Rainbow_map(p);
+  float3 n = float3(
+    Rainbow_map(p + float3(epsilon, 0, 0)) - center_d,
+    Rainbow_map(p + float3(0, epsilon, 0)) - center_d,
+    Rainbow_map(p + float3(0, 0, epsilon)) - center_d);
+  return normalize(n);
+}
+
+Custom30Output Rainbow(v2f i, float4x4 tangentToWorld) {
+  float4x4 worldToTangent = transpose(tangentToWorld);
+  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
+  float4x4 tangentToObject = transpose(objectToTangent);
+
+  // Vector from fragment to origin in tangent space.
+  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
+
+  float3 tanSpaceCameraPos = mul(worldToTangent,
+      float4(_WorldSpaceCameraPos, 1.0));
+
+  float3 ro = -frag_to_origin;
+  float3 rd = normalize(
+      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
+
+  ro -= rd * _Custom30_ro_Offset;
+
+  float d;
+  float d_acc = 0;
+  float epsilon = 1E-2;
+  float max_d = 1.73205081f * 2.0f;
+  [loop]
+  for (uint ii = 0; ii < CUSTOM30_MAX_STEPS; ++ii) {
+    float3 p = ro + rd * d_acc;
+    d = Rainbow_map(p);
+    d_acc += d;
+    if (d < epsilon) break;
+    if (d_acc > max_d) break;
+  }
+
+  Custom30Output o;
+#if !defined(_DEPTH_PREPASS)
+  clip(epsilon - d);
+#endif
+  float3 objPos = ro + rd * d_acc;
+  // Transform from SDF space back to object space
+  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
+  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
+  o.objPos = objSpacePos;
+  float4 clipPos = UnityObjectToClipPos(objSpacePos);
+  o.depth = clipPos.z / clipPos.w;
+  
+  float3 sdfNormal = Rainbow_normal(objPos);
+  o.normal = mul(tangentToWorld, sdfNormal);
   
   return o;
 }
