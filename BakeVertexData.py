@@ -1248,6 +1248,12 @@ class MESH_OT_bake_vertex_and_rotation_combined(Operator):
         precision=3
     )
 
+    use_cache: BoolProperty(
+        name="Cache Identical Submeshes",
+        description="Optimize by caching calculations for identical submeshes (recommended for meshes with many repeated elements)",
+        default=True
+    )
+
     @classmethod
     def poll(cls, context):
         obj = context.active_object
@@ -1256,429 +1262,276 @@ class MESH_OT_bake_vertex_and_rotation_combined(Operator):
                 context.mode == 'EDIT_MESH')
 
     def get_vertex_islands(self, mesh, selected_indices):
-        """Find contiguous groups of vertices using edge connectivity"""
-        adjacency = {idx: set() for idx in selected_indices}
-
+        """Find contiguous groups of vertices"""
+        from collections import deque
+        
+        # Build adjacency
+        adjacency = {idx: [] for idx in selected_indices}
         for edge in mesh.edges:
             v0, v1 = edge.vertices
-            if v0 in selected_indices and v1 in selected_indices:
-                adjacency[v0].add(v1)
-                adjacency[v1].add(v0)
-
+            if v0 in adjacency and v1 in adjacency:
+                adjacency[v0].append(v1)
+                adjacency[v1].append(v0)
+        
+        # Find islands
         islands = []
         visited = set()
-
+        
         for start_idx in selected_indices:
             if start_idx in visited:
                 continue
-
+                
             island = set()
-            queue = [start_idx]
-
+            queue = deque([start_idx])
+            
             while queue:
-                current = queue.pop(0)
+                current = queue.popleft()
                 if current in visited:
                     continue
-
                 visited.add(current)
                 island.add(current)
-
-                for neighbor in adjacency[current]:
+                
+                for neighbor in adjacency.get(current, []):
                     if neighbor not in visited:
                         queue.append(neighbor)
-
+            
             islands.append(island)
-
+        
         return islands
 
-    def get_submesh_faces_and_normals(self, mesh, island_indices):
-        """Get all faces and their normals for vertices in the island"""
-        faces_data = []
+    def calculate_island_data(self, mesh, island_indices):
+        """Calculate center and scale for an island"""
+        if not island_indices:
+            return None, 1.0
+        
+        # Calculate center
+        center = mathutils.Vector((0.0, 0.0, 0.0))
+        for idx in island_indices:
+            center += mesh.vertices[idx].co
+        center /= len(island_indices)
+        
+        # Calculate scale (1 / max distance from center)
+        max_dist = 0.0
+        for idx in island_indices:
+            dist = max(abs(c - center[i]) for i, c in enumerate(mesh.vertices[idx].co))
+            max_dist = max(max_dist, dist)
+        
+        scale = 1.0 / max_dist if max_dist > 0 else 1.0
+        return center, scale
 
-        # Build vertex to faces mapping for efficiency
-        vertex_to_faces = {}
-        for face_idx, face in enumerate(mesh.polygons):
-            for vertex_idx in face.vertices:
-                if vertex_idx in island_indices:
-                    if vertex_idx not in vertex_to_faces:
-                        vertex_to_faces[vertex_idx] = []
-                    vertex_to_faces[vertex_idx].append(face_idx)
-
-        # Collect unique faces that belong to this island
-        island_faces = set()
-        for vertex_idx in island_indices:
-            if vertex_idx in vertex_to_faces:
-                for face_idx in vertex_to_faces[vertex_idx]:
-                    face = mesh.polygons[face_idx]
-                    # Check if all vertices of this face are in the island
-                    if all(v in island_indices for v in face.vertices):
-                        island_faces.add(face_idx)
-
-        # Calculate face data
-        for face_idx in island_faces:
-            face = mesh.polygons[face_idx]
-            faces_data.append({
-                'normal': face.normal.copy(),
-                'area': face.area,
-                'index': face_idx
-            })
-
-        return faces_data
-
-    def build_orthonormal_basis_from_faces(self, faces_data, epsilon):
+    def build_basis_from_faces(self, mesh, face_indices, epsilon):
         """Build orthonormal basis from face normals"""
-        if not faces_data:
-            # Default to standard basis if no faces
+        if not face_indices:
             return mathutils.Matrix.Identity(3)
-
-        # Sort faces by area (largest first)
-        faces_data.sort(key=lambda x: x['area'], reverse=True)
-
-        # Find up to 3 non-parallel normals
-        basis_normals = []
+        
+        # Get largest face normal as primary axis
+        faces = sorted(face_indices, key=lambda i: mesh.polygons[i].area, reverse=True)
+        x_axis = mesh.polygons[faces[0]].normal.normalized()
+        
+        # Find a second normal that's different enough
+        y_axis = None
         epsilon_cos = math.cos(epsilon)
-
-        for face_data in faces_data:
-            normal = face_data['normal'].normalized()
-
-            # Check if this normal is sufficiently different from existing ones
-            is_unique = True
-            for existing_normal in basis_normals:
-                dot_product = abs(normal.dot(existing_normal))
-                if dot_product > epsilon_cos:
-                    is_unique = False
-                    break
-
-            if is_unique:
-                basis_normals.append(normal)
-                if len(basis_normals) >= 3:
-                    break
-
-        # Build orthonormal basis
-        if len(basis_normals) == 0:
-            # No faces, use default
-            return mathutils.Matrix.Identity(3)
-
-        # First basis vector is the largest face normal
-        x_axis = basis_normals[0].normalized()
-
-        if len(basis_normals) >= 2:
-            # Use second normal to define y-axis
-            y_candidate = basis_normals[1]
-            # Make it orthogonal to x
-            y_axis = (y_candidate - y_candidate.project(x_axis)).normalized()
-
-            # If y_axis is too small (normals were almost parallel), find a different vector
-            if y_axis.length < 0.1:
-                # Create arbitrary perpendicular vector
-                if abs(x_axis.z) < 0.9:
-                    y_axis = mathutils.Vector((0, 0, 1)).cross(x_axis).normalized()
-                else:
-                    y_axis = mathutils.Vector((1, 0, 0)).cross(x_axis).normalized()
-        else:
-            # Only one unique normal, create arbitrary perpendicular
+        
+        for face_idx in faces[1:]:
+            normal = mesh.polygons[face_idx].normal.normalized()
+            if abs(normal.dot(x_axis)) < epsilon_cos:
+                y_axis = normal - normal.dot(x_axis) * x_axis
+                y_axis.normalize()
+                break
+        
+        # If no good second normal, create perpendicular
+        if not y_axis:
             if abs(x_axis.z) < 0.9:
-                y_axis = mathutils.Vector((0, 0, 1)).cross(x_axis).normalized()
+                y_axis = mathutils.Vector((-x_axis.y, x_axis.x, 0))
             else:
-                y_axis = mathutils.Vector((1, 0, 0)).cross(x_axis).normalized()
-
-        # Third axis from cross product
-        z_axis = x_axis.cross(y_axis).normalized()
-
-        # Build rotation matrix (columns are the basis vectors)
-        matrix = mathutils.Matrix((
-            (x_axis.x, y_axis.x, z_axis.x),
-            (x_axis.y, y_axis.y, z_axis.y),
-            (x_axis.z, y_axis.z, z_axis.z)
-        ))
-
+                y_axis = mathutils.Vector((0, -x_axis.z, x_axis.y))
+            y_axis.normalize()
+        
+        # Complete the basis
+        z_axis = x_axis.cross(y_axis)
+        
         # Ensure right-handed coordinate system
+        matrix = mathutils.Matrix((x_axis, y_axis, z_axis)).transposed()
         if matrix.determinant() < 0:
-            z_axis = -z_axis
-            matrix = mathutils.Matrix((
-                (x_axis.x, y_axis.x, z_axis.x),
-                (x_axis.y, y_axis.y, z_axis.y),
-                (x_axis.z, y_axis.z, z_axis.z)
-            ))
-
+            matrix[2] = -matrix[2]
+        
         return matrix
 
-    def get_island_info(self, mesh, island_indices):
-        """Calculate center and scale for a single island"""
-        verts = []
+    def create_submesh_signature(self, mesh, island_indices, center, scale, tolerance=0.0001):
+        """Create a hash signature for a submesh based on its local geometry"""
+        # Collect local vertex positions (relative to center and normalized by scale)
+        local_positions = []
         for idx in island_indices:
-            verts.append(mesh.vertices[idx].co)
+            local_pos = (mesh.vertices[idx].co - center) * scale
+            # Round to tolerance to handle floating point differences
+            rounded = (
+                round(local_pos.x / tolerance) * tolerance,
+                round(local_pos.y / tolerance) * tolerance,
+                round(local_pos.z / tolerance) * tolerance
+            )
+            local_positions.append(rounded)
+        
+        # Sort for consistent ordering
+        local_positions.sort()
+        
+        # Create signature from vertex count and positions
+        signature = (len(island_indices), tuple(local_positions))
+        return signature
 
-        if not verts:
-            return None, None, None
-
-        center = mathutils.Vector((0, 0, 0))
-        for co in verts:
-            center += co
-        center /= len(verts)
-
-        max_dist = 0.0
-        for co in verts:
-            vec = co - center
-            max_component = max(abs(vec.x), abs(vec.y), abs(vec.z))
-            max_dist = max(max_dist, max_component)
-
-        if max_dist > 0:
-            scale = 1.0 / max_dist
-        else:
-            scale = 1.0
-
-        return center, max_dist, scale
+    def calculate_submesh_data(self, mesh, island, selected_faces, scale, correction):
+        """Calculate basis, quaternion, and inverted basis for a submesh"""
+        # Get faces for this island
+        island_faces = [f for f in selected_faces 
+                      if all(v in island for v in mesh.polygons[f].vertices)]
+        
+        # Build basis matrix
+        basis = self.build_basis_from_faces(mesh, island_faces, self.normal_epsilon)
+        
+        # Calculate quaternion
+        quat = basis.to_quaternion()
+        quat.normalize()
+        if quat.w < 0:
+            quat.negate()
+        quat = correction @ quat
+        
+        # Cache inverted basis
+        basis_inv = basis.inverted()
+        
+        return scale, basis, quat, basis_inv
 
     def execute(self, context):
         obj = context.active_object
         mesh = obj.data
 
-        try:
-            bpy.ops.object.mode_set(mode='OBJECT')
-        except Exception as e:
-            self.report({'ERROR'}, f"Failed to switch to object mode: {str(e)}")
-            return {'CANCELLED'}
+        # Switch to object mode
+        bpy.ops.object.mode_set(mode='OBJECT')
 
+        # Get selected vertices
         selected_indices = {v.index for v in mesh.vertices if v.select}
-
         if not selected_indices:
             self.report({'WARNING'}, "No vertices selected")
-            try:
-                bpy.ops.object.mode_set(mode='EDIT')
-            except:
-                pass
+            bpy.ops.object.mode_set(mode='EDIT')
             return {'CANCELLED'}
 
-        # Check if mesh has faces
+        # Ensure mesh has faces
         if not mesh.polygons:
-            self.report({'ERROR'}, "Mesh has no faces. Both vertex colors and quaternion baking require faces.")
-            try:
-                bpy.ops.object.mode_set(mode='EDIT')
-            except:
-                pass
+            self.report({'ERROR'}, "Mesh has no faces")
+            bpy.ops.object.mode_set(mode='EDIT')
             return {'CANCELLED'}
 
-        # Create vertex color layer
+        # Create/get data layers
         if not mesh.vertex_colors:
             mesh.vertex_colors.new(name="BakedVectors")
         color_layer = mesh.vertex_colors.active
-        if not color_layer:
-            self.report({'ERROR'}, "Failed to create vertex color layer")
-            try:
-                bpy.ops.object.mode_set(mode='EDIT')
-            except:
-                pass
-            return {'CANCELLED'}
 
-        # Remove existing UV maps and create new ones for quaternions
-        uv_names = ["BakedOriginAngle0", "BakedOriginAngle1"]
-        for uv_name in uv_names:
-            if uv_name in mesh.uv_layers:
-                mesh.uv_layers.remove(mesh.uv_layers[uv_name])
+        uv_layer0 = mesh.uv_layers.get("BakedOriginAngle0")
+        uv_layer1 = mesh.uv_layers.get("BakedOriginAngle1")
+        if not uv_layer0:
+            uv_layer0 = mesh.uv_layers.new(name="BakedOriginAngle0")
+        if not uv_layer1:
+            uv_layer1 = mesh.uv_layers.new(name="BakedOriginAngle1")
 
-        uv_layer0 = mesh.uv_layers.new(name="BakedOriginAngle0")
-        uv_layer1 = mesh.uv_layers.new(name="BakedOriginAngle1")
+        # Get correction quaternion
+        settings = context.scene.bake_vertex_settings
+        correction = mathutils.Euler(
+            (settings.correction_angle_x, settings.correction_angle_y, settings.correction_angle_z), 'XYZ'
+        ).to_quaternion()
 
-        if not uv_layer0 or not uv_layer1:
-            self.report({'ERROR'}, "Failed to create UV layers")
-            try:
-                bpy.ops.object.mode_set(mode='EDIT')
-            except:
-                pass
-            return {'CANCELLED'}
-
-        source_matrix = obj.matrix_world
-
-        if self.contiguous_mode:
-            # Build vertex to polygon mapping for efficiency
-            vertex_to_polys = {}
-            for poly_idx, poly in enumerate(mesh.polygons):
-                for vertex_idx in poly.vertices:
-                    if vertex_idx in selected_indices:
-                        if vertex_idx not in vertex_to_polys:
-                            vertex_to_polys[vertex_idx] = []
-                        vertex_to_polys[vertex_idx].append(poly_idx)
-
-            islands = self.get_vertex_islands(mesh, selected_indices)
-            total_updated = 0
-
-            # Process each island separately
-            for island_indices in islands:
-                # Get vector data for this island
-                center, max_dist, scale = self.get_island_info(mesh, island_indices)
-                if center is None:
-                    continue
-
-                # Get face data and build orthonormal basis for this island
-                faces_data = self.get_submesh_faces_and_normals(mesh, island_indices)
-                basis_matrix = self.build_orthonormal_basis_from_faces(faces_data, self.normal_epsilon)
+        # Build vertex to loops mapping
+        vertex_loops = {}
+        selected_faces = []
+        
+        for poly in mesh.polygons:
+            face_verts = set(poly.vertices)
+            if face_verts & selected_indices:  # Face has selected vertices
+                if face_verts <= selected_indices:  # All vertices selected
+                    selected_faces.append(poly.index)
                 
-                # Convert basis to quaternion
-                quaternion = basis_matrix.to_quaternion()
-                quaternion.normalize()
-
-                if quaternion.w < 0:
-                    quaternion.negate()
-
-                # Apply user-defined rotation correction from scene properties
-                settings = context.scene.bake_vertex_settings
-                correction_euler = mathutils.Euler(
-                    (settings.correction_angle_x, settings.correction_angle_y, settings.correction_angle_z), 'XYZ'
-                )
-                unity_correction = correction_euler.to_quaternion()
-                quaternion = unity_correction @ quaternion
-
-                center_world = source_matrix @ center
-
-                # Collect all polygons that contain vertices from this island
-                relevant_polys = set()
-                for vertex_idx in island_indices:
-                    if vertex_idx in vertex_to_polys:
-                        relevant_polys.update(vertex_to_polys[vertex_idx])
-
-                # Only process relevant polygons
-                for poly_idx in relevant_polys:
-                    poly = mesh.polygons[poly_idx]
-                    for loop_idx in poly.loop_indices:
-                        vertex_idx = mesh.loops[loop_idx].vertex_index
-
-                        if vertex_idx in island_indices:
-                            vertex = mesh.vertices[vertex_idx]
-
-                            # Calculate vector from vertex to center in world space
-                            vertex_world = source_matrix @ vertex.co
-                            vector_world = vertex_world - center_world
-                            
-                            # Transform to object space
-                            vector_object = source_matrix.inverted_safe().to_3x3() @ vector_world
-                            
-                            # Transform vector to local orthonormal basis coordinates
-                            # Use transpose of basis matrix to transform from object to local
-                            vector_local = basis_matrix.transposed() @ vector_object
-                            
-                            # Apply scale
-                            vector_scaled = vector_local * scale
-
-                            # Store transformed vector in vertex colors
-                            color = mathutils.Vector((
-                                (vector_scaled.x + 1.0) * 0.5,
-                                (vector_scaled.y + 1.0) * 0.5,
-                                (vector_scaled.z + 1.0) * 0.5,
-                                scale
-                            ))
-                            color_layer.data[loop_idx].color = color
-
-                            # Store quaternion in UV coordinates
-                            uv_layer0.data[loop_idx].uv = mathutils.Vector((quaternion.x, quaternion.y))
-                            uv_layer1.data[loop_idx].uv = mathutils.Vector((quaternion.z, quaternion.w))
-                            
-                            total_updated += 1
-
-            mesh.update()
-
-            try:
-                bpy.ops.object.mode_set(mode='EDIT')
-            except Exception as e:
-                self.report({'WARNING'}, f"Could not return to edit mode: {str(e)}")
-
-            self.report({'INFO'}, f"Baked vectors & quaternions for {len(islands)} contiguous groups ({len(selected_indices)} vertices)")
-            return {'FINISHED'}
-
-        else:
-            # Single group mode - process all selected vertices as one group
-            
-            # Get vector data
-            verts = []
-            for idx in selected_indices:
-                verts.append(mesh.vertices[idx].co)
-
-            center = mathutils.Vector((0, 0, 0))
-            for co in verts:
-                center += co
-            center /= len(verts)
-
-            max_dist = 0.0
-            for co in verts:
-                vec = co - center
-                max_component = max(abs(vec.x), abs(vec.y), abs(vec.z))
-                max_dist = max(max_dist, max_component)
-
-            if max_dist > 0:
-                scale = 1.0 / max_dist
-            else:
-                scale = 1.0
-
-            # Get face data and build orthonormal basis for all selected vertices
-            faces_data = self.get_submesh_faces_and_normals(mesh, selected_indices)
-            basis_matrix = self.build_orthonormal_basis_from_faces(faces_data, self.normal_epsilon)
-            
-            # Convert basis to quaternion
-            quaternion = basis_matrix.to_quaternion()
-            quaternion.normalize()
-
-            if quaternion.w < 0:
-                quaternion.negate()
-
-            # Apply user-defined rotation correction from scene properties
-            settings = context.scene.bake_vertex_settings
-            correction_euler = mathutils.Euler(
-                (settings.correction_angle_x, settings.correction_angle_y, settings.correction_angle_z), 'XYZ'
-            )
-            unity_correction = correction_euler.to_quaternion()
-            quaternion = unity_correction @ quaternion
-
-            center_world = source_matrix @ center
-
-            updated_count = 0
-            for poly in mesh.polygons:
                 for loop_idx in poly.loop_indices:
-                    vertex_idx = mesh.loops[loop_idx].vertex_index
+                    vert_idx = mesh.loops[loop_idx].vertex_index
+                    if vert_idx in selected_indices:
+                        vertex_loops.setdefault(vert_idx, []).append(loop_idx)
 
-                    if vertex_idx in selected_indices:
-                        vertex = mesh.vertices[vertex_idx]
+        # Get islands to process
+        if self.contiguous_mode:
+            islands = self.get_vertex_islands(mesh, selected_indices)
+        else:
+            islands = [selected_indices]  # Single island with all selected
 
-                        # Calculate vector from vertex to center in world space
-                        vertex_world = source_matrix @ vertex.co
-                        vector_world = vertex_world - center_world
-                        
-                        # Transform to object space
-                        vector_object = source_matrix.inverted_safe().to_3x3() @ vector_world
-                        
-                        # Transform vector to local orthonormal basis coordinates
-                        vector_local = basis_matrix.transposed() @ vector_object
-                        
-                        # Apply scale
-                        vector_scaled = vector_local * scale
+        # Process each island
+        world_matrix = obj.matrix_world
+        world_inv = world_matrix.inverted()
+        
+        # Cache for identical submeshes - stores (scale, basis, quaternion, basis_inv)
+        submesh_cache = {} if self.use_cache else None
+        cache_hits = 0
+        
+        for island in islands:
+            # Calculate island data
+            center, scale = self.calculate_island_data(mesh, island)
+            if center is None:
+                continue
 
-                        # Store transformed vector in vertex colors
-                        color = mathutils.Vector((
-                            (vector_scaled.x + 1.0) * 0.5,
-                            (vector_scaled.y + 1.0) * 0.5,
-                            (vector_scaled.z + 1.0) * 0.5,
-                            scale
-                        ))
-                        color_layer.data[loop_idx].color = color
+            # Check if we should use caching
+            if self.use_cache:
+                # Create signature for this submesh
+                signature = self.create_submesh_signature(mesh, island, center, scale)
+                
+                # Check cache for identical submesh
+                if signature in submesh_cache:
+                    # Reuse cached data
+                    scale, basis, quat, basis_inv = submesh_cache[signature]
+                    cache_hits += 1
+                else:
+                    # Calculate new data and store in cache
+                    data = self.calculate_submesh_data(mesh, island, selected_faces, scale, correction)
+                    scale, basis, quat, basis_inv = data
+                    submesh_cache[signature] = data
+            else:
+                # No caching - calculate data directly
+                scale, basis, quat, basis_inv = self.calculate_submesh_data(mesh, island, selected_faces, scale, correction)
+            
+            # Transform vertices
+            center_world = world_matrix @ center
+            
+            for vert_idx in island:
+                # Calculate local position
+                vert_world = world_matrix @ mesh.vertices[vert_idx].co
+                offset = world_inv.to_3x3() @ (vert_world - center_world)
+                local_pos = basis_inv @ offset
+                
+                # Scale and convert to color
+                color = mathutils.Vector((
+                    (local_pos.x * scale + 1.0) * 0.5,
+                    (local_pos.y * scale + 1.0) * 0.5,
+                    (local_pos.z * scale + 1.0) * 0.5,
+                    scale
+                ))
+                
+                # Apply to all loops of this vertex
+                for loop_idx in vertex_loops.get(vert_idx, []):
+                    color_layer.data[loop_idx].color = color
+                    uv_layer0.data[loop_idx].uv = (quat.x, quat.y)
+                    uv_layer1.data[loop_idx].uv = (quat.z, quat.w)
 
-                        # Store quaternion in UV coordinates
-                        uv_layer0.data[loop_idx].uv = mathutils.Vector((quaternion.x, quaternion.y))
-                        uv_layer1.data[loop_idx].uv = mathutils.Vector((quaternion.z, quaternion.w))
-                        
-                        updated_count += 1
+        mesh.update()
+        bpy.ops.object.mode_set(mode='EDIT')
 
-            mesh.update()
-
-            try:
-                bpy.ops.object.mode_set(mode='EDIT')
-            except Exception as e:
-                self.report({'WARNING'}, f"Could not return to edit mode: {str(e)}")
-
-            self.report({'INFO'}, f"Baked vectors & quaternion for {len(selected_indices)} vertices with scale {scale:.3f}")
-            return {'FINISHED'}
+        # Report with cache information
+        if self.use_cache and submesh_cache:
+            unique_submeshes = len(submesh_cache)
+            if cache_hits > 0:
+                self.report({'INFO'}, f"Baked {len(islands)} islands ({unique_submeshes} unique, {cache_hits} cache hits) with {len(selected_indices)} vertices")
+            else:
+                self.report({'INFO'}, f"Baked {len(islands)} islands ({unique_submeshes} unique shapes) with {len(selected_indices)} vertices")
+        else:
+            self.report({'INFO'}, f"Baked {len(islands)} island(s) with {len(selected_indices)} vertices")
+        return {'FINISHED'}
 
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "contiguous_mode")
+        layout.prop(self, "use_cache")
         layout.prop(self, "normal_epsilon")
 
         settings = context.scene.bake_vertex_settings
