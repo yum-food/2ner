@@ -778,7 +778,7 @@ class MESH_OT_merge_by_distance_per_submesh(BaseSubmeshOperator):
         layout.prop(self, "merge_distance")
 
 
-class MESH_OT_bake_vertex_and_rotation_combined(BaseSubmeshOperator):
+class MESH_OT_bake_origin_and_orientation_combined(BaseSubmeshOperator):
     bl_idname = "mesh.bake_submesh_origin_and_orientation"
     bl_label = "Bake Submesh Data"
     bl_description = "Bake vertex vectors and orientation quaternions"
@@ -800,27 +800,38 @@ class MESH_OT_bake_vertex_and_rotation_combined(BaseSubmeshOperator):
 
     use_cache: BoolProperty(
         name="Cache Identical Submeshes",
-        description="Cache calculations for identical submeshes",
+        description="Cache calculations for identical submeshes to avoid recomputing basis and scale",
         default=True
     )
 
-    def calculate_island_data(self, mesh, island_indices):
-        """Calculate center and scale for an island"""
+    def calculate_island_center(self, mesh, island_indices):
+        """Calculate center for an island"""
         if not island_indices:
-            return None, 1.0
+            return None
 
         center = mathutils.Vector((0.0, 0.0, 0.0))
         for idx in island_indices:
             center += mesh.vertices[idx].co
         center /= len(island_indices)
 
-        max_dist = max((abs(c - center[i]) 
-                       for idx in island_indices 
-                       for i, c in enumerate(mesh.vertices[idx].co)), 
-                      default=0)
-
-        scale = 1.0 / max_dist if max_dist > 0 else 1.0
-        return center, scale
+        return center
+    
+    def calculate_island_scale(self, mesh, island_indices, center, basis_inv):
+        """Calculate scale using L-infinity norm in rotated basis"""
+        if not island_indices:
+            return 1.0
+        
+        max_coord = 0.0
+        for idx in island_indices:
+            # Transform to local rotated basis
+            offset = mesh.vertices[idx].co - center
+            local_pos = basis_inv @ offset
+            
+            # L-infinity norm: max of absolute values
+            max_coord = max(max_coord, abs(local_pos.x), abs(local_pos.y), abs(local_pos.z))
+        
+        scale = 1.0 / max_coord if max_coord > 0 else 1.0
+        return scale
 
     def build_basis_from_faces(self, mesh, face_indices, epsilon):
         """Build orthonormal basis from face normals"""
@@ -857,18 +868,19 @@ class MESH_OT_bake_vertex_and_rotation_combined(BaseSubmeshOperator):
 
         return matrix
 
-    def create_submesh_signature(self, mesh, island_indices, center, scale):
-        """Create signature for caching"""
+    def create_submesh_signature(self, mesh, island_indices, center):
+        """Create signature for caching - based on relative positions only"""
         tolerance = 0.0001
-        local_positions = []
+        relative_positions = []
 
         for idx in island_indices:
-            local_pos = (mesh.vertices[idx].co - center) * scale
-            rounded = tuple(round(local_pos[i] / tolerance) * tolerance for i in range(3))
-            local_positions.append(rounded)
+            relative_pos = mesh.vertices[idx].co - center
+            # Round to tolerance to handle floating point precision
+            rounded = tuple(round(relative_pos[i] / tolerance) * tolerance for i in range(3))
+            relative_positions.append(rounded)
 
-        local_positions.sort()
-        return (len(island_indices), tuple(local_positions))
+        relative_positions.sort()
+        return (len(island_indices), tuple(relative_positions))
 
     def process_object(self, context, obj):
         """Process a single object and return (success, stats)"""
@@ -913,40 +925,45 @@ class MESH_OT_bake_vertex_and_rotation_combined(BaseSubmeshOperator):
         # Process each island
         world_matrix = obj.matrix_world
         world_inv = world_matrix.inverted()
+        
+        # Cache for storing computed basis, scale, and quaternion for identical submeshes
+        # Key: geometry signature, Value: (scale, basis, quaternion, basis_inverse)
         submesh_cache = {} if self.use_cache else None
 
         for island in islands:
-            center, scale = self.calculate_island_data(mesh, island)
+            center = self.calculate_island_center(mesh, island)
             if center is None:
                 continue
 
-            # Check cache
+            # Check cache first (if enabled)
+            cache_hit = False
             if self.use_cache:
-                signature = self.create_submesh_signature(mesh, island, center, scale)
+                signature = self.create_submesh_signature(mesh, island, center)
                 if signature in submesh_cache:
                     scale, basis, quat, basis_inv = submesh_cache[signature]
-                else:
-                    island_faces = [f for f in selected_faces 
-                                  if all(v in island for v in mesh.polygons[f].vertices)]
-                    basis = self.build_basis_from_faces(mesh, island_faces, self.normal_epsilon)
-                    quat = basis.to_quaternion()
-                    quat.normalize()
-                    if quat.w < 0:
-                        quat.negate()
-                    quat = correction @ quat
-                    basis_inv = basis.inverted()
+                    cache_hit = True
 
-                    submesh_cache[signature] = (scale, basis, quat, basis_inv)
-            else:
+            # Only calculate if not in cache
+            if not cache_hit:
+                # Calculate basis (compute-intensive)
                 island_faces = [f for f in selected_faces 
                               if all(v in island for v in mesh.polygons[f].vertices)]
                 basis = self.build_basis_from_faces(mesh, island_faces, self.normal_epsilon)
+                basis_inv = basis.inverted()
+                
+                # Calculate scale using L-infinity norm in rotated basis (compute-intensive)
+                scale = self.calculate_island_scale(mesh, island, center, basis_inv)
+                
+                # Calculate quaternion
                 quat = basis.to_quaternion()
                 quat.normalize()
                 if quat.w < 0:
                     quat.negate()
                 quat = correction @ quat
-                basis_inv = basis.inverted()
+                
+                # Store in cache if enabled
+                if self.use_cache:
+                    submesh_cache[signature] = (scale, basis, quat, basis_inv)
 
             # Transform vertices
             center_world = world_matrix @ center
@@ -1034,7 +1051,7 @@ classes = [
     MESH_OT_deduplicate_submeshes,
     MESH_OT_pack_uv_islands_by_submesh_z,
     MESH_OT_merge_by_distance_per_submesh,
-    MESH_OT_bake_vertex_and_rotation_combined,
+    MESH_OT_bake_origin_and_orientation_combined,
     MESH_PT_bake_vertex_panel
 ]
 
