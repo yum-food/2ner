@@ -109,6 +109,7 @@ Shader "yum_food/2ner"
         [ThryToggle(_CUSTOM30)]_Custom30_Enabled("Enable", Float) = 0
 
         _Custom30_ro_Offset("ro offset", Float) = 0.0
+        _Custom30_Omega("Omega", Range(1,2)) = 1.2
 
         //ifex _Custom30_BasicCube_Enabled==0
         [HideInInspector] m_start_Custom30_BasicCube("Basic cube", Float) = 0

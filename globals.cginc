@@ -515,6 +515,7 @@ float _3D_SDF_Z_Speed;
 
 #if defined(_CUSTOM30)
 float _Custom30_ro_Offset;
+float _Custom30_Omega;
 #endif
 
 #if defined(_CUSTOM30_BASICPLATFORM)

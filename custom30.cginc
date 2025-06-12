@@ -6,6 +6,7 @@
 #include "pema99.cginc"
 #include "quilez.cginc"
 #include "interpolators.cginc"
+#include "texture_utils.cginc"
 
 #if defined(_CUSTOM30)
 
@@ -14,8 +15,6 @@
 #else
 #define CUSTOM30_MAX_STEPS 30
 #endif
-#define SQRT_2     1.414213562
-#define RCP_SQRT_2 0.707106781
 
 struct Custom30Output {
   float3 objPos;
@@ -23,12 +22,15 @@ struct Custom30Output {
   float depth;
 };
 
-float3 GetFragToOrigin(v2f i, float3x3 tangentToWorld) {
-  // Vector from fragment to origin (tangent space)
-  float3 vec_tan = (i.color * 2.0f - 1.0f) / i.color.a;
-  float3 vec_world = mul(tangentToWorld, vec_tan);
-  float3 vec_obj = mul((float3x3)unity_WorldToObject, vec_world);
-  return vec_obj;
+float3 GetFragToOrigin(v2f i) {
+  return (i.color * 2.0f - 1.0f) / i.color.a;
+}
+
+float4 GetRotation(v2f i, float2 uv_channels) {
+  float4 quat;
+  quat.xy = get_uv_by_channel(i, uv_channels.x);
+  quat.zw = get_uv_by_channel(i, uv_channels.y);
+  return quat;
 }
 
 float cut_with_box(float3 p, float d, float3 box_size) {
@@ -37,15 +39,13 @@ float cut_with_box(float3 p, float d, float3 box_size) {
   float2 pp_yz = p.yz;
 
   // Rotate by 45 degrees
-  float c = RCP_SQRT_2;
-  float s = RCP_SQRT_2;
-  pp_xy = float2(c * p.x - s * p.y, s * p.x + c * p.y);
+  pp_xy = rot45(pp_xy);
   d = max(d, distance_from_box(float3(pp_xy, p.z), box_size));
 
-  pp_xz = float2(c * p.x - s * p.z, s * p.x + c * p.z);
+  pp_xz = rot45(pp_xz);
   d = max(d, distance_from_box(float3(pp_xz, p.y), box_size));
 
-  pp_yz = float2(c * p.y - s * p.z, s * p.y + c * p.z);
+  pp_yz = rot45(pp_yz);
   d = max(d, distance_from_box(float3(pp_yz, p.x), box_size));
 
   return d;
@@ -116,18 +116,14 @@ float BasicCube_map(float3 p) {
   d = cut_with_box(p, d, 1.3);
 #endif
 
-  // High rate of change = small size on screen = fade out grip.
-  float scale = length(fwidth(p));
-
 #if defined(_CUSTOM30_BASICCUBE_HEX_GRIP)
-  float hex_grip_scale = scale * 10;
   [branch]
-  if (hex_grip_scale < 1) {
+  {
     float period = 0.1;
     float hex_sc = period * 0.2;
     float count = 13;
 
-    float zoff = core_dim - (hex_sc * 0.2) - hex_grip_scale * hex_sc;
+    float zoff = core_dim - (hex_sc * 0.2);
 
     float3 pp = abs(p);
     pp = pp.z > pp.x && pp.z > pp.y ? pp.xyz : pp;
@@ -141,14 +137,12 @@ float BasicCube_map(float3 p) {
 #endif
 
 #if defined(_CUSTOM30_BASICCUBE_HEX_BOLTS)
-  float hex_bolt_scale = scale * 1;
-  [branch]
-  if (hex_bolt_scale < 1) {
+  {
     float period = 0.83;
     float hex_sc = period * 0.1;
     float count = 3;
 
-    float zoff = core_dim - hex_sc * hex_bolt_scale;
+    float zoff = core_dim;
 
     float3 pp = abs(p);
     pp = pp.z > pp.x && pp.z > pp.y ? pp.xyz : pp;
@@ -162,7 +156,8 @@ float BasicCube_map(float3 p) {
 }
 
 float3 BasicCube_normal(float3 p) {
-  float epsilon = 5E-3;
+  float3 fw = fwidth(p);
+  float epsilon = length(fw) * 0.5f;
   float center_d = BasicCube_map(p);
   float3 n = float3(
     BasicCube_map(p + float3(epsilon, 0, 0)) - center_d,
@@ -172,30 +167,36 @@ float3 BasicCube_normal(float3 p) {
 }
 
 Custom30Output BasicCube(v2f i, float4x4 tangentToWorld) {
-  float4x4 worldToTangent = transpose(tangentToWorld);
-  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
-  float4x4 tangentToObject = transpose(objectToTangent);
+  float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+  float3 frag_to_origin = GetFragToOrigin(i);
 
-  // Vector from fragment to origin in tangent space.
-  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
-
-  float3 tanSpaceCameraPos = mul(worldToTangent,
-      float4(_WorldSpaceCameraPos, 1.0));
+	float2 uv_channels = float2(1, 2);
+  float4 quat = GetRotation(i, uv_channels);
+  float4 iquat = float4(-quat.xyz, quat.w);
 
   float3 ro = -frag_to_origin;
-  float3 rd = normalize(
-      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
+  float3 rd = normalize(i.objPos - obj_space_camera_pos);
+  rd = rotate_vector(rd, iquat);
 
-  ro -= rd * _Custom30_ro_Offset;
+#if defined(_CUSTOM30_BASICCUBE_HEX_BOLTS)
+  float3 n = rotate_vector(normalize(mul(unity_WorldToObject, i.normal)), iquat);
+  // Get projected length of rd on normal.
+  float rd_proj_len = dot(rd, n);
+  // Move ray enough to give us `ro_Offset` gap.
+  ro += rd * _Custom30_ro_Offset / rd_proj_len;
+#endif
 
+  float epsilon = 5e-3f;
   float d;
   float d_acc = 0;
-  float epsilon = 1E-3;
   // 1.73... = sqrt(3)
   // our cube has an edge length of 2, so mult by 2
   float max_d = 1.73205081f * 2.0f;
+
+  uint ii = 0;
+
   [loop]
-  for (uint ii = 0; ii < CUSTOM30_MAX_STEPS; ++ii) {
+  for (; ii < CUSTOM30_MAX_STEPS; ++ii) {
     float3 p = ro + rd * d_acc;
     d = BasicCube_map(p);
     d_acc += d;
@@ -203,20 +204,22 @@ Custom30Output BasicCube(v2f i, float4x4 tangentToWorld) {
     if (d_acc > max_d) break;
   }
 
+  float3 localHit = ro + rd * d_acc;
+
   Custom30Output o;
 #if !defined(_DEPTH_PREPASS)
   clip(epsilon - d);
 #endif
-  float3 objPos = ro + rd * d_acc;
-  // Transform from SDF space back to object space
-  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
-  o.objPos = objSpacePos;
-  float4 clipPos = UnityObjectToClipPos(objSpacePos);
+  float3 objHit = rotate_vector(localHit, quat);
+  float3 objCenterOffset = rotate_vector(frag_to_origin, quat);
+
+  o.objPos = objHit + (i.objPos + objCenterOffset);
+  float4 clipPos = UnityObjectToClipPos(o.objPos);
   o.depth = clipPos.z / clipPos.w;
 
-  float3 sdfNormal = BasicCube_normal(objPos);
-  o.normal = mul(tangentToWorld, sdfNormal);
+  float3 sdfNormal = BasicCube_normal(localHit);
+  float3 objNormal = rotate_vector(sdfNormal, quat);
+  o.normal = UnityObjectToWorldNormal(objNormal);
 
   return o;
 }
@@ -233,7 +236,8 @@ float BasicWedge_map(float3 p) {
 }
 
 float3 BasicWedge_normal(float3 p) {
-  float epsilon = 1E-3;
+  float3 fw = fwidth(p);
+  float epsilon = max((fw.x+fw.y+fw.z) * 0.5f, 5e-3f);
   float center_d = BasicWedge_map(p);
   float3 n = float3(
     BasicWedge_map(p + float3(epsilon, 0, 0)) - center_d,
@@ -243,30 +247,35 @@ float3 BasicWedge_normal(float3 p) {
 }
 
 Custom30Output BasicWedge(v2f i, float4x4 tangentToWorld) {
-  float4x4 worldToTangent = transpose(tangentToWorld);
-  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
-  float4x4 tangentToObject = transpose(objectToTangent);
+  float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+  float3 frag_to_origin = GetFragToOrigin(i);
 
-  // Vector from fragment to origin in tangent space.
-  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
+	float2 uv_channels = float2(1, 2);
+  float4 quat = GetRotation(i, uv_channels);
+  float4 iquat = float4(-quat.xyz, quat.w);
 
-  float3 tanSpaceCameraPos = mul(worldToTangent,
-      float4(_WorldSpaceCameraPos, 1.0));
+  float3 frag_to_origin_obj = rotate_vector(frag_to_origin, iquat);
+  float3 origin = i.objPos + frag_to_origin_obj;
+  float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+  float distance_from_camera_obj = length(objSpaceCameraPos - origin);
 
   float3 ro = -frag_to_origin;
-  float3 rd = normalize(
-      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
+  float3 rd = normalize(i.objPos - obj_space_camera_pos);
+  rd = rotate_vector(rd, iquat);
 
   ro -= rd * _Custom30_ro_Offset;
 
   float d;
   float d_acc = 0;
-  float epsilon = 5E-3;
+  float epsilon = 5e-3f;
   // 1.73... = sqrt(3)
   // our cube has an edge length of 2, so mult by 2
   float max_d = 1.73205081f * 2.0f;
+
+  uint ii = 0;
+
   [loop]
-  for (uint ii = 0; ii < CUSTOM30_MAX_STEPS; ++ii) {
+  for (; ii < CUSTOM30_MAX_STEPS; ++ii) {
     float3 p = ro + rd * d_acc;
     d = BasicWedge_map(p);
     d_acc += d;
@@ -278,16 +287,17 @@ Custom30Output BasicWedge(v2f i, float4x4 tangentToWorld) {
 #if !defined(_DEPTH_PREPASS)
   clip(epsilon - d);
 #endif
-  float3 objPos = ro + rd * d_acc;
-  // Transform from SDF space back to object space
-  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
-  o.objPos = objSpacePos;
-  float4 clipPos = UnityObjectToClipPos(objSpacePos);
+  float3 localHit = ro + rd * d_acc;
+  float3 objHit = rotate_vector(localHit, quat);
+  float3 objCenterOffset = rotate_vector(frag_to_origin, quat);
+
+  o.objPos = objHit + (i.objPos + objCenterOffset);
+  float4 clipPos = UnityObjectToClipPos(o.objPos);
   o.depth = clipPos.z / clipPos.w;
 
-  float3 sdfNormal = BasicWedge_normal(objPos);
-  o.normal = mul(tangentToWorld, sdfNormal);
+  float3 sdfNormal = BasicWedge_normal(localHit);
+  float3 objNormal = rotate_vector(sdfNormal, quat);
+  o.normal = UnityObjectToWorldNormal(objNormal);
 
   return o;
 }
@@ -295,12 +305,7 @@ Custom30Output BasicWedge(v2f i, float4x4 tangentToWorld) {
 
 #if defined(_CUSTOM30_BASICPLATFORM)
 float BasicPlatform_map(float3 p) {
-  #if defined(_CUSTOM30_BASICPLATFORM_Y_ALIGNED)
-    p.xy = p.yx;
-  #endif
-  #if defined(_CUSTOM30_BASICPLATFORM_VERTICAL)
-    p.xz = p.zx;
-  #endif
+  p = abs(p.zyx);
 
   float3 platform_size = _Custom30_BasicPlatform_Size;
   float box_d = distance_from_box_frame(p, platform_size, _Custom30_BasicPlatform_Frame_D);
@@ -332,7 +337,8 @@ float BasicPlatform_map(float3 p) {
 }
 
 float3 BasicPlatform_normal(float3 p) {
-  float epsilon = 1E-3;
+  float3 fw = fwidth(p);
+  float epsilon = max((fw.x+fw.y+fw.z) * 0.5f, 5e-3f);
   float center_d = BasicPlatform_map(p);
   float3 n = float3(
     BasicPlatform_map(p + float3(epsilon, 0, 0)) - center_d,
@@ -342,29 +348,29 @@ float3 BasicPlatform_normal(float3 p) {
 }
 
 Custom30Output BasicPlatform(v2f i, float4x4 tangentToWorld) {
-  float4x4 worldToTangent = transpose(tangentToWorld);
-  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
-  float4x4 tangentToObject = transpose(objectToTangent);
+  float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+  float3 frag_to_origin = GetFragToOrigin(i);
 
-  // Vector from fragment to origin in tangent space.
-  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
-
-  float3 tanSpaceCameraPos = mul(worldToTangent,
-      float4(_WorldSpaceCameraPos, 1.0));
+	float2 uv_channels = float2(1, 2);
+  float4 quat = GetRotation(i, uv_channels);
+  float4 iquat = float4(-quat.xyz, quat.w);
 
   float3 ro = -frag_to_origin;
-  float3 rd = normalize(
-      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
+  float3 rd = normalize(i.objPos - obj_space_camera_pos);
+  rd = rotate_vector(rd, iquat);
 
   ro -= rd * _Custom30_ro_Offset;
 
   float d;
   float d_acc = 0;
-  float epsilon = 5E-3;
+  float epsilon = 5e-3;
   // Max distance for platform bounding sphere
   float max_d = length(float3(1.0, 0.4, 0.2)) * 2.0f;
+
+  uint ii = 0;
+
   [loop]
-  for (uint ii = 0; ii < CUSTOM30_MAX_STEPS; ++ii) {
+  for (; ii < CUSTOM30_MAX_STEPS; ++ii) {
     float3 p = ro + rd * d_acc;
     d = BasicPlatform_map(p);
     d_acc += d;
@@ -376,81 +382,18 @@ Custom30Output BasicPlatform(v2f i, float4x4 tangentToWorld) {
 #if !defined(_DEPTH_PREPASS)
   clip(epsilon - d);
 #endif
-  float3 objPos = ro + rd * d_acc;
-  // Transform from SDF space back to object space
-  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
-  o.objPos = objSpacePos;
-  float4 clipPos = UnityObjectToClipPos(objSpacePos);
+  float3 localHit = ro + rd * d_acc;
+  float3 objHit = rotate_vector(localHit, quat);
+  float3 objCenterOffset = rotate_vector(frag_to_origin, quat);
+
+  o.objPos = objHit + (i.objPos + objCenterOffset);
+  float4 clipPos = UnityObjectToClipPos(o.objPos);
   o.depth = clipPos.z / clipPos.w;
-  
-  float3 sdfNormal = BasicPlatform_normal(objPos);
-  o.normal = mul(tangentToWorld, sdfNormal);
-  
-  return o;
-}
-#endif
 
-#if defined(_CUSTOM30_RAINBOW)
-float Rainbow_map(float3 p) {
-  return length(p) - 2;
-}
+  float3 sdfNormal = BasicPlatform_normal(localHit);
+  float3 objNormal = rotate_vector(sdfNormal, quat);
+  o.normal = UnityObjectToWorldNormal(objNormal);
 
-float3 Rainbow_normal(float3 p) {
-  float epsilon = 1E-3;
-  float center_d = Rainbow_map(p);
-  float3 n = float3(
-    Rainbow_map(p + float3(epsilon, 0, 0)) - center_d,
-    Rainbow_map(p + float3(0, epsilon, 0)) - center_d,
-    Rainbow_map(p + float3(0, 0, epsilon)) - center_d);
-  return normalize(n);
-}
-
-Custom30Output Rainbow(v2f i, float4x4 tangentToWorld) {
-  float4x4 worldToTangent = transpose(tangentToWorld);
-  float4x4 objectToTangent = mul(worldToTangent, unity_ObjectToWorld);
-  float4x4 tangentToObject = transpose(objectToTangent);
-
-  // Vector from fragment to origin in tangent space.
-  float3 frag_to_origin = (i.color * 2.0f - 1.0f) / i.color.a;
-
-  float3 tanSpaceCameraPos = mul(worldToTangent,
-      float4(_WorldSpaceCameraPos, 1.0));
-
-  float3 ro = -frag_to_origin;
-  float3 rd = normalize(
-      mul(worldToTangent, float4(i.worldPos, 1.0)).xyz - tanSpaceCameraPos);
-
-  ro -= rd * _Custom30_ro_Offset;
-
-  float d;
-  float d_acc = 0;
-  float epsilon = 1E-2;
-  float max_d = 1.73205081f * 2.0f;
-  [loop]
-  for (uint ii = 0; ii < CUSTOM30_MAX_STEPS; ++ii) {
-    float3 p = ro + rd * d_acc;
-    d = Rainbow_map(p);
-    d_acc += d;
-    if (d < epsilon) break;
-    if (d_acc > max_d) break;
-  }
-
-  Custom30Output o;
-#if !defined(_DEPTH_PREPASS)
-  clip(epsilon - d);
-#endif
-  float3 objPos = ro + rd * d_acc;
-  // Transform from SDF space back to object space
-  float3 frag_to_origin_obj = mul(tangentToObject, float4(frag_to_origin, 1.0));
-  float3 objSpacePos = objPos + (i.objPos + frag_to_origin_obj);
-  o.objPos = objSpacePos;
-  float4 clipPos = UnityObjectToClipPos(objSpacePos);
-  o.depth = clipPos.z / clipPos.w;
-  
-  float3 sdfNormal = Rainbow_normal(objPos);
-  o.normal = mul(tangentToWorld, sdfNormal);
-  
   return o;
 }
 #endif

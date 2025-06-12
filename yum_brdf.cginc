@@ -136,8 +136,8 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     const float3 E = specularDFG(dfg, f0);
     const float3 energy_compensation = energyCompensation(dfg, f0);
 
+    float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao * light.attenuation;
     float3 Fr = E * light.specular * energy_compensation * pbr.ao;
-    float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao;
 
     indirect_standard = Fr + Fd;
   }

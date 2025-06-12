@@ -6,11 +6,13 @@
 #define PI 3.14159265358979323846264
 #define TAU (2 * PI)
 #define HALF_PI (PI * 0.5)
-#define PHI 1.618033989
-#define SQRT_2_RCP 0.707106781
+#define PHI             1.618033989f
+#define SQRT_2          1.414213562f
+#define SQRT_2_RCP      0.707106781f
+#define RCP_SQRT_2      0.707106781f
 #define TWO_OVER_THREE  0.6666666666666666f
 #define SQRT_3_OVER_2   0.8660254037844386f
-#define EULERS_CONSTANT 2.718281828
+#define EULERS_CONSTANT 2.718281828f
 
 
 float pow5(float x)
@@ -235,11 +237,11 @@ float4 qmul(float4 q1, float4 q2)
 }
 
 // Vector rotation with a quaternion
-// http://mathworld.wolfram.com/Quaternion.html
-float3 rotate_vector(float3 v, float4 r)
+// https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+float3 rotate_vector(float3 v, float4 q)
 {
-  float4 r_c = r * float4(-1, -1, -1, 1);
-  return qmul(r, qmul(float4(v, 0), r_c)).xyz;
+  float3 t = 2.0 * cross(q.xyz, v);
+  return v + q.w * t + cross(q.xyz, t);
 }
 
 float4 get_quaternion(float3 axis_normal, float theta) {
@@ -302,5 +304,8 @@ float2 hex_to_cart(float3 cart) {
       cart[0] + (cart[1] + cart[2]) * 0.5f,
       (cart[1] - cart[2]) * SQRT_3_OVER_2);
 }
+
+// Rotate 45 degrees.
+float2 rot45(float2 v) { return float2(v.x - v.y, v.x + v.y) * RCP_SQRT_2; }
 
 #endif  // __MATH_INC
