@@ -1061,8 +1061,6 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
         precision=3
     )
     
-
-    
     def build_face_spatial_cache(self, bm, selected_faces):
         """Build spatial cache for fast proximity queries"""
         face_centers = {}
@@ -1098,28 +1096,21 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
     
     def build_combined_adjacency(self, bm, selected_faces, face_centers, face_bounds):
         """Build adjacency including both edge connections and spatial proximity"""
-        import time
         angle_threshold_cos = math.cos(self.angle_threshold)
         gap_dist_sq = self.gap_distance * self.gap_distance
         
         # Build edge-based adjacency
-        edge_start = time.time()
         edge_adjacency = defaultdict(set)
-        selected_set = set(selected_faces)  # Convert to set for O(1) lookup
+        selected_set = set(selected_faces)
         
         for edge in bm.edges:
             if len(edge.link_faces) == 2:
                 f1, f2 = edge.link_faces
                 if f1.index in selected_set and f2.index in selected_set:
-                    # For edge connections, always connect if they share an edge
-                    # The angle threshold will be applied during island grouping
                     edge_adjacency[f1.index].add(f2.index)
                     edge_adjacency[f2.index].add(f1.index)
         
-        print(f"    Edge adjacency took {time.time() - edge_start:.3f}s")
-        
         # Build spatial grid for efficient proximity queries
-        grid_start = time.time()
         grid_size = max(self.gap_distance * 2, 0.01)
         spatial_grid = defaultdict(list)
         
@@ -1142,11 +1133,8 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
                         )
                         spatial_grid[neighbor_key].append(face_idx)
         
-        print(f"    Spatial grid took {time.time() - grid_start:.3f}s")
-        
-        # Only build proximity adjacency if gap distance is significant
+        # Build proximity adjacency if gap distance is significant
         proximity_adjacency = defaultdict(set)
-        proximity_start = time.time()
         
         if self.gap_distance > 0.0001:
             # Build face-to-vertex mapping with spatial hashing
@@ -1154,7 +1142,6 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
             
             for face_idx in selected_faces:
                 face = bm.faces[face_idx]
-                # Add face to grid cells of all its vertices
                 for vert in face.verts:
                     v_key = (
                         int(vert.co.x / grid_size),
@@ -1190,7 +1177,6 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
                                 neighbor_key = (v_key[0] + dx, v_key[1] + dy, v_key[2] + dz)
                                 candidates.update(face_vertex_grid.get(neighbor_key, set()))
                 
-                # Remove self
                 candidates.discard(face_idx)
                 
                 # Check each candidate
@@ -1235,8 +1221,6 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
                     if found_close:
                         proximity_adjacency[face_idx].add(other_idx)
                         proximity_adjacency[other_idx].add(face_idx)
-        
-        print(f"    Proximity adjacency took {time.time() - proximity_start:.3f}s")
         
         # Combine adjacencies - ensure ALL selected faces are in the result
         combined = defaultdict(set)
@@ -1348,11 +1332,9 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
         projected_uvs = {}
         min_uv = mathutils.Vector((float('inf'), float('inf')))
         max_uv = mathutils.Vector((float('-inf'), float('-inf')))
-        loop_count = 0
         
         for face_idx in face_group:
             if face_idx >= len(bm.faces):
-                print(f"    Warning: Invalid face index {face_idx}")
                 continue
                 
             face = bm.faces[face_idx]
@@ -1366,20 +1348,13 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
                 min_uv.y = min(min_uv.y, uv.y)
                 max_uv.x = max(max_uv.x, uv.x)
                 max_uv.y = max(max_uv.y, uv.y)
-                loop_count += 1
         
         if not projected_uvs:
-            print(f"    Warning: No UVs projected for group with {len(face_group)} faces")
             return None
         
         size = max_uv - min_uv
         if size.x <= 0 or size.y <= 0:
-            print(f"    Warning: Invalid UV size: {size} for group with {len(face_group)} faces")
             return None
-        
-        # Add some validation
-        if size.x > 1000 or size.y > 1000:
-            print(f"    Warning: Extremely large UV size: {size} - this might indicate a projection issue")
         
         return {
             'min_uv': min_uv,
@@ -1387,263 +1362,129 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
             'size': size,
             'projected_uvs': projected_uvs,
             'face_count': len(face_group),
-            'loop_count': loop_count,
-            'face_indices': face_group  # Store face indices for 3D area calculation
+            'face_indices': face_group
         }
     
     def pack_uv_islands_growing(self, islands, bm, uv_layer):
-        """Pack UV islands using an improved bin packing algorithm with uniform texel density"""
+        """Pack UV islands using shelf packing with uniform texel density
+        
+        Algorithm:
+        1. Calculates a uniform scale factor based on 3D surface area to normalize texel density
+        2. Sorts islands by height (tallest first) for efficient shelf packing
+        3. Places islands on horizontal shelves with smart height matching (50%-200% tolerance)
+        4. Maintains consistent margins between islands
+        5. Scales result to fit within UV space (0-1 range)
+        
+        This produces approximately square UV layouts even with significant padding.
+        """
         import math
         
         if not islands:
-            print("UV Packing: No islands to pack")
             return
         
-        # Filter valid islands and calculate areas
+        # Filter valid islands and calculate 3D surface area
         valid_islands = []
-        island_areas = []
         total_3d_area = 0.0
-        total_uv_area = 0.0
         
-        for i, island in enumerate(islands):
-            if island is not None:
-                uv_area = island['size'].x * island['size'].y
-                if uv_area > 0:
-                    # Calculate 3D surface area for this island
-                    surface_area_3d = 0.0
-                    for face_idx in island.get('face_indices', []):
-                        if face_idx < len(bm.faces):
-                            surface_area_3d += bm.faces[face_idx].calc_area()
-                    
-                    # Store both UV and 3D areas
-                    island['uv_area'] = uv_area
-                    island['surface_area_3d'] = surface_area_3d
-                    total_3d_area += surface_area_3d
-                    total_uv_area += uv_area
-                    
-                    valid_islands.append(island)
-                    island_areas.append(uv_area)
+        for island in islands:
+            if island and island['size'].x > 0 and island['size'].y > 0:
+                # Calculate 3D surface area for this island
+                surface_area_3d = sum(
+                    bm.faces[face_idx].calc_area() 
+                    for face_idx in island.get('face_indices', [])
+                    if face_idx < len(bm.faces)
+                )
+                
+                island['surface_area_3d'] = surface_area_3d
+                total_3d_area += surface_area_3d
+                valid_islands.append(island)
         
         if not valid_islands:
-            print("UV Packing: No valid islands after filtering")
             return
         
-        # Calculate uniform texel density scale
-        # The goal is to make UV area proportional to 3D surface area
-        target_total_uv_area = 0.8  # Use 80% of UV space to leave room for margins
-        
-        # Calculate the scale needed to achieve uniform texel density
-        uniform_scale = 1.0
-        if total_3d_area > 0:
-            # Direct calculation: total UV area should equal target area
-            # Each island's UV size should be proportional to sqrt(3D area)
-            uniform_scale = math.sqrt(target_total_uv_area / total_3d_area)
-        
-        print(f"\nUV Packing Statistics:")
-        print(f"  Total islands: {len(valid_islands)}")
-        print(f"  Total 3D surface area: {total_3d_area:.6f}")
-        print(f"  Uniform texel density scale: {uniform_scale:.3f}")
-        
-        # Create histogram of island sizes (logarithmic bins)
-        if island_areas:
-            min_area = min(island_areas)
-            max_area = max(island_areas)
-            print(f"  UV area range: {min_area:.6f} to {max_area:.6f}")
-            
-            if min_area > 0 and max_area > min_area:
-                log_min = math.log10(min_area)
-                log_max = math.log10(max_area)
-                num_bins = min(10, len(valid_islands))
-                
-                if log_max - log_min > 0.01:
-                    bins = [0] * num_bins
-                    bin_edges = []
-                    
-                    for i in range(num_bins + 1):
-                        edge = log_min + (log_max - log_min) * i / num_bins
-                        bin_edges.append(10 ** edge)
-                    
-                    for area in island_areas:
-                        for i in range(num_bins):
-                            if bin_edges[i] <= area < bin_edges[i + 1]:
-                                bins[i] += 1
-                                break
-                        else:
-                            bins[-1] += 1
-                    
-                    print("\n  Island size histogram (logarithmic):")
-                    for i in range(num_bins):
-                        print(f"    [{bin_edges[i]:.6f} - {bin_edges[i+1]:.6f}): {bins[i]} islands")
+        # Calculate uniform scale to normalize texel density
+        target_coverage = 0.8  # Use 80% of UV space
+        uniform_scale = math.sqrt(target_coverage / total_3d_area) if total_3d_area > 0 else 1.0
         
         # Apply uniform scale to all islands
         for island in valid_islands:
-            island['uniform_scale'] = uniform_scale
-            island['scaled_size'] = mathutils.Vector((
-                island['size'].x * uniform_scale,
-                island['size'].y * uniform_scale
-            ))
+            island['scaled_size'] = island['size'] * uniform_scale
         
-        # Sort by height (tallest first) for better shelf packing
-        indexed_islands = [(i, island, island['scaled_size'].y) 
+        # Sort by height (tallest first) for shelf packing
+        valid_islands.sort(key=lambda x: x['scaled_size'].y, reverse=True)
         
-                          for i, island in enumerate(valid_islands)]
-        indexed_islands.sort(key=lambda x: x[2], reverse=True)
+        # Estimate target width for approximately square packing
+        total_area = sum(island['scaled_size'].x * island['scaled_size'].y for island in valid_islands)
         
-        # Debug: track pack order
-        pack_order = []
+        # Estimate margin overhead: roughly sqrt(n) gaps horizontally and vertically
+        n_islands = len(valid_islands)
+        estimated_gaps = 2 * math.sqrt(n_islands)
+        estimated_margin_area = estimated_gaps * self.island_margin * math.sqrt(total_area)
         
-        # Use simple shelf packing with better space utilization
+        # Calculate target width from total area including margins
+        total_area_with_margins = total_area + estimated_margin_area
+        target_width = math.sqrt(total_area_with_margins) * 1.1  # 10% safety factor
+        
+        # Shelf packing
         shelves = []
-        packed_count = 0
-        
-        # Calculate total area to determine target width for square packing
-        total_area = 0.0
-        for island in valid_islands:
-            width = island['scaled_size'].x + self.island_margin
-            height = island['scaled_size'].y + self.island_margin
-            total_area += width * height
-        
-        # Target width for approximately square result
-        target_width = math.sqrt(total_area) * 1.1  # Add 10% for inefficiency
-        
-        # Width-constrained shelf packing
-        shelves = []
-        packed_count = 0
         current_y = self.island_margin
         
-        # Pack islands
-        for idx, (original_idx, island, sort_height) in enumerate(indexed_islands):
-            width = island['scaled_size'].x + self.island_margin
-            height = island['scaled_size'].y + self.island_margin
+        for island in valid_islands:
+            width = island['scaled_size'].x
+            height = island['scaled_size'].y
             
-            # Skip if island is wider than target
-            if width > target_width:
-                print(f"  Warning: Island {original_idx} width {width:.3f} exceeds target {target_width:.3f}")
-                target_width = width + self.island_margin
-            
-            # Find shelf with space
+            # Find a suitable shelf
             placed = False
-            for shelf_idx, shelf in enumerate(shelves):
-                if shelf['remaining_width'] >= width:
-                    # Height compatibility check
-                    height_ratio = height / shelf['height'] if shelf['height'] > 0 else float('inf')
-                    if 0.7 <= height_ratio <= 1.3:  # Allow 30% height variation
+            for shelf in shelves:
+                # Check horizontal space
+                if shelf['current_x'] + self.island_margin + width <= target_width - self.island_margin:
+                    # Check height compatibility (50% to 200% of shelf height)
+                    height_ratio = height / shelf['height']
+                    if 0.5 <= height_ratio <= 2.0:
                         # Place on this shelf
-                        island['pack_position'] = mathutils.Vector((shelf['current_x'], shelf['y_position']))
-                        
-                        if idx < 5:  # Debug first few
-                            print(f"  Island {idx} placed on shelf {shelf_idx} at ({shelf['current_x']:.3f}, {shelf['y_position']:.3f})")
-                        
-                        shelf['current_x'] += width
-                        shelf['remaining_width'] -= width
-                        packed_count += 1
+                        island['pack_position'] = mathutils.Vector((
+                            shelf['current_x'] + self.island_margin,
+                            shelf['y_position']
+                        ))
+                        shelf['current_x'] += self.island_margin + width
                         placed = True
-                        pack_order.append((original_idx, island['pack_position'].copy()))
                         break
             
             if not placed:
                 # Create new shelf
-                new_shelf = {
+                island['pack_position'] = mathutils.Vector((self.island_margin, current_y))
+                shelves.append({
                     'y_position': current_y,
                     'height': height,
-                    'current_x': width,  # Start after this island
-                    'remaining_width': target_width - width,
-                }
-                shelves.append(new_shelf)
-                
-                island['pack_position'] = mathutils.Vector((0, current_y))
-                
-                if idx < 5:  # Debug first few
-                    print(f"  Island {idx} created new shelf at y={current_y:.3f}")
-                
-                current_y += height
-                packed_count += 1
-                pack_order.append((original_idx, island['pack_position'].copy()))
+                    'current_x': self.island_margin + width
+                })
+                current_y += height + self.island_margin
         
-        # Calculate final dimensions
-        max_x = target_width
-        max_y = current_y
+        # Calculate final dimensions and scale to fit UV space
+        pack_width = max(target_width, max(shelf['current_x'] + self.island_margin for shelf in shelves))
+        pack_height = current_y
+        scale_factor = min(0.98 / pack_width, 0.98 / pack_height)
         
-        print(f"\n  Packed {packed_count} islands with uniform texel density")
-        print(f"  Created {len(shelves)} shelves with target width {target_width:.3f}")
-        
-        # Calculate packing results
-        if packed_count > 0:
-            # Calculate efficiency
-            total_island_area = sum(island['scaled_size'].x * island['scaled_size'].y 
-                                  for island in valid_islands)
-            total_used_area = max_x * max_y
-            efficiency = total_island_area / total_used_area if total_used_area > 0 else 0
-            
-            aspect_ratio = max_x / max_y if max_y > 0 else 1.0
-            
-            print(f"  Pack dimensions: {max_x:.3f} x {max_y:.3f}")
-            print(f"  Aspect ratio: {aspect_ratio:.2f} (1.0 = perfect square)")
-            print(f"  Packing efficiency: {efficiency:.1%}")
-            
-            # Scale to fit in UV space
-            scale_factor = min(0.95 / max_x, 0.95 / max_y) if max(max_x, max_y) > 0 else 1.0
-            
-            # Apply scale to all positions
-            for island in valid_islands:
-                if 'pack_position' in island:
-                    island['pack_position'] *= scale_factor
-            
-            total_height = max_y * scale_factor
-            final_scale = scale_factor
-        else:
-            total_height = 0
-            final_scale = 1.0
-        
-        if total_height > 0.95:
-            print(f"  Warning: Not enough UV space for desired texel density. Consider increasing angle threshold.")
-        
-        # Apply UV coordinates with uniform texel density
-        applied_count = 0
-        debug_islands = 0
+        # Apply UV coordinates
         for island in valid_islands:
             if 'pack_position' not in island:
-                print(f"  Warning: Island without pack position!")
                 continue
             
-            # Get the scale needed to match packed size
-            position = island['pack_position'] * final_scale
-            # Scale to match the packed size (which includes uniform scale)
-            size_scale = island['uniform_scale'] * final_scale
+            position = island['pack_position'] * scale_factor
+            size_scale = uniform_scale * scale_factor
             min_uv = island['min_uv']
-            
-            # Debug first few islands
-            if debug_islands < 3:
-                expected_size = island['size'] * size_scale
-                print(f"\n  Debug island {debug_islands}:")
-                print(f"    Original size: {island['size']}")
-                print(f"    Scaled size: {island['scaled_size']}")
-                print(f"    Pack position: {island['pack_position']}")
-                print(f"    Final position: {position}")
-                print(f"    Size scale: {size_scale:.4f}")
-                print(f"    Expected final size: {expected_size}")
-                debug_islands += 1
             
             # Apply to all loops
             for loop, original_uv in island['projected_uvs'].items():
-                # Scale and translate the UV
                 new_uv = (original_uv - min_uv) * size_scale + position
                 loop[uv_layer].uv = new_uv
-                applied_count += 1
         
-        print(f"  Applied UVs to {applied_count} loops")
-        print(f"  Final UV space usage: {min(max_y * final_scale, 1.0):.1%}")
-        print(f"  Final texel density scale: {uniform_scale * final_scale:.4f}")
+        # Report results
+        efficiency = total_area / (pack_width * pack_height) if pack_height > 0 else 0
+        aspect_ratio = pack_width / pack_height if pack_height > 0 else 1.0
         
-        # Debug: print first few islands in pack order
-        if pack_order:
-            print("\n  First 5 islands in pack order:")
-            for i in range(min(5, len(pack_order))):
-                original_idx, position = pack_order[i]
-                island = indexed_islands[i][1]  # Get the island from sorted list
-                print(f"    Pack order {i}: orig_idx={original_idx}, size={island['scaled_size']}, pos={position}")
-        
-        print("")  # Empty line for readability
+        print(f"\n  Packed {len(valid_islands)} UV islands")
+        print(f"  Shelves: {len(shelves)}, Aspect ratio: {aspect_ratio:.2f}, Efficiency: {efficiency:.0%}")
     
     def process_object(self, context, obj):
         import time
@@ -1657,7 +1498,6 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
         # Get or create UV layer
         if not bm.loops.layers.uv:
             bm.loops.layers.uv.new("UVMap")
-            print("  Created new UV layer")
         uv_layer = bm.loops.layers.uv.active
         
         if not uv_layer:
@@ -1665,115 +1505,47 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
             return False, {}
         
         # Get selected faces
-        t1 = time.time()
-        selected_faces = []
-        for face in bm.faces:
-            if face.select and not face.hide:
-                selected_faces.append(face.index)
+        selected_faces = [face.index for face in bm.faces if face.select and not face.hide]
         
-        print(f"  Selected faces: {len(selected_faces)} (took {time.time()-t1:.3f}s)")
+        print(f"  Selected faces: {len(selected_faces)}")
         
         if not selected_faces:
             return False, {}
         
         # Build spatial cache
-        t2 = time.time()
         face_centers, face_bounds = self.build_face_spatial_cache(bm, selected_faces)
-        print(f"  Built spatial cache for {len(face_centers)} faces (took {time.time()-t2:.3f}s)")
         
         # Build combined adjacency
-        t3 = time.time()
         adjacency = self.build_combined_adjacency(bm, selected_faces, face_centers, face_bounds)
-        print(f"  Built adjacency (took {time.time()-t3:.3f}s)")
-        
-        # Count adjacency connections
-        t4 = time.time()
-        edge_connections = 0
-        proximity_connections = 0
-        isolated_faces = 0
-        
-        for face_idx in selected_faces:
-            neighbors = adjacency.get(face_idx, set())
-            if not neighbors:
-                isolated_faces += 1
-            
-            for neighbor in neighbors:
-                # Check if they share an edge
-                face = bm.faces[face_idx]
-                neighbor_face = bm.faces[neighbor]
-                shares_edge = False
-                for edge in face.edges:
-                    if edge in neighbor_face.edges:
-                        shares_edge = True
-                        break
-                if shares_edge:
-                    edge_connections += 1
-                else:
-                    proximity_connections += 1
-        
-        print(f"  Adjacency stats: {edge_connections//2} edge connections, {proximity_connections//2} proximity connections, {isolated_faces} isolated faces")
-        print(f"  (adjacency analysis took {time.time()-t4:.3f}s)")
-        
-        # Debug: print some adjacency info
-        if len(selected_faces) > 0:
-            sample_face = selected_faces[0]
-            print(f"  Debug - Face {sample_face} has {len(adjacency.get(sample_face, set()))} neighbors")
         
         # Find face groups using flood fill
-        t5 = time.time()
         face_groups = self.find_face_groups_flood_fill(selected_faces, adjacency, bm)
-        print(f"  Found {len(face_groups)} face groups (took {time.time()-t5:.3f}s)")
-        
-        if face_groups:
-            group_sizes = [len(g) for g in face_groups]
-            print(f"  Group sizes: min={min(group_sizes)}, max={max(group_sizes)}, avg={sum(group_sizes)/len(group_sizes):.1f}")
+        print(f"  Found {len(face_groups)} face groups")
         
         if not face_groups:
             return False, {}
         
         # Process each group
-        t6 = time.time()
         islands = []
         processed_faces = 0
-        failed_projections = 0
         
-        # Only show warnings for first few failures
-        max_warnings = 5
-        warning_count = 0
-        
-        for i, group in enumerate(face_groups):
+        for group in face_groups:
             projection_matrix, center = self.calculate_projection_matrix(group, bm)
             if projection_matrix is not None:
                 island_data = self.project_faces_to_uv(group, projection_matrix, center, bm, uv_layer)
                 if island_data:
                     islands.append(island_data)
                     processed_faces += island_data['face_count']
-                else:
-                    failed_projections += 1
-                    if warning_count < max_warnings:
-                        print(f"  Warning: Failed to project group {i} with {len(group)} faces")
-                        warning_count += 1
-            else:
-                failed_projections += 1
-                if warning_count < max_warnings:
-                    print(f"  Warning: Failed to calculate projection for group {i} with {len(group)} faces")
-                    warning_count += 1
         
-        print(f"  Created {len(islands)} UV islands from {len(face_groups)} groups (took {time.time()-t6:.3f}s)")
-        if failed_projections > 0:
-            print(f"  Failed projections: {failed_projections}")
+        print(f"  Created {len(islands)} UV islands")
         
         # Pack islands
-        t7 = time.time()
         if islands:
             self.pack_uv_islands_growing(islands, bm, uv_layer)
-            print(f"  Packing completed (took {time.time()-t7:.3f}s)")
-        else:
-            print("  ERROR: No islands to pack!")
         
         bmesh.update_edit_mesh(obj.data)
         
-        print(f"  Total processing time: {time.time()-start_time:.3f}s")
+        print(f"  Total time: {time.time()-start_time:.2f}s")
         
         return True, {
             'groups': len(face_groups),
