@@ -5,7 +5,7 @@ import cv2
 import argparse
 import os
 
-def compute_sdf(img, scale_factor):
+def compute_sdf(img, n_px, bit_depth=8):
     # Convert to binary image if not already
     _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     
@@ -13,21 +13,36 @@ def compute_sdf(img, scale_factor):
     dist_transform_fg = cv2.distanceTransform(binary, cv2.DIST_L2, 5)
     dist_transform_bg = cv2.distanceTransform(255 - binary, cv2.DIST_L2, 5)
     
-    # Combine the distance fields and scale by factor
-    sdf = (dist_transform_fg - dist_transform_bg) / scale_factor
+    # Combine to get signed distance field (positive outside, negative inside)
+    sdf = dist_transform_fg - dist_transform_bg
     
-    # Normalize values to [0, 255] range
-    sdf_min = np.min(sdf)
-    sdf_max = np.max(sdf)
-    sdf = ((sdf - sdf_min) * 255 / (sdf_max - sdf_min))
+    # Clip to ±n_px range
+    sdf = np.clip(sdf, -n_px, n_px)
     
-    return sdf.astype(np.uint8)
+    # Map from [-n_px, +n_px] to [0, 1]
+    sdf_normalized = (sdf + n_px) / (2 * n_px)
+    
+    # Quantize to requested bit depth
+    if bit_depth == 8:
+        max_value = 255
+        dtype = np.uint8
+    elif bit_depth == 16:
+        max_value = 65535
+        dtype = np.uint16
+    else:
+        raise ValueError(f"Unsupported bit depth: {bit_depth}")
+    
+    sdf_quantized = np.round(sdf_normalized * max_value).astype(dtype)
+    
+    return sdf_quantized
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate SDF from black and white image')
+    parser = argparse.ArgumentParser(description='Generate SDF from black and white image with fixed range encoding')
     parser.add_argument('input_images', nargs='+', help='Path to input image(s)')
-    parser.add_argument('--scale', type=float, default=1.0, 
-                        help='Scale factor for distance (in texels)')
+    parser.add_argument('--n_px', type=float, default=64.0, 
+                        help='Maximum distance to encode in pixels (default: 64)')
+    parser.add_argument('--bit_depth', type=int, default=8, choices=[8, 16],
+                        help='Output bit depth (default: 8)')
     args = parser.parse_args()
     
     # Process each input image
@@ -42,12 +57,18 @@ def main():
             print(f"Error: Could not read image {input_path}")
             continue
         
-        # Compute SDF with scale factor
-        sdf = compute_sdf(img, args.scale)
+        # Compute SDF with fixed range
+        sdf = compute_sdf(img, args.n_px, args.bit_depth)
         
         # Save result
-        cv2.imwrite(output_path, sdf)
-        print(f"SDF generated and saved to {output_path}")
+        if args.bit_depth == 16:
+            # For 16-bit images, ensure proper saving
+            cv2.imwrite(output_path, sdf)
+        else:
+            cv2.imwrite(output_path, sdf)
+        
+        print(f"SDF generated and saved to {output_path} (±{args.n_px}px range, {args.bit_depth}-bit)")
+        print(f"  Decoding: 0.5 = contour, 0.0 = -{args.n_px}px (inside), 1.0 = +{args.n_px}px (outside)")
 
 if __name__ == "__main__":
     main()

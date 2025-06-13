@@ -166,63 +166,25 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
 }
 
 float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
-#if defined(YUM_SH9_STANDARD)
-  // Unity gives us the first three bands (L0-L2) of SH coefficients as follows:
-  //   unity_SHA*.w:   L0 coefficients
-  //   unity_SHA*.xyz: L1 coefficients
-  //   unity_SHB*:     first four of the L2 coefficients
-  //   unity_SHC:      last L2 coefficient
-
-  // Parse out coefficients into a simpler but less efficient format.
-  float3 L00  = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
-  float3 L1_1 = float3(unity_SHAr.x, unity_SHAg.x, unity_SHAb.x);
-  float3 L10  = float3(unity_SHAr.y, unity_SHAg.y, unity_SHAb.y);
-  float3 L11  = float3(unity_SHAr.z, unity_SHAg.z, unity_SHAb.z);
-  float3 L2_2 = float3(unity_SHBr.x, unity_SHBg.x, unity_SHBb.x);
-  float3 L2_1 = float3(unity_SHBr.y, unity_SHBg.y, unity_SHBb.y);
-  float3 L20  = float3(unity_SHBr.z, unity_SHBg.z, unity_SHBb.z);
-  float3 L21  = float3(unity_SHBr.w, unity_SHBg.w, unity_SHBb.w);
-  float3 L22  = unity_SHC;
-
-  // Equation 13 from "An Efficient Representation for Irradiance Environment
-  // Maps" by Ramamoorthi and Hanrahan. Note that the order of some
-  // coefficients is different, and normalization constants have been
-  // premultiplied by Unity.
-  float3 L0 = L00;
-  float3 L1 = L1_1 * n.x + L10 * n.y + L11 * n.z;
-  float3 L2 =
-    L2_2 * n.x * n.y +
-    L2_1 * n.y * n.z +
-    L20  * n.z * n.z +
-    L21 * n.x * n.z +
-    L22 * (n.x * n.x - n.y * n.y);
-
-  light.L00 = L00;
-  light.L01r = unity_SHAr.xyz;
-  light.L01g = unity_SHAg.xyz;
-  light.L01b = unity_SHAb.xyz;
-
-  return L0 + L1 + L2;
-#elif 1
-  // Light volumes. We omit the L01 contribution since flat shading looks
-  // better on avatars.
   LightVolumeSH(worldPos, light.L00, light.L01r, light.L01g, light.L01b);
-  return LightVolumeEvaluate(n.xyz, light.L00,
-      _UdonLightVolumeEnabled ? light.L01r : 0,
-      _UdonLightVolumeEnabled ? light.L01g : 0,
-      _UdonLightVolumeEnabled ? light.L01b : 0);
+#if defined(_SPHERICAL_HARMONICS_L1)
+  return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
 #else
-  // On non-photorealistic avatars, simply using the diffuse component looks
-  // better. *shruge*
-  float3 L00  = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
-
-  light.L00 = L00;
-  light.L01r = unity_SHAr.xyz;
-  light.L01g = unity_SHAg.xyz;
-  light.L01b = unity_SHAb.xyz;
-
-  return L00;
+  return LightVolumeEvaluate(n.xyz, light.L00, 0, 0, 0);
 #endif
+}
+
+float4 getIndirectDiffuse(v2f i, float4 vertexLightColor,
+    inout YumLighting light) {
+  float4 diffuse = vertexLightColor;
+#if defined(FORWARD_BASE_PASS)
+#if defined(LIGHTMAP_ON)
+  diffuse.xyz = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv01.zw));
+#else
+  diffuse.xyz += max(0, yumSH9(float4(i.normal, 0), i.worldPos, light));
+#endif
+#endif
+  return diffuse;
 }
 
 YumLighting GetYumLighting(v2f i, YumPbr pbr) {
@@ -242,9 +204,10 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
 
 	// Use Bakery-aware irradiance function
+#if defined(LIGHTMAP_ON)
 	light.diffuse = BakeryGI_Irradiance(
 			pbr.normal,           // worldNormal
-			i.worldPos,           // worldPos  
+			i.worldPos,           // worldPos
 			float4(i.uv01.zw, 0, 0),               // lightmapUV (xy = uv0, zw = uv1)
 			float3(0,0,0),        // ambient (will be calculated internally)
 			light.attenuation,    // attenuation
@@ -255,6 +218,10 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	);
 #if defined(_GRAYSCALE_LIGHTMAPS)
   light.diffuse.gb = light.diffuse.r;
+#endif
+#else
+  light.diffuse = getIndirectDiffuse(i, 0, light);
+  light.occlusion = 1;
 #endif
 
 #if defined(_MIN_BRIGHTNESS)

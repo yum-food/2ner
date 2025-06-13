@@ -380,5 +380,9 @@
 #pragma shader_feature_local _BAKERY_MONOSH
 //endex
 
+//ifex _Spherical_Harmonics_L1_Enabled==0
+#pragma shader_feature_local _SPHERICAL_HARMONICS_L1
+//endex
+
 #endif  // __FEATURES_INC
 

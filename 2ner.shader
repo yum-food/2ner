@@ -1939,6 +1939,12 @@ Shader "yum_food/2ner"
       [HideInInspector] m_end_Shadow_Casting("Cast shadows", Float) = 0
       //endex
 
+      //ifex _Spherical_Harmonics_L1_Enabled==0
+      [HideInInspector] m_start_Spherical_Harmonics_L1("L1 spherical harmonics", Float) = 0
+        [ThryToggle(_SPHERICAL_HARMONICS_L1)] _Spherical_Harmonics_L1_Enabled("Enable", Float) = 0
+      [HideInInspector] m_end_Spherical_Harmonics_L1("L1 spherical harmonics", Float) = 0
+      //endex
+
       //ifex _Depth_Prepass_Enabled==0
       [HideInInspector] m_start_Depth_Prepass("Depth Prepass", Float) = 0
         [ThryToggle(_DEPTH_PREPASS)] _Depth_Prepass_Enabled("Enable", Float) = 0
