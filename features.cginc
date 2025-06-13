@@ -334,5 +334,21 @@
 #pragma shader_feature_local _UNLIT
 //endex
 
+//ifex _Masked_Stencil1_Enabled==0
+#pragma shader_feature_local _MASKED_STENCIL1
+//endex
+
+//ifex _Masked_Stencil2_Enabled==0
+#pragma shader_feature_local _MASKED_STENCIL2
+//endex
+
+//ifex _Masked_Stencil3_Enabled==0
+#pragma shader_feature_local _MASKED_STENCIL3
+//endex
+
+//ifex _Masked_Stencil4_Enabled==0
+#pragma shader_feature_local _MASKED_STENCIL4
+//endex
+
 #endif  // __FEATURES_INC
 

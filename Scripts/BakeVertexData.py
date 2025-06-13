@@ -503,7 +503,7 @@ class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator, ToleranceOperatorMixin)
 class MESH_OT_select_hidden_faces(BaseSubmeshOperator, ToleranceOperatorMixin):
     bl_idname = "mesh.select_hidden_faces"
     bl_label = "Select Hidden Faces"
-    bl_description = "Select faces that are hidden behind other faces (overlapping with opposing normals)"
+    bl_description = "Select faces that are hidden behind other faces (overlapping with opposing normals and same material)"
 
     position_tolerance: FloatProperty(
         name="Position Tolerance",
@@ -600,7 +600,8 @@ class MESH_OT_select_hidden_faces(BaseSubmeshOperator, ToleranceOperatorMixin):
             face_data[face.index] = {
                 'normal': face.normal.normalized(),
                 'face': face,
-                'center': center
+                'center': center,
+                'material_index': face.material_index
             }
             
             # Hash by center position (with boundary handling)
@@ -630,6 +631,10 @@ class MESH_OT_select_hidden_faces(BaseSubmeshOperator, ToleranceOperatorMixin):
                     
                     face1_data = face_data[face1_idx]
                     face2_data = face_data[face2_idx]
+                    
+                    # Check if faces use the same material
+                    if face1_data['material_index'] != face2_data['material_index']:
+                        continue
                     
                     # Quick check: opposing normals
                     dot_product = face1_data['normal'].dot(face2_data['normal'])
@@ -679,6 +684,7 @@ class MESH_OT_select_hidden_faces(BaseSubmeshOperator, ToleranceOperatorMixin):
         layout.prop(self, "position_tolerance")
         layout.prop(self, "normal_tolerance")
         layout.label(text="Selects overlapping faces with opposing normals", icon='INFO')
+        layout.label(text="Only considers faces with the same material", icon='INFO')
 
 
 class UVOperatorMixin:

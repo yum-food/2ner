@@ -34,7 +34,13 @@ v2f vert(appdata v) {
   // hide outlines when not locked.
   return (v2f) (0.0/0.0);
 #endif
+#if defined(DEPTH_PREPASS) && !defined(_DEPTH_PREPASS)
+  return (v2f) (0.0/0.0);
+#endif
 #if defined(MASKED_STENCIL1_PASS)
+#if !defined(_MASKED_STENCIL1)
+  return (v2f) (0.0/0.0);
+#endif
   float masked_stencil1_mask = _Masked_Stencil1_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil1_mask < 0.5) {
@@ -42,6 +48,9 @@ v2f vert(appdata v) {
   }
 #endif
 #if defined(MASKED_STENCIL2_PASS)
+#if !defined(_MASKED_STENCIL2)
+  return (v2f) (0.0/0.0);
+#endif
   float masked_stencil2_mask = _Masked_Stencil2_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil2_mask < 0.5) {
@@ -49,6 +58,9 @@ v2f vert(appdata v) {
   }
 #endif
 #if defined(MASKED_STENCIL3_PASS)
+#if !defined(_MASKED_STENCIL3)
+  return (v2f) (0.0/0.0);
+#endif
   float masked_stencil3_mask = _Masked_Stencil3_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil3_mask < 0.5) {
@@ -56,6 +68,9 @@ v2f vert(appdata v) {
   }
 #endif
 #if defined(MASKED_STENCIL4_PASS)
+#if !defined(_MASKED_STENCIL4)
+  return (v2f) (0.0/0.0);
+#endif
   float masked_stencil4_mask = _Masked_Stencil4_Mask.SampleLevel(linear_repeat_s, v.uv0, 0);
   [branch]
   if (masked_stencil4_mask < 0.5) {
@@ -139,7 +154,11 @@ v2f vert(appdata v) {
   o.tpos = v.vertex;
 #endif
   o.uv01.xy = v.uv0;
+#if defined(LIGHTMAP_ON)
+  o.uv01.zw = v.uv1 * unity_LightmapST.xy + unity_LightmapST.zw;
+#else
   o.uv01.zw = v.uv1;
+#endif
   o.uv23.xy = v.uv2;
   o.uv23.zw = v.uv3;
 #if defined(_MIRROR_UVS_IN_MIRROR)

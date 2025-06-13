@@ -1594,7 +1594,7 @@ Shader "yum_food/2ner"
 
         //ifex _Masked_Stencil1_Enabled==0
         [HideInInspector] m_start_Masked_Stencil1("Masked stencil 1", Float) = 0
-          [ThryToggle(_)] _Masked_Stencil1_Enabled("Enable", Float) = 0
+          [ThryToggle(_MASKED_STENCIL1)] _Masked_Stencil1_Enabled("Enable", Float) = 0
           [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _Stencil1Type ("Stencil Type", Float) = 0
           _Masked_Stencil1_Mask("Mask", 2D) = "white" {}
           [IntRange] _MaskedStencil1Ref ("Stencil Reference Value", Range(0, 255)) = 0
@@ -1623,7 +1623,7 @@ Shader "yum_food/2ner"
 
         //ifex _Masked_Stencil2_Enabled==0
         [HideInInspector] m_start_Masked_Stencil2("Masked stencil 2", Float) = 0
-          [ThryToggle(_)] _Masked_Stencil2_Enabled("Enable", Float) = 0
+          [ThryToggle(_MASKED_STENCIL2)] _Masked_Stencil2_Enabled("Enable", Float) = 0
           [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _Stencil2Type ("Stencil Type", Float) = 0
           _Masked_Stencil2_Mask("Mask", 2D) = "white" {}
           [IntRange] _MaskedStencil2Ref ("Stencil Reference Value", Range(0, 255)) = 0
@@ -1652,7 +1652,7 @@ Shader "yum_food/2ner"
 
         //ifex _Masked_Stencil3_Enabled==0
         [HideInInspector] m_start_Masked_Stencil3("Masked stencil 3", Float) = 0
-          [ThryToggle(_)] _Masked_Stencil3_Enabled("Enable", Float) = 0
+          [ThryToggle(_MASKED_STENCIL3)] _Masked_Stencil3_Enabled("Enable", Float) = 0
           [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _Stencil3Type ("Stencil Type", Float) = 0
           _Masked_Stencil3_Mask("Mask", 2D) = "white" {}
           [IntRange] _MaskedStencil3Ref ("Stencil Reference Value", Range(0, 255)) = 0
@@ -1681,7 +1681,7 @@ Shader "yum_food/2ner"
 
         //ifex _Masked_Stencil4_Enabled==0
         [HideInInspector] m_start_Masked_Stencil4("Masked stencil 4", Float) = 0
-          [ThryToggle(_)] _Masked_Stencil4_Enabled("Enable", Float) = 0
+          [ThryToggle(_MASKED_STENCIL4)] _Masked_Stencil4_Enabled("Enable", Float) = 0
           [ThryWideEnum(Simple, 0, Front Face vs Back Face, 1)] _Stencil4Type ("Stencil Type", Float) = 0
           _Masked_Stencil4_Mask("Mask", 2D) = "white" {}
           [IntRange] _MaskedStencil4Ref ("Stencil Reference Value", Range(0, 255)) = 0
