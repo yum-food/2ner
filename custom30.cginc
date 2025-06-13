@@ -170,7 +170,7 @@ Custom30Output BasicCube(v2f i, float4x4 tangentToWorld) {
   float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
   float3 frag_to_origin = GetFragToOrigin(i);
 
-	float2 uv_channels = float2(1, 2);
+	float2 uv_channels = float2(_Custom30_Quaternion_UV_Channel_0, _Custom30_Quaternion_UV_Channel_1);
   float4 quat = GetRotation(i, uv_channels);
   float4 iquat = float4(-quat.xyz, quat.w);
 
@@ -250,7 +250,7 @@ Custom30Output BasicWedge(v2f i, float4x4 tangentToWorld) {
   float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
   float3 frag_to_origin = GetFragToOrigin(i);
 
-	float2 uv_channels = float2(1, 2);
+	float2 uv_channels = float2(_Custom30_Quaternion_UV_Channel_0, _Custom30_Quaternion_UV_Channel_1);
   float4 quat = GetRotation(i, uv_channels);
   float4 iquat = float4(-quat.xyz, quat.w);
 
@@ -351,7 +351,7 @@ Custom30Output BasicPlatform(v2f i, float4x4 tangentToWorld) {
   float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
   float3 frag_to_origin = GetFragToOrigin(i);
 
-	float2 uv_channels = float2(1, 2);
+	float2 uv_channels = float2(_Custom30_Quaternion_UV_Channel_0, _Custom30_Quaternion_UV_Channel_1);
   float4 quat = GetRotation(i, uv_channels);
   float4 iquat = float4(-quat.xyz, quat.w);
 

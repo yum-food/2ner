@@ -222,7 +222,7 @@ float4 getIndirectDiffuse(v2f i, float4 vertexLightColor,
 	float4 diffuse = vertexLightColor;
 #if defined(FORWARD_BASE_PASS)
 #if defined(LIGHTMAP_ON)
-	diffuse.xyz = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
+	diffuse.xyz = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv01.zw));
 #else
 	diffuse.xyz += max(0, yumSH9(float4(i.normal, 0), i.worldPos, light));
 #endif

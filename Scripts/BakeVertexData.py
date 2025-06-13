@@ -65,36 +65,25 @@ class MeshUtils:
 
     @staticmethod
     def with_multi_object_support(process_func_name='process_object'):
-        """Decorator to add multi-object support to operators
-
-        The decorated execute method should return a tuple of (success, stats_dict)
-        where stats_dict contains the statistics to aggregate across objects.
-        """
+        """Decorator to add multi-object support to operators"""
         def decorator(func):
             def wrapper(self, context, *args, **kwargs):
-                # Store the original active object
                 original_active = context.active_object
-
-                # Get all selected mesh objects
                 selected_objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
+                
                 if not selected_objects:
                     self.report({'WARNING'}, "No mesh objects selected")
                     return {'CANCELLED'}
 
-                # Initialize aggregated stats
                 total_stats = {}
                 processed_count = 0
 
-                # Process each selected object
                 for obj in selected_objects:
-                    # Make this object active temporarily
                     context.view_layer.objects.active = obj
 
-                    # Call the actual processing method
                     if hasattr(self, process_func_name):
                         success, stats = getattr(self, process_func_name)(context, obj)
                     else:
-                        # Fallback to calling the decorated function
                         result = func(self, context, obj, *args, **kwargs)
                         if isinstance(result, tuple) and len(result) == 2:
                             success, stats = result
@@ -103,23 +92,18 @@ class MeshUtils:
 
                     if success:
                         processed_count += 1
-                        # Aggregate statistics
                         for key, value in stats.items():
                             if isinstance(value, (int, float)):
                                 total_stats[key] = total_stats.get(key, 0) + value
                             else:
-                                # For non-numeric values, just store the last one
                                 total_stats[key] = value
 
-                # Restore original active object
                 context.view_layer.objects.active = original_active
 
-                # Report results
                 total_stats['object_count'] = processed_count
                 if hasattr(self, 'format_report'):
                     message = self.format_report(total_stats)
                 else:
-                    # Default reporting
                     if processed_count == 0:
                         self.report({'WARNING'}, "No objects processed")
                         return {'CANCELLED'}
@@ -196,9 +180,27 @@ class MeshUtils:
             if all(mesh.vertices[v].select for v in face.vertices):
                 face.select = True
 
+    @staticmethod
+    def build_position_map(vertices, scale):
+        """Build a map of vertices by quantized position"""
+        position_map = defaultdict(list)
+        for v in vertices:
+            if hasattr(v, 'index'):
+                key = tuple(int(v.co[i] * scale) for i in range(3))
+                position_map[key].append(v.index)
+            else:
+                key = tuple(int(v[i] * scale) for i in range(3))
+                position_map[key].append(v)
+        return position_map
+
+    @staticmethod
+    def get_or_create_uv_layer(mesh, name):
+        """Get or create a UV layer by name"""
+        return mesh.uv_layers.get(name) or mesh.uv_layers.new(name=name)
+
 
 class BaseSubmeshOperator(Operator):
-    """Base class for submesh operations"""
+    """Base class for submesh operations with common functionality"""
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -214,6 +216,18 @@ class BaseSubmeshOperator(Operator):
         adjacency = MeshUtils.build_adjacency(mesh, selected)
         return MeshUtils.find_islands(selected, adjacency)
 
+    @MeshUtils.with_multi_object_support('process_object')
+    def execute(self, context):
+        pass
+
+
+class ToleranceOperatorMixin:
+    """Mixin for operators that use tolerance values"""
+    
+    def get_scale_from_tolerance(self, tolerance):
+        """Convert tolerance to scale factor for quantization"""
+        return min(1.0 / tolerance, 1e7) if tolerance > 0 else 1e7
+
 
 class MESH_OT_select_all_linked(BaseSubmeshOperator):
     bl_idname = "mesh.select_all_linked"
@@ -221,15 +235,26 @@ class MESH_OT_select_all_linked(BaseSubmeshOperator):
     bl_description = "Select all vertices in any submesh that has at least one vertex selected"
 
     def process_object(self, context, obj):
-        """Process a single object and return (success, stats)"""
         mesh = obj.data
-        initially_selected = MeshUtils.get_selected_vertices(mesh)
+        
+        # Get BMesh for edit mode operations
+        bm = bmesh.from_edit_mesh(mesh)
+        bm.verts.ensure_lookup_table()
+        
+        initially_selected = {v.index for v in bm.verts if v.select}
 
         if not initially_selected:
             return False, {}
 
-        all_vertices = set(range(len(mesh.vertices)))
-        adjacency = MeshUtils.build_adjacency(mesh, all_vertices)
+        # Build adjacency using BMesh
+        all_vertices = set(range(len(bm.verts)))
+        adjacency = {idx: set() for idx in all_vertices}
+        
+        for edge in bm.edges:
+            v0, v1 = edge.verts[0].index, edge.verts[1].index
+            adjacency[v0].add(v1)
+            adjacency[v1].add(v0)
+        
         islands = MeshUtils.find_islands(all_vertices, adjacency)
 
         expanded_count = 0
@@ -241,10 +266,21 @@ class MESH_OT_select_all_linked(BaseSubmeshOperator):
                 if new_selections:
                     expanded_count += len(new_selections)
                     affected_islands += 1
+                # Select all vertices in the island using BMesh
                 for idx in island:
-                    mesh.vertices[idx].select = True
+                    bm.verts[idx].select = True
 
-        MeshUtils.select_edges_and_faces(mesh)
+        # Select edges and faces based on selected vertices
+        for edge in bm.edges:
+            if edge.verts[0].select and edge.verts[1].select:
+                edge.select = True
+
+        for face in bm.faces:
+            if all(v.select for v in face.verts):
+                face.select = True
+
+        # Update the mesh
+        bmesh.update_edit_mesh(mesh)
 
         return True, {
             'affected_islands': affected_islands,
@@ -252,19 +288,12 @@ class MESH_OT_select_all_linked(BaseSubmeshOperator):
         }
 
     def format_report(self, stats):
-        """Format the aggregated statistics into a report message"""
         if stats['object_count'] == 0:
             return "No objects with selected vertices found"
         return f"Expanded selection in {stats['affected_islands']} submeshes ({stats['expanded_count']} new vertices) across {stats['object_count']} object(s)"
 
-    @MeshUtils.with_mode('OBJECT')
-    @MeshUtils.with_multi_object_support('process_object')
-    def execute(self, context):
-        # The decorator handles everything
-        pass
 
-
-class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator):
+class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator, ToleranceOperatorMixin):
     bl_idname = "mesh.select_linked_across_boundaries"
     bl_label = "Select Linked (Cross Boundaries)"
     bl_description = "Select linked vertices, crossing submesh boundaries where vertices share locations"
@@ -279,15 +308,21 @@ class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator):
         subtype='DISTANCE'
     )
 
-    def build_combined_adjacency(self, mesh):
+    def build_combined_adjacency(self, bm):
         """Build adjacency including both edges and position-based connections"""
-        edge_adjacency = MeshUtils.build_adjacency(mesh, set(range(len(mesh.vertices))))
+        # Build edge adjacency
+        edge_adjacency = {v.index: set() for v in bm.verts}
+        
+        for edge in bm.edges:
+            v0, v1 = edge.verts[0].index, edge.verts[1].index
+            edge_adjacency[v0].add(v1)
+            edge_adjacency[v1].add(v0)
 
-        # Build position adjacency
-        scale = min(1.0 / self.epsilon, 1e7) if self.epsilon > 0 else 1e7
+        # Build position-based adjacency
+        scale = self.get_scale_from_tolerance(self.epsilon)
         position_map = defaultdict(list)
-
-        for v in mesh.vertices:
+        
+        for v in bm.verts:
             key = tuple(int(v.co[i] * scale) for i in range(3))
             position_map[key].append(v.index)
 
@@ -303,7 +338,6 @@ class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator):
                             position_adjacency[v2] = set()
                         position_adjacency[v2].add(v1)
 
-        # Combine adjacencies
         def combined_adjacency(vertex):
             neighbors = set()
             if vertex in edge_adjacency:
@@ -315,20 +349,36 @@ class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator):
         return combined_adjacency
 
     def process_object(self, context, obj):
-        """Process a single object and return (success, stats)"""
         mesh = obj.data
-        initially_selected = MeshUtils.get_selected_vertices(mesh)
+        
+        # Get BMesh for edit mode operations
+        bm = bmesh.from_edit_mesh(mesh)
+        bm.verts.ensure_lookup_table()
+        
+        initially_selected = {v.index for v in bm.verts if v.select}
 
         if not initially_selected:
             return False, {}
 
-        combined_adjacency = self.build_combined_adjacency(mesh)
+        combined_adjacency = self.build_combined_adjacency(bm)
         visited = MeshUtils.flood_fill(initially_selected, combined_adjacency)
 
+        # Select vertices using BMesh
         for idx in visited:
-            mesh.vertices[idx].select = True
+            bm.verts[idx].select = True
 
-        MeshUtils.select_edges_and_faces(mesh)
+        # Select edges and faces based on selected vertices
+        for edge in bm.edges:
+            if edge.verts[0].select and edge.verts[1].select:
+                edge.select = True
+
+        for face in bm.faces:
+            if all(v.select for v in face.verts):
+                face.select = True
+
+        # Update the mesh
+        bmesh.update_edit_mesh(mesh)
+        
         expanded_count = len(visited) - len(initially_selected)
 
         return True, {
@@ -337,16 +387,9 @@ class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator):
         }
 
     def format_report(self, stats):
-        """Format the aggregated statistics into a report message"""
         if stats['object_count'] == 0:
             return "No objects with selected vertices found"
         return f"Selected {stats['selected']} vertices ({stats['expanded']} new) across {stats['object_count']} object(s)"
-
-    @MeshUtils.with_mode('OBJECT')
-    @MeshUtils.with_multi_object_support('process_object')
-    def execute(self, context):
-        # The decorator handles everything
-        pass
 
     def draw(self, context):
         layout = self.layout
@@ -354,7 +397,7 @@ class MESH_OT_select_linked_across_boundaries(BaseSubmeshOperator):
         layout.label(text="Connects vertices at same location", icon='INFO')
 
 
-class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator):
+class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator, ToleranceOperatorMixin):
     bl_idname = "mesh.deduplicate_submeshes"
     bl_label = "Deduplicate Submeshes"
     bl_description = "Remove duplicate submeshes from selection that have vertices at the same locations"
@@ -368,13 +411,13 @@ class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator):
         precision=6
     )
 
-    def get_island_signature(self, mesh, island_indices):
+    def get_island_signature(self, island_verts):
         """Create a hash for an island based on vertex positions"""
         decimal_places = 6 if self.tolerance == 0 else max(0, int(-math.log10(self.tolerance)))
 
         positions = []
-        for idx in island_indices:
-            co = mesh.vertices[idx].co
+        for v in island_verts:
+            co = v.co
             rounded = tuple(round(co[i], decimal_places) for i in range(3))
             positions.append(rounded)
 
@@ -382,43 +425,63 @@ class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator):
         return tuple(positions)
 
     def process_object(self, context, obj):
-        """Process a single object and return (success, stats)"""
         mesh = obj.data
-        islands = self.get_selected_submeshes(mesh)
-
-        if len(islands) <= 1:
+        
+        # Get BMesh for edit mode operations
+        bm = bmesh.from_edit_mesh(mesh)
+        bm.verts.ensure_lookup_table()
+        
+        # Get selected vertices
+        selected_indices = {v.index for v in bm.verts if v.select}
+        if not selected_indices:
             return False, {}
+        
+        # Build adjacency
+        adjacency = {idx: set() for idx in selected_indices}
+        for edge in bm.edges:
+            v0, v1 = edge.verts[0].index, edge.verts[1].index
+            if v0 in selected_indices and v1 in selected_indices:
+                adjacency[v0].add(v1)
+                adjacency[v1].add(v0)
+        
+        # Find islands
+        island_indices = MeshUtils.find_islands(selected_indices, adjacency)
+        
+        if len(island_indices) <= 1:
+            return False, {}
+
+        # Create island vertex lists
+        islands = []
+        for island_idx_set in island_indices:
+            island_verts = [bm.verts[idx] for idx in island_idx_set]
+            islands.append(island_verts)
 
         # Group islands by signature
         island_groups = defaultdict(list)
         for island in islands:
-            signature = self.get_island_signature(mesh, island)
+            signature = self.get_island_signature(island)
             island_groups[signature].append(island)
 
-        # Find duplicates to remove
         vertices_to_delete = set()
         duplicate_count = 0
 
+        # Mark duplicate islands for deletion
         for group in island_groups.values():
             if len(group) > 1:
+                # Keep the first island, delete the rest
                 for island in group[1:]:
-                    vertices_to_delete.update(island)
+                    for v in island:
+                        vertices_to_delete.add(v)
                     duplicate_count += 1
 
         if not vertices_to_delete:
             return False, {}
 
-        # Select vertices to delete
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.object.mode_set(mode='OBJECT')
-
-        for idx in vertices_to_delete:
-            mesh.vertices[idx].select = True
-
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.delete(type='VERT')
-        bpy.ops.object.mode_set(mode='OBJECT')
+        # Delete vertices using BMesh
+        bmesh.ops.delete(bm, geom=list(vertices_to_delete), context='VERTS')
+        
+        # Update the mesh
+        bmesh.update_edit_mesh(mesh)
 
         return True, {
             'duplicates': duplicate_count,
@@ -426,16 +489,10 @@ class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator):
         }
 
     def format_report(self, stats):
-        """Format the aggregated statistics into a report message"""
         if stats['object_count'] == 0:
-            return "No duplicate submeshes found"
+            return "No objects processed"
+        
         return f"Removed {stats['duplicates']} duplicate submeshes ({stats['vertices_deleted']} vertices) across {stats['object_count']} object(s)"
-
-    @MeshUtils.with_mode('OBJECT')
-    @MeshUtils.with_multi_object_support('process_object')
-    def execute(self, context):
-        # The decorator handles everything
-        pass
 
     def draw(self, context):
         layout = self.layout
@@ -443,7 +500,241 @@ class MESH_OT_deduplicate_submeshes(BaseSubmeshOperator):
         layout.label(text="Set to 0 for exact matching", icon='INFO')
 
 
-class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
+class MESH_OT_select_hidden_faces(BaseSubmeshOperator, ToleranceOperatorMixin):
+    bl_idname = "mesh.select_hidden_faces"
+    bl_label = "Select Hidden Faces"
+    bl_description = "Select faces that are hidden behind other faces (overlapping with opposing normals)"
+
+    position_tolerance: FloatProperty(
+        name="Position Tolerance",
+        description="Maximum distance for vertices to be considered at the same position",
+        default=0.001,
+        min=0.0,
+        max=0.1,
+        precision=6,
+        subtype='DISTANCE'
+    )
+
+    normal_tolerance: FloatProperty(
+        name="Normal Tolerance",
+        description="Maximum angle difference for normals to be considered opposing",
+        default=0.1,
+        min=0.0,
+        max=math.pi,
+        precision=3,
+        subtype='ANGLE'
+    )
+
+    def process_object(self, context, obj):
+        mesh = obj.data
+        
+        # Get BMesh for edit mode operations
+        bm = bmesh.from_edit_mesh(mesh)
+        bm.faces.ensure_lookup_table()
+        
+        selected_faces = [f for f in bm.faces if f.select]
+        faces_to_check = selected_faces if selected_faces else list(bm.faces)
+        
+        if len(faces_to_check) < 2:
+            return False, {}
+
+        scale = self.get_scale_from_tolerance(self.position_tolerance)
+        
+        def get_center_hash_variations(center):
+            """Get hash variations for a point near grid boundaries"""
+            variations = []
+            boundary_threshold = 0.1  # If within 10% of grid boundary
+            
+            # For each dimension, determine which cells to hash to
+            cells = []
+            for i in range(3):
+                scaled = center[i] * scale
+                floored = int(scaled)
+                frac = scaled - floored
+                
+                if frac < boundary_threshold:
+                    # Near lower boundary, include previous cell
+                    cells.append([floored - 1, floored])
+                elif frac > (1.0 - boundary_threshold):
+                    # Near upper boundary, include next cell
+                    cells.append([floored, floored + 1])
+                else:
+                    # Not near boundary
+                    cells.append([floored])
+            
+            # Generate all combinations (max 8 for a corner)
+            for x in cells[0]:
+                for y in cells[1]:
+                    for z in cells[2]:
+                        variations.append((x, y, z))
+            
+            return variations
+        
+        def faces_match(face1, face2):
+            """Check if two faces have matching vertices at same positions"""
+            if len(face1.verts) != len(face2.verts):
+                return False
+            
+            # For each vertex in face1, check if there's a matching vertex in face2
+            tolerance_sq = self.position_tolerance * self.position_tolerance
+            
+            for v1 in face1.verts:
+                found_match = False
+                for v2 in face2.verts:
+                    if (v1.co - v2.co).length_squared <= tolerance_sq:
+                        found_match = True
+                        break
+                if not found_match:
+                    return False
+            
+            return True
+
+        # Group faces by center position for finding candidates
+        center_hash_map = defaultdict(list)
+        face_data = {}
+        
+        for face in faces_to_check:
+            center = face.calc_center_median()
+            
+            # Store face data
+            face_data[face.index] = {
+                'normal': face.normal.normalized(),
+                'face': face,
+                'center': center
+            }
+            
+            # Hash by center position (with boundary handling)
+            center_variations = get_center_hash_variations(center)
+            for center_hash in center_variations:
+                center_hash_map[center_hash].append(face.index)
+
+        hidden_faces = set()
+        checked_pairs = 0
+        checked_face_pairs = set()
+        
+        # Check faces that have the same center hash
+        for center_hash, face_indices in center_hash_map.items():
+            if len(face_indices) < 2:
+                continue
+            
+            for i in range(len(face_indices)):
+                for j in range(i + 1, len(face_indices)):
+                    face1_idx = face_indices[i]
+                    face2_idx = face_indices[j]
+                    
+                    # Skip if we've already checked this pair
+                    pair = (min(face1_idx, face2_idx), max(face1_idx, face2_idx))
+                    if pair in checked_face_pairs:
+                        continue
+                    checked_face_pairs.add(pair)
+                    
+                    face1_data = face_data[face1_idx]
+                    face2_data = face_data[face2_idx]
+                    
+                    # Quick check: opposing normals
+                    dot_product = face1_data['normal'].dot(face2_data['normal'])
+                    if dot_product >= 0:
+                        continue
+                    
+                    # Check angle tolerance
+                    angle_diff = math.acos(min(1.0, max(-1.0, abs(dot_product))))
+                    if angle_diff >= self.normal_tolerance:
+                        continue
+                    
+                    # Detailed vertex comparison
+                    checked_pairs += 1
+                    if faces_match(face1_data['face'], face2_data['face']):
+                        hidden_faces.add(face1_idx)
+                        hidden_faces.add(face2_idx)
+        
+        # Select faces using BMesh
+        for face_idx in hidden_faces:
+            if face_idx in face_data:
+                face_data[face_idx]['face'].select = True
+        
+        # Update the mesh
+        bmesh.update_edit_mesh(mesh)
+        
+        return len(hidden_faces) > 0, {
+            'hidden_faces': len(hidden_faces),
+            'checked_faces': len(faces_to_check),
+            'checked_pairs': checked_pairs,
+            'hash_groups': len([g for g in center_hash_map.values() if len(g) > 1])
+        }
+
+    def format_report(self, stats):
+        if stats['object_count'] == 0:
+            return "No objects processed"
+        if stats['hidden_faces'] == 0:
+            groups = stats.get('hash_groups', 0)
+            pairs = stats.get('checked_pairs', 0)
+            return f"No hidden faces found among {stats['checked_faces']} faces ({groups} overlapping groups, {pairs} pairs checked) in {stats['object_count']} object(s)"
+        
+        groups = stats.get('hash_groups', 0)
+        pairs = stats.get('checked_pairs', 0)
+        return f"Selected {stats['hidden_faces']} hidden faces from {stats['checked_faces']} faces ({groups} overlapping groups, {pairs} pairs checked) across {stats['object_count']} object(s)"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "position_tolerance")
+        layout.prop(self, "normal_tolerance")
+        layout.label(text="Selects overlapping faces with opposing normals", icon='INFO')
+
+
+class UVOperatorMixin:
+    """Mixin for UV-related operations"""
+    
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return (obj and obj.type == 'MESH' and 
+                context.mode == 'EDIT_MESH' and 
+                obj.data.uv_layers.active)
+    
+    def get_uv_islands(self, bm, uv_layer):
+        """Find all UV islands in the mesh"""
+        uv_vert_map = {}
+        uv_adjacency = defaultdict(set)
+
+        for face in bm.faces:
+            if not face.select:
+                continue
+
+            face_uvs = []
+            for loop in face.loops:
+                uv = loop[uv_layer].uv
+                uv_key = (round(uv.x, 6), round(uv.y, 6))
+                face_uvs.append(uv_key)
+
+                if uv_key not in uv_vert_map:
+                    uv_vert_map[uv_key] = set()
+                uv_vert_map[uv_key].add(loop.vert.index)
+
+            for i in range(len(face_uvs)):
+                j = (i + 1) % len(face_uvs)
+                uv_adjacency[face_uvs[i]].add(face_uvs[j])
+                uv_adjacency[face_uvs[j]].add(face_uvs[i])
+
+        islands = []
+        for start_uv in uv_vert_map:
+            if any(start_uv in island['uvs'] for island in islands):
+                continue
+
+            island_uvs = MeshUtils.flood_fill([start_uv], lambda uv: uv_adjacency.get(uv, []))
+            island_vert_indices = set()
+            for uv in island_uvs:
+                island_vert_indices.update(uv_vert_map[uv])
+
+            islands.append({
+                'uvs': island_uvs,
+                'vert_indices': island_vert_indices,
+                'loops': []
+            })
+
+        return islands
+
+
+class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator, UVOperatorMixin):
     bl_idname = "mesh.pack_uv_islands_by_submesh_z"
     bl_label = "Pack UV Islands by Submesh Z"
     bl_description = "Pack UV islands vertically sorted by submesh Z position"
@@ -477,62 +768,19 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
         default=False
     )
 
-    @classmethod
-    def poll(cls, context):
-        obj = context.active_object
-        return (obj and obj.type == 'MESH' and 
-                context.mode == 'EDIT_MESH' and 
-                obj.data.uv_layers.active)
-
-    def get_uv_islands(self, bm, uv_layer):
-        """Find all UV islands in the mesh"""
-        uv_vert_map = {}
-        uv_adjacency = defaultdict(set)
-
-        for face in bm.faces:
-            if not face.select:
-                continue
-
-            face_uvs = []
-            for loop in face.loops:
-                uv = loop[uv_layer].uv
-                uv_key = (round(uv.x, 6), round(uv.y, 6))
-                face_uvs.append(uv_key)
-
-                if uv_key not in uv_vert_map:
-                    uv_vert_map[uv_key] = set()
-                uv_vert_map[uv_key].add(loop.vert.index)
-
-            # Create UV edges
-            for i in range(len(face_uvs)):
-                j = (i + 1) % len(face_uvs)
-                uv_adjacency[face_uvs[i]].add(face_uvs[j])
-                uv_adjacency[face_uvs[j]].add(face_uvs[i])
-
-        # Find connected components
-        islands = []
-        for start_uv in uv_vert_map:
-            if any(start_uv in island['uvs'] for island in islands):
-                continue
-
-            island_uvs = MeshUtils.flood_fill([start_uv], lambda uv: uv_adjacency.get(uv, []))
-            island_vert_indices = set()
-            for uv in island_uvs:
-                island_vert_indices.update(uv_vert_map[uv])
-
-            islands.append({
-                'uvs': island_uvs,
-                'vert_indices': island_vert_indices,
-                'loops': []
-            })
-
-        return islands
-
     def execute(self, context):
         obj = context.active_object
         mesh = obj.data
 
+        # Get BMesh and ensure we have a UV layer
         bm = bmesh.from_edit_mesh(mesh)
+        bm.verts.ensure_lookup_table()
+        bm.faces.ensure_lookup_table()
+        
+        if not bm.loops.layers.uv:
+            self.report({'WARNING'}, "No UV layer found")
+            return {'CANCELLED'}
+            
         bm_uv_layer = bm.loops.layers.uv.active
 
         # Get UV islands
@@ -541,24 +789,34 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
             self.report({'WARNING'}, "No UV islands found")
             return {'CANCELLED'}
 
-        # Get submeshes and their Z values
-        bpy.ops.object.mode_set(mode='OBJECT')
-        submeshes = self.get_selected_submeshes(mesh)
-
+        # Get selected vertices and build submeshes
+        selected_indices = {v.index for v in bm.verts if v.select}
+        if not selected_indices:
+            self.report({'WARNING'}, "No vertices selected")
+            return {'CANCELLED'}
+            
+        # Build adjacency
+        adjacency = {idx: set() for idx in selected_indices}
+        for edge in bm.edges:
+            v0, v1 = edge.verts[0].index, edge.verts[1].index
+            if v0 in selected_indices and v1 in selected_indices:
+                adjacency[v0].add(v1)
+                adjacency[v1].add(v0)
+        
+        # Find submeshes
+        submesh_indices = MeshUtils.find_islands(selected_indices, adjacency)
+        
+        # Calculate average Z for each submesh
         submesh_z_values = []
-        for submesh in submeshes:
-            avg_z = sum(mesh.vertices[idx].co.z for idx in submesh) / len(submesh)
+        for submesh_idx_set in submesh_indices:
+            avg_z = sum(bm.verts[idx].co.z for idx in submesh_idx_set) / len(submesh_idx_set)
             submesh_z_values.append(avg_z)
 
-        # Build vertex to submesh mapping
+        # Map vertices to submeshes
         vertex_to_submesh = {}
-        for i, submesh in enumerate(submeshes):
-            for v in submesh:
-                vertex_to_submesh[v] = i
-
-        bpy.ops.object.mode_set(mode='EDIT')
-        bm = bmesh.from_edit_mesh(mesh)
-        bm_uv_layer = bm.loops.layers.uv.active
+        for i, submesh_idx_set in enumerate(submesh_indices):
+            for v_idx in submesh_idx_set:
+                vertex_to_submesh[v_idx] = i
 
         # Build UV to loops mapping
         uv_to_loops = defaultdict(list)
@@ -569,7 +827,7 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
                     uv_key = (round(uv.x, 6), round(uv.y, 6))
                     uv_to_loops[uv_key].append(loop)
 
-        # Assign loops and create island data
+        # Process islands
         island_data = []
         for island in uv_islands:
             island['loops'] = []
@@ -579,7 +837,7 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
             if not island['loops']:
                 continue
 
-            # Find submesh
+            # Find submesh for this island
             submesh_idx = None
             for v_idx in island['vert_indices']:
                 if v_idx in vertex_to_submesh:
@@ -587,7 +845,7 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
                     break
 
             if submesh_idx is not None:
-                # Get bounds
+                # Calculate bounds
                 min_u = min_v = float('inf')
                 max_u = max_v = float('-inf')
 
@@ -610,16 +868,15 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
                         'height': height
                     })
 
-        # Sort by submesh Z
+        # Sort by Z position
         island_data.sort(key=lambda x: x['submesh_z'], reverse=True)
 
-        # Calculate scale
+        # Pack islands
         total_area = sum((d['width'] + self.padding) * (d['height'] + self.padding) 
                         for d in island_data)
         target_size = min(0.95, math.sqrt(total_area) * 1.2)
         scale_factor = 0.95 / target_size if target_size > 1.0 else 1.0
 
-        # Pack islands
         current_v = 0.95
         current_row = []
 
@@ -627,7 +884,7 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
             width = data['width'] * scale_factor
             height = data['height'] * scale_factor
 
-            # Start new row if needed
+            # Check if we need to start a new row
             if current_row and (sum(d['width'] * scale_factor + self.padding for d in current_row) + width > target_size 
                                or len(current_row) >= self.max_islands_per_row):
                 # Place current row
@@ -664,8 +921,10 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator):
 
                 current_u += row_data['width'] * scale_factor + self.padding
 
+        # Update the mesh
         bmesh.update_edit_mesh(mesh)
-        self.report({'INFO'}, f"Packed {len(island_data)} UV islands from {len(submeshes)} submeshes")
+        
+        self.report({'INFO'}, f"Packed {len(island_data)} UV islands from {len(submesh_indices)} submeshes")
         return {'FINISHED'}
 
     def draw(self, context):
@@ -692,15 +951,14 @@ class MESH_OT_merge_by_distance_per_submesh(BaseSubmeshOperator):
     )
 
     def process_object(self, context, obj):
-        """Process a single object and return (success, stats)"""
         mesh = obj.data
         bm = bmesh.from_edit_mesh(mesh)
+        bm.verts.ensure_lookup_table()
 
         selected_verts = [v for v in bm.verts if v.select]
         if not selected_verts:
             return False, {}
 
-        # Build islands using BMesh
         selected_set = set(selected_verts)
         island_verts = []
         visited = set()
@@ -709,7 +967,6 @@ class MESH_OT_merge_by_distance_per_submesh(BaseSubmeshOperator):
             if start_v in visited:
                 continue
 
-            # Find island
             island = []
             stack = [start_v]
 
@@ -727,7 +984,6 @@ class MESH_OT_merge_by_distance_per_submesh(BaseSubmeshOperator):
 
             island_verts.append(island)
 
-        # Merge within each island
         merge_targets = {}
         merge_dist_sq = self.merge_distance ** 2
         merged_count = 0
@@ -751,7 +1007,6 @@ class MESH_OT_merge_by_distance_per_submesh(BaseSubmeshOperator):
                         processed.add(v2)
                         merged_count += 1
 
-        # Perform merges
         if merge_targets:
             targetmap = {v: merge_targets[v] for v in merge_targets if v.is_valid}
             if targetmap:
@@ -762,20 +1017,781 @@ class MESH_OT_merge_by_distance_per_submesh(BaseSubmeshOperator):
         return merged_count > 0, {'merged': merged_count}
 
     def format_report(self, stats):
-        """Format the aggregated statistics into a report message"""
         if stats.get('merged', 0) > 0:
             return f"Merged {stats['merged']} vertices across {stats['object_count']} object(s)"
         else:
             return "No vertices close enough to merge"
 
-    @MeshUtils.with_multi_object_support('process_object')
-    def execute(self, context):
-        # The decorator handles everything
-        pass
-
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "merge_distance")
+
+
+class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixin):
+    bl_idname = "mesh.smart_uv_project_normal_groups"
+    bl_label = "Smart UV Project (Normal Groups)"
+    bl_description = "Project UVs by grouping faces with similar normals across disconnected geometry"
+    
+    angle_threshold: FloatProperty(
+        name="Angle Threshold",
+        description="Maximum angle difference for faces to be grouped together",
+        default=0.087266,
+        min=0.0,
+        max=math.pi/2,
+        precision=3,
+        subtype='ANGLE'
+    )
+    
+    gap_distance: FloatProperty(
+        name="Gap Distance",
+        description="Maximum distance to bridge gaps between faces",
+        default=0.001,
+        min=0.0,
+        max=0.1,
+        precision=6,
+        subtype='DISTANCE'
+    )
+    
+    island_margin: FloatProperty(
+        name="Island Margin",
+        description="Margin between UV islands",
+        default=0.01,
+        min=0.0,
+        max=0.5,
+        precision=3
+    )
+    
+
+    
+    def build_face_spatial_cache(self, bm, selected_faces):
+        """Build spatial cache for fast proximity queries"""
+        face_centers = {}
+        face_bounds = {}
+        
+        for face_idx in selected_faces:
+            if face_idx >= len(bm.faces):
+                continue
+            face = bm.faces[face_idx]
+            if face.hide:
+                continue
+                
+            # Calculate center and bounds
+            min_co = mathutils.Vector((float('inf'), float('inf'), float('inf')))
+            max_co = mathutils.Vector((float('-inf'), float('-inf'), float('-inf')))
+            center = mathutils.Vector((0, 0, 0))
+            
+            for vert in face.verts:
+                co = vert.co
+                center += co
+                min_co.x = min(min_co.x, co.x)
+                min_co.y = min(min_co.y, co.y)
+                min_co.z = min(min_co.z, co.z)
+                max_co.x = max(max_co.x, co.x)
+                max_co.y = max(max_co.y, co.y)
+                max_co.z = max(max_co.z, co.z)
+            
+            center /= len(face.verts)
+            face_centers[face_idx] = center
+            face_bounds[face_idx] = (min_co, max_co)
+        
+        return face_centers, face_bounds
+    
+    def build_combined_adjacency(self, bm, selected_faces, face_centers, face_bounds):
+        """Build adjacency including both edge connections and spatial proximity"""
+        import time
+        angle_threshold_cos = math.cos(self.angle_threshold)
+        gap_dist_sq = self.gap_distance * self.gap_distance
+        
+        # Build edge-based adjacency
+        edge_start = time.time()
+        edge_adjacency = defaultdict(set)
+        selected_set = set(selected_faces)  # Convert to set for O(1) lookup
+        
+        for edge in bm.edges:
+            if len(edge.link_faces) == 2:
+                f1, f2 = edge.link_faces
+                if f1.index in selected_set and f2.index in selected_set:
+                    # For edge connections, always connect if they share an edge
+                    # The angle threshold will be applied during island grouping
+                    edge_adjacency[f1.index].add(f2.index)
+                    edge_adjacency[f2.index].add(f1.index)
+        
+        print(f"    Edge adjacency took {time.time() - edge_start:.3f}s")
+        
+        # Build spatial grid for efficient proximity queries
+        grid_start = time.time()
+        grid_size = max(self.gap_distance * 2, 0.01)
+        spatial_grid = defaultdict(list)
+        
+        for face_idx in face_centers:
+            center = face_centers[face_idx]
+            grid_key = (
+                int(center.x / grid_size),
+                int(center.y / grid_size),
+                int(center.z / grid_size)
+            )
+            
+            # Add to neighboring grid cells as well
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    for dz in [-1, 0, 1]:
+                        neighbor_key = (
+                            grid_key[0] + dx,
+                            grid_key[1] + dy,
+                            grid_key[2] + dz
+                        )
+                        spatial_grid[neighbor_key].append(face_idx)
+        
+        print(f"    Spatial grid took {time.time() - grid_start:.3f}s")
+        
+        # Only build proximity adjacency if gap distance is significant
+        proximity_adjacency = defaultdict(set)
+        proximity_start = time.time()
+        
+        if self.gap_distance > 0.0001:
+            # Build face-to-vertex mapping with spatial hashing
+            face_vertex_grid = defaultdict(set)
+            
+            for face_idx in selected_faces:
+                face = bm.faces[face_idx]
+                # Add face to grid cells of all its vertices
+                for vert in face.verts:
+                    v_key = (
+                        int(vert.co.x / grid_size),
+                        int(vert.co.y / grid_size),
+                        int(vert.co.z / grid_size)
+                    )
+                    face_vertex_grid[v_key].add(face_idx)
+            
+            # Find proximity connections
+            processed_pairs = set()
+            
+            for face_idx in selected_faces:
+                if face_idx not in face_centers:
+                    continue
+                    
+                face = bm.faces[face_idx]
+                face_normal = face.normal.normalized()
+                
+                # Find candidate faces through vertex proximity
+                candidates = set()
+                
+                for vert in face.verts:
+                    v_key = (
+                        int(vert.co.x / grid_size),
+                        int(vert.co.y / grid_size),
+                        int(vert.co.z / grid_size)
+                    )
+                    
+                    # Check neighboring grid cells
+                    for dx in [-1, 0, 1]:
+                        for dy in [-1, 0, 1]:
+                            for dz in [-1, 0, 1]:
+                                neighbor_key = (v_key[0] + dx, v_key[1] + dy, v_key[2] + dz)
+                                candidates.update(face_vertex_grid.get(neighbor_key, set()))
+                
+                # Remove self
+                candidates.discard(face_idx)
+                
+                # Check each candidate
+                for other_idx in candidates:
+                    pair = (min(face_idx, other_idx), max(face_idx, other_idx))
+                    if pair in processed_pairs:
+                        continue
+                    processed_pairs.add(pair)
+                    
+                    other_face = bm.faces[other_idx]
+                    
+                    # Check normal similarity first
+                    if face_normal.dot(other_face.normal.normalized()) < angle_threshold_cos:
+                        continue
+                    
+                    # Quick bounds check
+                    bounds1 = face_bounds[face_idx]
+                    bounds2 = face_bounds[other_idx]
+                    
+                    min_dist_sq = 0.0
+                    for i in range(3):
+                        if bounds1[1][i] < bounds2[0][i]:
+                            d = bounds2[0][i] - bounds1[1][i]
+                            min_dist_sq += d * d
+                        elif bounds2[1][i] < bounds1[0][i]:
+                            d = bounds1[0][i] - bounds2[1][i]
+                            min_dist_sq += d * d
+                    
+                    if min_dist_sq > gap_dist_sq:
+                        continue
+                    
+                    # Check if any vertices are close
+                    found_close = False
+                    for v1 in face.verts:
+                        for v2 in other_face.verts:
+                            if (v1.co - v2.co).length_squared <= gap_dist_sq:
+                                found_close = True
+                                break
+                        if found_close:
+                            break
+                    
+                    if found_close:
+                        proximity_adjacency[face_idx].add(other_idx)
+                        proximity_adjacency[other_idx].add(face_idx)
+        
+        print(f"    Proximity adjacency took {time.time() - proximity_start:.3f}s")
+        
+        # Combine adjacencies - ensure ALL selected faces are in the result
+        combined = defaultdict(set)
+        
+        # First, add all selected faces (even isolated ones)
+        for face_idx in selected_faces:
+            combined[face_idx] = set()
+        
+        # Then add adjacency information
+        for face_idx in edge_adjacency:
+            combined[face_idx].update(edge_adjacency[face_idx])
+        
+        for face_idx in proximity_adjacency:
+            combined[face_idx].update(proximity_adjacency[face_idx])
+        
+        return combined
+    
+    def find_face_groups_flood_fill(self, selected_faces, adjacency, bm):
+        """Efficient flood fill to find connected face groups respecting angle threshold"""
+        visited = set()
+        groups = []
+        angle_threshold_cos = math.cos(self.angle_threshold)
+        
+        for start_face in selected_faces:
+            if start_face in visited:
+                continue
+            
+            # Flood fill from this face
+            group = []
+            queue = deque([start_face])
+            
+            while queue:
+                face_idx = queue.popleft()
+                if face_idx in visited:
+                    continue
+                
+                visited.add(face_idx)
+                group.append(face_idx)
+                
+                # Get current face normal
+                current_face = bm.faces[face_idx]
+                current_normal = current_face.normal.normalized()
+                
+                # Add unvisited neighbors if their normals are similar enough
+                for neighbor in adjacency.get(face_idx, []):
+                    if neighbor not in visited:
+                        neighbor_face = bm.faces[neighbor]
+                        neighbor_normal = neighbor_face.normal.normalized()
+                        
+                        # Check angle threshold
+                        if current_normal.dot(neighbor_normal) >= angle_threshold_cos:
+                            queue.append(neighbor)
+            
+            if group:
+                groups.append(group)
+        
+        return groups
+    
+    def calculate_projection_matrix(self, face_group, bm):
+        """Calculate optimal projection matrix for a group of faces"""
+        if not face_group:
+            return None, None
+        
+        # Calculate weighted average normal and center
+        avg_normal = mathutils.Vector((0, 0, 0))
+        total_area = 0.0
+        center = mathutils.Vector((0, 0, 0))
+        
+        for face_idx in face_group:
+            if face_idx < len(bm.faces):
+                face = bm.faces[face_idx]
+                area = face.calc_area()
+                if area > 0:
+                    avg_normal += face.normal * area
+                    total_area += area
+                    center += face.calc_center_median() * area
+        
+        if total_area <= 0:
+            return None, None
+        
+        avg_normal /= total_area
+        center /= total_area
+        avg_normal.normalize()
+        
+        # Create orthonormal basis
+        if abs(avg_normal.z) < 0.9:
+            u_axis = mathutils.Vector((0, 0, 1)).cross(avg_normal)
+        else:
+            u_axis = mathutils.Vector((1, 0, 0)).cross(avg_normal)
+        u_axis.normalize()
+        
+        v_axis = avg_normal.cross(u_axis)
+        v_axis.normalize()
+        
+        # Create projection matrix
+        projection_matrix = mathutils.Matrix((
+            (u_axis.x, u_axis.y, u_axis.z),
+            (v_axis.x, v_axis.y, v_axis.z)
+        ))
+        
+        return projection_matrix, center
+    
+    def project_faces_to_uv(self, face_group, projection_matrix, center, bm, uv_layer):
+        """Project faces in a group to UV coordinates"""
+        if not face_group or projection_matrix is None:
+            return None
+        
+        # Project all vertices
+        projected_uvs = {}
+        min_uv = mathutils.Vector((float('inf'), float('inf')))
+        max_uv = mathutils.Vector((float('-inf'), float('-inf')))
+        loop_count = 0
+        
+        for face_idx in face_group:
+            if face_idx >= len(bm.faces):
+                print(f"    Warning: Invalid face index {face_idx}")
+                continue
+                
+            face = bm.faces[face_idx]
+            for loop in face.loops:
+                relative_pos = loop.vert.co - center
+                uv_2d = projection_matrix @ relative_pos
+                uv = mathutils.Vector((uv_2d.x, uv_2d.y))
+                
+                projected_uvs[loop] = uv
+                min_uv.x = min(min_uv.x, uv.x)
+                min_uv.y = min(min_uv.y, uv.y)
+                max_uv.x = max(max_uv.x, uv.x)
+                max_uv.y = max(max_uv.y, uv.y)
+                loop_count += 1
+        
+        if not projected_uvs:
+            print(f"    Warning: No UVs projected for group with {len(face_group)} faces")
+            return None
+        
+        size = max_uv - min_uv
+        if size.x <= 0 or size.y <= 0:
+            print(f"    Warning: Invalid UV size: {size} for group with {len(face_group)} faces")
+            return None
+        
+        # Add some validation
+        if size.x > 1000 or size.y > 1000:
+            print(f"    Warning: Extremely large UV size: {size} - this might indicate a projection issue")
+        
+        return {
+            'min_uv': min_uv,
+            'max_uv': max_uv,
+            'size': size,
+            'projected_uvs': projected_uvs,
+            'face_count': len(face_group),
+            'loop_count': loop_count,
+            'face_indices': face_group  # Store face indices for 3D area calculation
+        }
+    
+    def pack_uv_islands_growing(self, islands, bm, uv_layer):
+        """Pack UV islands using an improved bin packing algorithm with uniform texel density"""
+        import math
+        
+        if not islands:
+            print("UV Packing: No islands to pack")
+            return
+        
+        # Filter valid islands and calculate areas
+        valid_islands = []
+        island_areas = []
+        total_3d_area = 0.0
+        total_uv_area = 0.0
+        
+        for i, island in enumerate(islands):
+            if island is not None:
+                uv_area = island['size'].x * island['size'].y
+                if uv_area > 0:
+                    # Calculate 3D surface area for this island
+                    surface_area_3d = 0.0
+                    for face_idx in island.get('face_indices', []):
+                        if face_idx < len(bm.faces):
+                            surface_area_3d += bm.faces[face_idx].calc_area()
+                    
+                    # Store both UV and 3D areas
+                    island['uv_area'] = uv_area
+                    island['surface_area_3d'] = surface_area_3d
+                    total_3d_area += surface_area_3d
+                    total_uv_area += uv_area
+                    
+                    valid_islands.append(island)
+                    island_areas.append(uv_area)
+        
+        if not valid_islands:
+            print("UV Packing: No valid islands after filtering")
+            return
+        
+        # Calculate uniform texel density scale
+        # The goal is to make UV area proportional to 3D surface area
+        target_total_uv_area = 0.8  # Use 80% of UV space to leave room for margins
+        
+        # Calculate the scale needed to achieve uniform texel density
+        uniform_scale = 1.0
+        if total_3d_area > 0:
+            # Direct calculation: total UV area should equal target area
+            # Each island's UV size should be proportional to sqrt(3D area)
+            uniform_scale = math.sqrt(target_total_uv_area / total_3d_area)
+        
+        print(f"\nUV Packing Statistics:")
+        print(f"  Total islands: {len(valid_islands)}")
+        print(f"  Total 3D surface area: {total_3d_area:.6f}")
+        print(f"  Uniform texel density scale: {uniform_scale:.3f}")
+        
+        # Create histogram of island sizes (logarithmic bins)
+        if island_areas:
+            min_area = min(island_areas)
+            max_area = max(island_areas)
+            print(f"  UV area range: {min_area:.6f} to {max_area:.6f}")
+            
+            if min_area > 0 and max_area > min_area:
+                log_min = math.log10(min_area)
+                log_max = math.log10(max_area)
+                num_bins = min(10, len(valid_islands))
+                
+                if log_max - log_min > 0.01:
+                    bins = [0] * num_bins
+                    bin_edges = []
+                    
+                    for i in range(num_bins + 1):
+                        edge = log_min + (log_max - log_min) * i / num_bins
+                        bin_edges.append(10 ** edge)
+                    
+                    for area in island_areas:
+                        for i in range(num_bins):
+                            if bin_edges[i] <= area < bin_edges[i + 1]:
+                                bins[i] += 1
+                                break
+                        else:
+                            bins[-1] += 1
+                    
+                    print("\n  Island size histogram (logarithmic):")
+                    for i in range(num_bins):
+                        print(f"    [{bin_edges[i]:.6f} - {bin_edges[i+1]:.6f}): {bins[i]} islands")
+        
+        # Apply uniform scale to all islands
+        for island in valid_islands:
+            island['uniform_scale'] = uniform_scale
+            island['scaled_size'] = mathutils.Vector((
+                island['size'].x * uniform_scale,
+                island['size'].y * uniform_scale
+            ))
+        
+        # Sort by height (tallest first) for better shelf packing
+        indexed_islands = [(i, island, island['scaled_size'].y) 
+        
+                          for i, island in enumerate(valid_islands)]
+        indexed_islands.sort(key=lambda x: x[2], reverse=True)
+        
+        # Debug: track pack order
+        pack_order = []
+        
+        # Use simple shelf packing with better space utilization
+        shelves = []
+        packed_count = 0
+        
+        # Calculate total area to determine target width for square packing
+        total_area = 0.0
+        for island in valid_islands:
+            width = island['scaled_size'].x + self.island_margin
+            height = island['scaled_size'].y + self.island_margin
+            total_area += width * height
+        
+        # Target width for approximately square result
+        target_width = math.sqrt(total_area) * 1.1  # Add 10% for inefficiency
+        
+        # Width-constrained shelf packing
+        shelves = []
+        packed_count = 0
+        current_y = self.island_margin
+        
+        # Pack islands
+        for idx, (original_idx, island, sort_height) in enumerate(indexed_islands):
+            width = island['scaled_size'].x + self.island_margin
+            height = island['scaled_size'].y + self.island_margin
+            
+            # Skip if island is wider than target
+            if width > target_width:
+                print(f"  Warning: Island {original_idx} width {width:.3f} exceeds target {target_width:.3f}")
+                target_width = width + self.island_margin
+            
+            # Find shelf with space
+            placed = False
+            for shelf_idx, shelf in enumerate(shelves):
+                if shelf['remaining_width'] >= width:
+                    # Height compatibility check
+                    height_ratio = height / shelf['height'] if shelf['height'] > 0 else float('inf')
+                    if 0.7 <= height_ratio <= 1.3:  # Allow 30% height variation
+                        # Place on this shelf
+                        island['pack_position'] = mathutils.Vector((shelf['current_x'], shelf['y_position']))
+                        
+                        if idx < 5:  # Debug first few
+                            print(f"  Island {idx} placed on shelf {shelf_idx} at ({shelf['current_x']:.3f}, {shelf['y_position']:.3f})")
+                        
+                        shelf['current_x'] += width
+                        shelf['remaining_width'] -= width
+                        packed_count += 1
+                        placed = True
+                        pack_order.append((original_idx, island['pack_position'].copy()))
+                        break
+            
+            if not placed:
+                # Create new shelf
+                new_shelf = {
+                    'y_position': current_y,
+                    'height': height,
+                    'current_x': width,  # Start after this island
+                    'remaining_width': target_width - width,
+                }
+                shelves.append(new_shelf)
+                
+                island['pack_position'] = mathutils.Vector((0, current_y))
+                
+                if idx < 5:  # Debug first few
+                    print(f"  Island {idx} created new shelf at y={current_y:.3f}")
+                
+                current_y += height
+                packed_count += 1
+                pack_order.append((original_idx, island['pack_position'].copy()))
+        
+        # Calculate final dimensions
+        max_x = target_width
+        max_y = current_y
+        
+        print(f"\n  Packed {packed_count} islands with uniform texel density")
+        print(f"  Created {len(shelves)} shelves with target width {target_width:.3f}")
+        
+        # Calculate packing results
+        if packed_count > 0:
+            # Calculate efficiency
+            total_island_area = sum(island['scaled_size'].x * island['scaled_size'].y 
+                                  for island in valid_islands)
+            total_used_area = max_x * max_y
+            efficiency = total_island_area / total_used_area if total_used_area > 0 else 0
+            
+            aspect_ratio = max_x / max_y if max_y > 0 else 1.0
+            
+            print(f"  Pack dimensions: {max_x:.3f} x {max_y:.3f}")
+            print(f"  Aspect ratio: {aspect_ratio:.2f} (1.0 = perfect square)")
+            print(f"  Packing efficiency: {efficiency:.1%}")
+            
+            # Scale to fit in UV space
+            scale_factor = min(0.95 / max_x, 0.95 / max_y) if max(max_x, max_y) > 0 else 1.0
+            
+            # Apply scale to all positions
+            for island in valid_islands:
+                if 'pack_position' in island:
+                    island['pack_position'] *= scale_factor
+            
+            total_height = max_y * scale_factor
+            final_scale = scale_factor
+        else:
+            total_height = 0
+            final_scale = 1.0
+        
+        if total_height > 0.95:
+            print(f"  Warning: Not enough UV space for desired texel density. Consider increasing angle threshold.")
+        
+        # Apply UV coordinates with uniform texel density
+        applied_count = 0
+        debug_islands = 0
+        for island in valid_islands:
+            if 'pack_position' not in island:
+                print(f"  Warning: Island without pack position!")
+                continue
+            
+            # Get the scale needed to match packed size
+            position = island['pack_position'] * final_scale
+            # Scale to match the packed size (which includes uniform scale)
+            size_scale = island['uniform_scale'] * final_scale
+            min_uv = island['min_uv']
+            
+            # Debug first few islands
+            if debug_islands < 3:
+                expected_size = island['size'] * size_scale
+                print(f"\n  Debug island {debug_islands}:")
+                print(f"    Original size: {island['size']}")
+                print(f"    Scaled size: {island['scaled_size']}")
+                print(f"    Pack position: {island['pack_position']}")
+                print(f"    Final position: {position}")
+                print(f"    Size scale: {size_scale:.4f}")
+                print(f"    Expected final size: {expected_size}")
+                debug_islands += 1
+            
+            # Apply to all loops
+            for loop, original_uv in island['projected_uvs'].items():
+                # Scale and translate the UV
+                new_uv = (original_uv - min_uv) * size_scale + position
+                loop[uv_layer].uv = new_uv
+                applied_count += 1
+        
+        print(f"  Applied UVs to {applied_count} loops")
+        print(f"  Final UV space usage: {min(max_y * final_scale, 1.0):.1%}")
+        print(f"  Final texel density scale: {uniform_scale * final_scale:.4f}")
+        
+        # Debug: print first few islands in pack order
+        if pack_order:
+            print("\n  First 5 islands in pack order:")
+            for i in range(min(5, len(pack_order))):
+                original_idx, position = pack_order[i]
+                island = indexed_islands[i][1]  # Get the island from sorted list
+                print(f"    Pack order {i}: orig_idx={original_idx}, size={island['scaled_size']}, pos={position}")
+        
+        print("")  # Empty line for readability
+    
+    def process_object(self, context, obj):
+        import time
+        
+        print(f"\nProcessing object: {obj.name}")
+        start_time = time.time()
+        
+        bm = bmesh.from_edit_mesh(obj.data)
+        bm.faces.ensure_lookup_table()
+        
+        # Get or create UV layer
+        if not bm.loops.layers.uv:
+            bm.loops.layers.uv.new("UVMap")
+            print("  Created new UV layer")
+        uv_layer = bm.loops.layers.uv.active
+        
+        if not uv_layer:
+            print("  ERROR: No UV layer available")
+            return False, {}
+        
+        # Get selected faces
+        t1 = time.time()
+        selected_faces = []
+        for face in bm.faces:
+            if face.select and not face.hide:
+                selected_faces.append(face.index)
+        
+        print(f"  Selected faces: {len(selected_faces)} (took {time.time()-t1:.3f}s)")
+        
+        if not selected_faces:
+            return False, {}
+        
+        # Build spatial cache
+        t2 = time.time()
+        face_centers, face_bounds = self.build_face_spatial_cache(bm, selected_faces)
+        print(f"  Built spatial cache for {len(face_centers)} faces (took {time.time()-t2:.3f}s)")
+        
+        # Build combined adjacency
+        t3 = time.time()
+        adjacency = self.build_combined_adjacency(bm, selected_faces, face_centers, face_bounds)
+        print(f"  Built adjacency (took {time.time()-t3:.3f}s)")
+        
+        # Count adjacency connections
+        t4 = time.time()
+        edge_connections = 0
+        proximity_connections = 0
+        isolated_faces = 0
+        
+        for face_idx in selected_faces:
+            neighbors = adjacency.get(face_idx, set())
+            if not neighbors:
+                isolated_faces += 1
+            
+            for neighbor in neighbors:
+                # Check if they share an edge
+                face = bm.faces[face_idx]
+                neighbor_face = bm.faces[neighbor]
+                shares_edge = False
+                for edge in face.edges:
+                    if edge in neighbor_face.edges:
+                        shares_edge = True
+                        break
+                if shares_edge:
+                    edge_connections += 1
+                else:
+                    proximity_connections += 1
+        
+        print(f"  Adjacency stats: {edge_connections//2} edge connections, {proximity_connections//2} proximity connections, {isolated_faces} isolated faces")
+        print(f"  (adjacency analysis took {time.time()-t4:.3f}s)")
+        
+        # Debug: print some adjacency info
+        if len(selected_faces) > 0:
+            sample_face = selected_faces[0]
+            print(f"  Debug - Face {sample_face} has {len(adjacency.get(sample_face, set()))} neighbors")
+        
+        # Find face groups using flood fill
+        t5 = time.time()
+        face_groups = self.find_face_groups_flood_fill(selected_faces, adjacency, bm)
+        print(f"  Found {len(face_groups)} face groups (took {time.time()-t5:.3f}s)")
+        
+        if face_groups:
+            group_sizes = [len(g) for g in face_groups]
+            print(f"  Group sizes: min={min(group_sizes)}, max={max(group_sizes)}, avg={sum(group_sizes)/len(group_sizes):.1f}")
+        
+        if not face_groups:
+            return False, {}
+        
+        # Process each group
+        t6 = time.time()
+        islands = []
+        processed_faces = 0
+        failed_projections = 0
+        
+        # Only show warnings for first few failures
+        max_warnings = 5
+        warning_count = 0
+        
+        for i, group in enumerate(face_groups):
+            projection_matrix, center = self.calculate_projection_matrix(group, bm)
+            if projection_matrix is not None:
+                island_data = self.project_faces_to_uv(group, projection_matrix, center, bm, uv_layer)
+                if island_data:
+                    islands.append(island_data)
+                    processed_faces += island_data['face_count']
+                else:
+                    failed_projections += 1
+                    if warning_count < max_warnings:
+                        print(f"  Warning: Failed to project group {i} with {len(group)} faces")
+                        warning_count += 1
+            else:
+                failed_projections += 1
+                if warning_count < max_warnings:
+                    print(f"  Warning: Failed to calculate projection for group {i} with {len(group)} faces")
+                    warning_count += 1
+        
+        print(f"  Created {len(islands)} UV islands from {len(face_groups)} groups (took {time.time()-t6:.3f}s)")
+        if failed_projections > 0:
+            print(f"  Failed projections: {failed_projections}")
+        
+        # Pack islands
+        t7 = time.time()
+        if islands:
+            self.pack_uv_islands_growing(islands, bm, uv_layer)
+            print(f"  Packing completed (took {time.time()-t7:.3f}s)")
+        else:
+            print("  ERROR: No islands to pack!")
+        
+        bmesh.update_edit_mesh(obj.data)
+        
+        print(f"  Total processing time: {time.time()-start_time:.3f}s")
+        
+        return True, {
+            'groups': len(face_groups),
+            'islands': len(islands),
+            'faces': processed_faces
+        }
+    
+    def format_report(self, stats):
+        if stats['object_count'] == 0:
+            return "No objects processed"
+        
+        return f"Created {stats['islands']} UV islands from {stats['groups']} face groups ({stats['faces']} faces) across {stats['object_count']} object(s)"
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "angle_threshold")
+        layout.prop(self, "gap_distance")
+        layout.prop(self, "island_margin")
 
 
 class MESH_OT_bake_origin_and_orientation_combined(BaseSubmeshOperator):
@@ -804,50 +1820,47 @@ class MESH_OT_bake_origin_and_orientation_combined(BaseSubmeshOperator):
         default=True
     )
 
-    def calculate_island_center(self, mesh, island_indices):
+    def calculate_island_center(self, vertices):
         """Calculate center for an island"""
-        if not island_indices:
+        if not vertices:
             return None
 
         center = mathutils.Vector((0.0, 0.0, 0.0))
-        for idx in island_indices:
-            center += mesh.vertices[idx].co
-        center /= len(island_indices)
+        for v in vertices:
+            center += v.co
+        center /= len(vertices)
 
         return center
     
-    def calculate_island_scale(self, mesh, island_indices, center, basis_inv):
+    def calculate_island_scale(self, vertices, center, basis_inv):
         """Calculate scale using L-infinity norm in rotated basis"""
-        if not island_indices:
+        if not vertices:
             return 1.0
         
         max_coord = 0.0
-        for idx in island_indices:
-            # Transform to local rotated basis
-            offset = mesh.vertices[idx].co - center
+        for v in vertices:
+            offset = v.co - center
             local_pos = basis_inv @ offset
             
-            # L-infinity norm: max of absolute values
             max_coord = max(max_coord, abs(local_pos.x), abs(local_pos.y), abs(local_pos.z))
         
         scale = 1.0 / max_coord if max_coord > 0 else 1.0
         return scale
 
-    def build_basis_from_faces(self, mesh, face_indices, epsilon):
+    def build_basis_from_faces(self, faces, epsilon):
         """Build orthonormal basis from face normals"""
-        if not face_indices:
+        if not faces:
             return mathutils.Matrix.Identity(3)
 
-        # Get largest face normal
-        faces = sorted(face_indices, key=lambda i: mesh.polygons[i].area, reverse=True)
-        x_axis = mesh.polygons[faces[0]].normal.normalized()
+        # Sort faces by area
+        sorted_faces = sorted(faces, key=lambda f: f.calc_area(), reverse=True)
+        x_axis = sorted_faces[0].normal.normalized()
 
-        # Find second normal
         epsilon_cos = math.cos(epsilon)
         y_axis = None
 
-        for face_idx in faces[1:]:
-            normal = mesh.polygons[face_idx].normal.normalized()
+        for face in sorted_faces[1:]:
+            normal = face.normal.normalized()
             if abs(normal.dot(x_axis)) < epsilon_cos:
                 y_axis = normal - normal.dot(x_axis) * x_axis
                 y_axis.normalize()
@@ -868,112 +1881,135 @@ class MESH_OT_bake_origin_and_orientation_combined(BaseSubmeshOperator):
 
         return matrix
 
-    def create_submesh_signature(self, mesh, island_indices, center):
+    def create_submesh_signature(self, vertices, center):
         """Create signature for caching - based on relative positions only"""
         tolerance = 0.0001
         relative_positions = []
 
-        for idx in island_indices:
-            relative_pos = mesh.vertices[idx].co - center
-            # Round to tolerance to handle floating point precision
+        for v in vertices:
+            relative_pos = v.co - center
             rounded = tuple(round(relative_pos[i] / tolerance) * tolerance for i in range(3))
             relative_positions.append(rounded)
 
         relative_positions.sort()
-        return (len(island_indices), tuple(relative_positions))
+        return (len(vertices), tuple(relative_positions))
 
     def process_object(self, context, obj):
-        """Process a single object and return (success, stats)"""
         mesh = obj.data
-        selected = MeshUtils.get_selected_vertices(mesh)
-
-        if not selected:
-            return False, {}
-
-        # Create/get data layers
+        
+        # Switch to object mode temporarily to ensure vertex colors exist
+        bpy.ops.object.mode_set(mode='OBJECT')
+        
         if not mesh.vertex_colors:
             mesh.vertex_colors.new(name="BakedVectors")
         color_layer = mesh.vertex_colors.active
 
-        uv_layer0 = mesh.uv_layers.get("BakedOriginAngle0") or mesh.uv_layers.new(name="BakedOriginAngle0")
-        uv_layer1 = mesh.uv_layers.get("BakedOriginAngle1") or mesh.uv_layers.new(name="BakedOriginAngle1")
+        uv_layer0 = MeshUtils.get_or_create_uv_layer(mesh, "BakedOriginAngle0")
+        uv_layer1 = MeshUtils.get_or_create_uv_layer(mesh, "BakedOriginAngle1")
+        
+        # Switch back to edit mode
+        bpy.ops.object.mode_set(mode='EDIT')
+        
+        # Get BMesh for edit mode operations
+        bm = bmesh.from_edit_mesh(mesh)
+        bm.verts.ensure_lookup_table()
+        bm.faces.ensure_lookup_table()
+        
+        # Get vertex color and UV layers in BMesh
+        if not bm.loops.layers.color:
+            bm.loops.layers.color.new("BakedVectors")
+        bm_color_layer = bm.loops.layers.color.active
+        
+        uv_layers = bm.loops.layers.uv
+        bm_uv_layer0 = uv_layers.get("BakedOriginAngle0")
+        bm_uv_layer1 = uv_layers.get("BakedOriginAngle1")
+        
+        if not bm_uv_layer0:
+            bm_uv_layer0 = uv_layers.new("BakedOriginAngle0")
+        if not bm_uv_layer1:
+            bm_uv_layer1 = uv_layers.new("BakedOriginAngle1")
+        
+        selected_verts = [v for v in bm.verts if v.select]
+        if not selected_verts:
+            return False, {}
 
-        # Get correction quaternion
         settings = context.scene.bake_vertex_settings
         correction = mathutils.Euler(
             (settings.correction_angle_x, settings.correction_angle_y, settings.correction_angle_z), 'XYZ'
         ).to_quaternion()
 
-        # Build vertex to loops mapping
-        vertex_loops = defaultdict(list)
+        # Get selected faces
         selected_faces = []
+        for face in bm.faces:
+            if all(v.select for v in face.verts):
+                selected_faces.append(face)
 
-        for poly in mesh.polygons:
-            face_verts = set(poly.vertices)
-            if face_verts & selected:
-                if face_verts <= selected:
-                    selected_faces.append(poly.index)
+        # Build islands using BMesh vertices
+        if self.contiguous_mode:
+            selected_indices = {v.index for v in selected_verts}
+            adjacency = {v.index: set() for v in selected_verts}
+            
+            for edge in bm.edges:
+                v0, v1 = edge.verts[0].index, edge.verts[1].index
+                if v0 in selected_indices and v1 in selected_indices:
+                    adjacency[v0].add(v1)
+                    adjacency[v1].add(v0)
+            
+            island_indices = MeshUtils.find_islands(selected_indices, adjacency)
+            islands = []
+            for island_idx_set in island_indices:
+                island_verts = [bm.verts[idx] for idx in island_idx_set]
+                islands.append(island_verts)
+        else:
+            islands = [selected_verts]
 
-                for loop_idx in poly.loop_indices:
-                    vert_idx = mesh.loops[loop_idx].vertex_index
-                    if vert_idx in selected:
-                        vertex_loops[vert_idx].append(loop_idx)
-
-        # Get islands
-        islands = self.get_selected_submeshes(mesh) if self.contiguous_mode else [selected]
-
-        # Process each island
         world_matrix = obj.matrix_world
         world_inv = world_matrix.inverted()
         
-        # Cache for storing computed basis, scale, and quaternion for identical submeshes
-        # Key: geometry signature, Value: (scale, basis, quaternion, basis_inverse)
         submesh_cache = {} if self.use_cache else None
 
-        for island in islands:
-            center = self.calculate_island_center(mesh, island)
+        for island_verts in islands:
+            center = self.calculate_island_center(island_verts)
             if center is None:
                 continue
 
-            # Check cache first (if enabled)
             cache_hit = False
             if self.use_cache:
-                signature = self.create_submesh_signature(mesh, island, center)
+                signature = self.create_submesh_signature(island_verts, center)
                 if signature in submesh_cache:
                     scale, basis, quat, basis_inv = submesh_cache[signature]
                     cache_hit = True
 
-            # Only calculate if not in cache
             if not cache_hit:
-                # Calculate basis (compute-intensive)
-                island_faces = [f for f in selected_faces 
-                              if all(v in island for v in mesh.polygons[f].vertices)]
-                basis = self.build_basis_from_faces(mesh, island_faces, self.normal_epsilon)
+                # Get faces for this island
+                island_faces = []
+                island_vert_set = set(island_verts)
+                for face in selected_faces:
+                    if all(v in island_vert_set for v in face.verts):
+                        island_faces.append(face)
+                
+                basis = self.build_basis_from_faces(island_faces, self.normal_epsilon)
                 basis_inv = basis.inverted()
                 
-                # Calculate scale using L-infinity norm in rotated basis (compute-intensive)
-                scale = self.calculate_island_scale(mesh, island, center, basis_inv)
+                scale = self.calculate_island_scale(island_verts, center, basis_inv)
                 
-                # Calculate quaternion
                 quat = basis.to_quaternion()
                 quat.normalize()
                 if quat.w < 0:
                     quat.negate()
                 quat = correction @ quat
                 
-                # Store in cache if enabled
                 if self.use_cache:
                     submesh_cache[signature] = (scale, basis, quat, basis_inv)
 
-            # Transform vertices
             center_world = world_matrix @ center
 
-            for vert_idx in island:
-                vert_world = world_matrix @ mesh.vertices[vert_idx].co
+            # Apply to each vertex in the island
+            for vert in island_verts:
+                vert_world = world_matrix @ vert.co
                 offset = world_inv.to_3x3() @ (vert_world - center_world)
                 local_pos = basis_inv @ offset
 
-                # Scale and convert to color
                 color = mathutils.Vector((
                     (local_pos.x * scale + 1.0) * 0.5,
                     (local_pos.y * scale + 1.0) * 0.5,
@@ -981,30 +2017,28 @@ class MESH_OT_bake_origin_and_orientation_combined(BaseSubmeshOperator):
                     scale
                 ))
 
-                # Apply to loops
-                for loop_idx in vertex_loops.get(vert_idx, []):
-                    color_layer.data[loop_idx].color = color
-                    uv_layer0.data[loop_idx].uv = (quat.x, quat.y)
-                    uv_layer1.data[loop_idx].uv = (quat.z, quat.w)
+                # Apply to all loops of this vertex
+                for face in vert.link_faces:
+                    if face.select:
+                        for loop in face.loops:
+                            if loop.vert == vert:
+                                loop[bm_color_layer] = color
+                                loop[bm_uv_layer0].uv = (quat.x, quat.y)
+                                loop[bm_uv_layer1].uv = (quat.z, quat.w)
 
-        mesh.update()
+        # Update the mesh
+        bmesh.update_edit_mesh(mesh)
 
         return True, {
             'islands': len(islands),
-            'vertices': len(selected)
+            'vertices': len(selected_verts)
         }
 
     def format_report(self, stats):
-        """Format the aggregated statistics into a report message"""
         if stats['object_count'] == 0:
-            return "No objects with selected vertices found"
+            return "No objects processed"
+        
         return f"Baked {stats['islands']} island(s) with {stats['vertices']} vertices across {stats['object_count']} object(s)"
-
-    @MeshUtils.with_mode('OBJECT')
-    @MeshUtils.with_multi_object_support('process_object')
-    def execute(self, context):
-        # The decorator handles everything
-        pass
 
     def draw(self, context):
         layout = self.layout
@@ -1037,9 +2071,11 @@ class MESH_PT_bake_vertex_panel(Panel):
             col.operator("mesh.bake_submesh_origin_and_orientation", icon='EXPORT')
             col.operator("mesh.select_all_linked", icon='SELECT_EXTEND')
             col.operator("mesh.select_linked_across_boundaries", icon='LINKED')
+            col.operator("mesh.select_hidden_faces", icon='GHOST_ENABLED')
             col.operator("mesh.deduplicate_submeshes", icon='DUPLICATE')
             col.operator("mesh.merge_by_distance_per_submesh", icon='AUTOMERGE_ON')
             col.operator("mesh.pack_uv_islands_by_submesh_z", icon='UV')
+            col.operator("mesh.smart_uv_project_normal_groups", icon='UV_DATA')
         else:
             layout.label(text="Enter Edit Mode to use tools", icon='INFO')
 
@@ -1049,8 +2085,10 @@ classes = [
     MESH_OT_select_all_linked,
     MESH_OT_select_linked_across_boundaries,
     MESH_OT_deduplicate_submeshes,
+    MESH_OT_select_hidden_faces,
     MESH_OT_pack_uv_islands_by_submesh_z,
     MESH_OT_merge_by_distance_per_submesh,
+    MESH_OT_smart_uv_project_normal_groups,
     MESH_OT_bake_origin_and_orientation_combined,
     MESH_PT_bake_vertex_panel
 ]
@@ -1060,9 +2098,11 @@ def menu_func(self, context):
     self.layout.separator()
     self.layout.operator("mesh.select_all_linked", icon='SELECT_EXTEND')
     self.layout.operator("mesh.select_linked_across_boundaries", icon='LINKED')
+    self.layout.operator("mesh.select_hidden_faces", icon='GHOST_ENABLED')
     self.layout.operator("mesh.deduplicate_submeshes", icon='DUPLICATE')
     self.layout.operator("mesh.merge_by_distance_per_submesh", icon='AUTOMERGE_ON')
     self.layout.operator("mesh.pack_uv_islands_by_submesh_z", icon='UV')
+    self.layout.operator("mesh.smart_uv_project_normal_groups", icon='UV_DATA')
     self.layout.operator("mesh.bake_submesh_origin_and_orientation", icon='EXPORT')
 
 
