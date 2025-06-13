@@ -1373,7 +1373,8 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
         2. Sorts islands by height (tallest first) for efficient shelf packing
         3. Places islands on horizontal shelves with smart height matching (50%-200% tolerance)
         4. Maintains consistent margins between islands
-        5. Scales result to fit within UV space (0-1 range)
+        5. Uses two-pass approach to achieve near-square aspect ratio
+        6. Scales result to fit within UV space (0-1 range)
         
         This produces approximately square UV layouts even with significant padding.
         """
@@ -1406,84 +1407,148 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
         target_coverage = 0.8  # Use 80% of UV space
         uniform_scale = math.sqrt(target_coverage / total_3d_area) if total_3d_area > 0 else 1.0
         
-        # Apply uniform scale to all islands
+        # Apply uniform scale to all islands and inflate by margin
         for island in valid_islands:
             island['scaled_size'] = island['size'] * uniform_scale
+            
+            # Check if rotating by 90 degrees would be beneficial (make it wider than tall)
+            if island['scaled_size'].y > island['scaled_size'].x:
+                # Rotate the island by swapping dimensions
+                island['rotated'] = True
+                island['scaled_size'] = mathutils.Vector((
+                    island['scaled_size'].y,
+                    island['scaled_size'].x
+                ))
+            else:
+                island['rotated'] = False
+            
+            # Inflate the island size by margin on all sides for packing
+            island['inflated_size'] = mathutils.Vector((
+                island['scaled_size'].x + 2 * self.island_margin,
+                island['scaled_size'].y + 2 * self.island_margin
+            ))
         
         # Sort by height (tallest first) for shelf packing
-        valid_islands.sort(key=lambda x: x['scaled_size'].y, reverse=True)
+        valid_islands.sort(key=lambda x: x['inflated_size'].y, reverse=True)
         
-        # Estimate target width for approximately square packing
-        total_area = sum(island['scaled_size'].x * island['scaled_size'].y for island in valid_islands)
+        # Calculate total area using inflated sizes
+        total_area_inflated = sum(island['inflated_size'].x * island['inflated_size'].y for island in valid_islands)
         
-        # Estimate margin overhead: roughly sqrt(n) gaps horizontally and vertically
-        n_islands = len(valid_islands)
-        estimated_gaps = 2 * math.sqrt(n_islands)
-        estimated_margin_area = estimated_gaps * self.island_margin * math.sqrt(total_area)
+        # Initial target width based on inflated area
+        target_width = math.sqrt(total_area_inflated)
         
-        # Calculate target width from total area including margins
-        total_area_with_margins = total_area + estimated_margin_area
-        target_width = math.sqrt(total_area_with_margins) * 1.1  # 10% safety factor
-        
-        # Shelf packing
-        shelves = []
-        current_y = self.island_margin
-        
-        for island in valid_islands:
-            width = island['scaled_size'].x
-            height = island['scaled_size'].y
+        # Two-pass packing for better aspect ratio
+        for pass_num in range(2):
+            # Shelf packing
+            shelves = []
+            current_y = 0
             
-            # Find a suitable shelf
-            placed = False
-            for shelf in shelves:
-                # Check horizontal space
-                if shelf['current_x'] + self.island_margin + width <= target_width - self.island_margin:
-                    # Check height compatibility (50% to 200% of shelf height)
-                    height_ratio = height / shelf['height']
-                    if 0.5 <= height_ratio <= 2.0:
-                        # Place on this shelf
+            for island in valid_islands:
+                width = island['inflated_size'].x
+                height = island['inflated_size'].y
+                
+                # Find a suitable shelf
+                placed = False
+                for shelf in shelves:
+                    # Check horizontal space
+                    if shelf['current_x'] + width <= target_width:
+                        # Place on this shelf (no height restriction)
                         island['pack_position'] = mathutils.Vector((
-                            shelf['current_x'] + self.island_margin,
+                            shelf['current_x'],
                             shelf['y_position']
                         ))
-                        shelf['current_x'] += self.island_margin + width
+                        shelf['current_x'] += width
                         placed = True
                         break
+                
+                if not placed:
+                    # Create new shelf
+                    island['pack_position'] = mathutils.Vector((0, current_y))
+                    shelves.append({
+                        'y_position': current_y,
+                        'height': height,
+                        'current_x': width
+                    })
+                    current_y += height
             
-            if not placed:
-                # Create new shelf
-                island['pack_position'] = mathutils.Vector((self.island_margin, current_y))
-                shelves.append({
-                    'y_position': current_y,
-                    'height': height,
-                    'current_x': self.island_margin + width
-                })
-                current_y += height + self.island_margin
+            # Calculate actual packed dimensions
+            pack_width = max(shelf['current_x'] for shelf in shelves) if shelves else target_width
+            pack_height = current_y
+            
+            # After first pass, calculate better target width based on actual dimensions
+            if pass_num == 0:
+                if pack_width > pack_height:
+                    # Too wide, need narrower target
+                    target_width = math.sqrt(total_area_inflated * pack_height / pack_width)
+                else:
+                    # Too tall, need wider target
+                    target_width = math.sqrt(total_area_inflated * pack_width / pack_height)
         
-        # Calculate final dimensions and scale to fit UV space
-        pack_width = max(target_width, max(shelf['current_x'] + self.island_margin for shelf in shelves))
-        pack_height = current_y
-        scale_factor = min(0.98 / pack_width, 0.98 / pack_height)
+        # Improvement 3: Trim unused space from each shelf
+        for shelf in shelves:
+            shelf['actual_width'] = shelf['current_x']  # Store actual used width
+        
+        # Improvement 4: Compact shelves vertically
+        # Sort shelves by height for better vertical packing
+        shelves.sort(key=lambda s: s['height'], reverse=True)
+        
+        # Re-stack shelves with actual widths
+        compacted_y = 0
+        for shelf in shelves:
+            # Update all islands on this shelf with new Y position
+            y_offset = compacted_y - shelf['y_position']
+            for island in valid_islands:
+                if 'pack_position' in island and abs(island['pack_position'].y - shelf['y_position']) < 0.0001:
+                    island['pack_position'].y += y_offset
+            
+            shelf['y_position'] = compacted_y
+            compacted_y += shelf['height']
+        
+        # Update pack height after compaction
+        pack_height = compacted_y
+        
+        # Recalculate pack width after compaction using actual shelf widths
+        pack_width = max(shelf['actual_width'] for shelf in shelves) if shelves else target_width
+        
+        # Calculate final scale to fit UV space
+        scale_factor = min(1.0 / pack_width, 1.0 / pack_height)
         
         # Apply UV coordinates
         for island in valid_islands:
             if 'pack_position' not in island:
                 continue
             
-            position = island['pack_position'] * scale_factor
+            # Scale the inflated position and then add margin to get the actual position
+            scaled_position = island['pack_position'] * scale_factor
+            # The actual island position is the inflated position plus the margin
+            actual_position = scaled_position + mathutils.Vector((self.island_margin, self.island_margin))
+            
             size_scale = uniform_scale * scale_factor
             min_uv = island['min_uv']
             
             # Apply to all loops
             for loop, original_uv in island['projected_uvs'].items():
-                new_uv = (original_uv - min_uv) * size_scale + position
+                # Apply rotation if needed
+                if island.get('rotated', False):
+                    # Rotate 90 degrees counterclockwise: (x, y) -> (-y, x)
+                    # But we want to keep it in positive space, so we do (x, y) -> (y, -x) then flip
+                    rotated_uv = mathutils.Vector((
+                        original_uv.y - min_uv.y,
+                        -(original_uv.x - min_uv.x) + (island['max_uv'].x - island['min_uv'].x)
+                    ))
+                    new_uv = rotated_uv * size_scale + actual_position
+                else:
+                    new_uv = (original_uv - min_uv) * size_scale + actual_position
                 loop[uv_layer].uv = new_uv
         
         # Report results
+        # Calculate actual area (non-inflated) for efficiency calculation
+        total_area = sum(island['scaled_size'].x * island['scaled_size'].y for island in valid_islands)
         efficiency = total_area / (pack_width * pack_height) if pack_height > 0 else 0
         aspect_ratio = pack_width / pack_height if pack_height > 0 else 1.0
+        rotated_count = sum(1 for island in valid_islands if island.get('rotated', False))
         
-        print(f"\n  Packed {len(valid_islands)} UV islands")
+        print(f"\n  Packed {len(valid_islands)} UV islands ({rotated_count} rotated)")
         print(f"  Shelves: {len(shelves)}, Aspect ratio: {aspect_ratio:.2f}, Efficiency: {efficiency:.0%}")
     
     def process_object(self, context, obj):
