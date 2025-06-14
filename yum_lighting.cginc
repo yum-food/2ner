@@ -60,6 +60,8 @@ struct YumLighting {
   float3 L01r;
   float3 L01g;
   float3 L01b;
+  float occlusion;
+  Light derivedLight;
 };
 
 float getShadowAttenuation(v2f i)
@@ -217,17 +219,21 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 #endif
 }
 
-float4 getIndirectDiffuse(v2f i, float4 vertexLightColor,
-    inout YumLighting light) {
-	float4 diffuse = vertexLightColor;
-#if defined(FORWARD_BASE_PASS)
-#if defined(LIGHTMAP_ON)
-	diffuse.xyz = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv01.zw));
-#else
-	diffuse.xyz += max(0, yumSH9(float4(i.normal, 0), i.worldPos, light));
-#endif
-#endif
-	return diffuse;
+float3 SubtractMainLightWithRealtimeAttenuationFromLightmap(float3 lightmap, float attenuation, float4 bakedColorTex, float3 normalWorld) {
+    float3 shadowColor = unity_ShadowColor.rgb;
+    float shadowStrength = _LightShadowData.x;
+
+    // Calculate estimated light contribution that should be shadowed
+    float ndotl = saturate(dot(normalWorld, _WorldSpaceLightPos0.xyz));
+    float3 estimatedLightContributionMaskedByInverseOfShadow = ndotl * (1.0 - attenuation) * _LightColor0.rgb;
+    float3 subtractedLightmap = lightmap - estimatedLightContributionMaskedByInverseOfShadow;
+
+    // Apply shadow color and strength
+    float3 realtimeShadow = max(subtractedLightmap, shadowColor);
+    realtimeShadow = lerp(realtimeShadow, lightmap, shadowStrength);
+
+    // Pick darkest color
+    return min(lightmap, realtimeShadow);
 }
 
 YumLighting GetYumLighting(v2f i, YumPbr pbr) {
@@ -239,9 +245,39 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.dir = getDirectLightDirection(i);
 
 	light.direct = _LightColor0.rgb;
-	// TODO filament's spherical harmonics look nicer than this.
-	// See FilamentLightIndirect.cginc::UnityGI_Irradiance in filamented.
-  light.diffuse = getIndirectDiffuse(i, /*vertexLightColor=*/0, light);
+	
+	// Calculate attenuation first, before diffuse lighting
+#if defined(LIGHTMAP_ON)
+  light.attenuation = 1;
+#else
+  light.attenuation = getShadowAttenuation(i);
+#endif
+
+	// Use filamented's comprehensive irradiance calculation
+	float occlusion;
+	Light derivedLight;
+	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, i.binormal, i.normal)));
+	float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
+
+	light.diffuse = UnityGI_Irradiance(
+			pbr.normal,           // worldNormal
+			i.worldPos,           // worldPos  
+			float4(i.uv01.zw, 0, 0),               // lightmapUV (xy = uv0, zw = uv1)
+			float3(0,0,0),        // ambient (will be calculated internally)
+			light.attenuation,    // attenuation
+			tangentNormal,        // tangentNormal
+			tangentToWorld,       // tangentToWorld
+			#if defined(USING_BAKERY_VERTEXLMSH)
+					// You'll need to add these to your v2f if using Bakery vertex SH
+					i.bakeryVertexSH,
+			#elif defined(USING_BAKERY_VERTEXLMDIR)
+					// You'll need to add this to your v2f if using Bakery vertex directional
+					i.bakeryVertexDir,
+			#endif
+			occlusion,            // out occlusion
+			derivedLight          // out Light
+	);
+
 #if defined(_MIN_BRIGHTNESS)
   light.diffuse = max(_Min_Brightness, light.diffuse);
 #endif
@@ -286,8 +322,6 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.NoL_wrapped_d = saturate(wrapNoL(light.NoL, _Wrap_NoL_Diffuse_Strength));
 #endif
   light.NoL = saturate(light.NoL);
-
-  light.attenuation = getShadowAttenuation(i);
 
 	return light;
 }

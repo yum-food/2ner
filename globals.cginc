@@ -3,6 +3,23 @@
 
 #include "features.cginc"
 
+// Filamented global variables
+half _ExposureOcclusion;
+half _LightmapSpecularMaxSmoothness;
+
+#if defined(USING_BAKERY_VERTEXLM)
+float bakeryLightmapMode;
+#endif
+
+#if defined(_VRCLV)
+half _VRCLVSurfaceBias;
+float _UdonLightVolumeEnabled;
+float _UdonLightVolumeAdditiveCount;
+#endif
+
+// Math constants
+#define FLT_EPS 1.192092896e-07
+
 #if defined(_SSAO) || defined(_RAYMARCHED_FOG)
 UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 float4 _CameraDepthTexture_TexelSize;

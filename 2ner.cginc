@@ -37,6 +37,9 @@ v2f vert(appdata v) {
 #if defined(DEPTH_PREPASS) && !defined(_DEPTH_PREPASS)
   return (v2f) (0.0/0.0);
 #endif
+#if defined(EXTRA_STENCIL_COLOR_PASS) && !defined(_EXTRA_STENCIL_COLOR_PASS)
+  return (v2f) (0.0/0.0);
+#endif
 #if defined(MASKED_STENCIL1_PASS)
 #if !defined(_MASKED_STENCIL1)
   return (v2f) (0.0/0.0);

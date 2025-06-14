@@ -1,6 +1,9 @@
 #ifndef __FILAMENTED_INC
 #define __FILAMENTED_INC
 
+#include "SharedSamplingLib.hlsl"
+#include "SharedFilteringLib.hlsl"
+
 #include "UnityImageBasedLighting.cginc"
 #include "UnityStandardUtils.cginc"
 
@@ -237,6 +240,609 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 UNITY_DECLARE_TEX2D_FLOAT(_DFG);
 
+// Filamented defines for spherical harmonics
+#define SPHERICAL_HARMONICS_DEFAULT         0
+#define SPHERICAL_HARMONICS_GEOMETRICS      1
+#define SPHERICAL_HARMONICS_ZH3             2
+#define SPHERICAL_HARMONICS SPHERICAL_HARMONICS_ZH3
+#define SPHERICAL_HARMONICS_USE_L2          0
+
+// Light struct from filamented
+struct Light {
+    float4 colorIntensity;
+    float3 l;
+    float attenuation;
+    float NoL;
+    float3 worldPosition;
+};
+
+// Helper functions
+half getExposureOcclusionBias()
+{
+    return 1.0/(_ExposureOcclusion);
+}
+
+bool getIsBakeryVertexMode()
+{
+#if defined(USING_BAKERY_VERTEXLM)
+    #define BAKERYMODE_DEFAULT 0
+    #define BAKERYMODE_VERTEXLM 1.0f
+    #define BAKERYMODE_RNM 2.0f
+    #define BAKERYMODE_SH 3.0f
+    return (bakeryLightmapMode == BAKERYMODE_VERTEXLM);
+#endif
+    return false;
+}
+
+half getLightVolumeSurfaceBias()
+{
+    #if defined(_VRCLV)
+    return _VRCLVSurfaceBias;
+    #else
+    return 0;
+    #endif
+}
+
+// Geomerics spherical harmonics evaluation
+float shEvaluateDiffuseL1Geomerics_local(float L0, float3 L1, float3 n)
+{
+    float R0 = max(L0, 0);
+    float3 R1 = 0.5f * L1;
+    float lenR1 = length(R1);
+    float q = dot(normalize(R1), n) * 0.5 + 0.5;
+    q = saturate(q);
+    float p = 1.0f + 2.0f * lenR1 / R0;
+    float a = (1.0f - lenR1 / R0) / (1.0f + lenR1 / R0);
+    return R0 * (a + (1.0f - a) * (p + 1.0f) * pow(q, p));
+}
+
+// ZH3 constants and functions
+const static float L0IrradianceToRadiance = 2 * sqrt(UNITY_PI);
+const static float L1IrradianceToRadiance = sqrt(3 * UNITY_PI);
+const static float4 L0L1IrradianceToRadiance = float4(L0IrradianceToRadiance, L1IrradianceToRadiance, L1IrradianceToRadiance, L1IrradianceToRadiance);
+
+float SHEvalLinearL0L1_ZH3Hallucinate(float4 sh, float3 normal)
+{
+    float4 radiance = sh * L0L1IrradianceToRadiance;
+    float3 zonalAxis = float3(radiance.w, radiance.y, radiance.z);
+    float l1Length = length(zonalAxis);
+    zonalAxis /= l1Length;
+    float ratio = l1Length / radiance.x;
+    float zonalL2Coeff = radiance.x * ratio * (0.08 + 0.6 * ratio);
+    float fZ = dot(zonalAxis, normal);
+    float zhNormal = sqrt(5.0f / (16.0f * UNITY_PI)) * (3.0f * fZ * fZ - 1.0f);
+    float result = dot(sh, float4(1, float3(normal.y, normal.z, normal.x)));
+    result += 0.25f * zhNormal * zonalL2Coeff;
+    return result;
+}
+
+float3 SHEvalLinearL0L1_ZH3Hallucinate(float3 normal)
+{
+    float3 shL0 = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w) +
+        float3(unity_SHBr.z, unity_SHBg.z, unity_SHBb.z) / 3.0;
+    float3 shL1_1 = float3(unity_SHAr.y, unity_SHAg.y, unity_SHAb.y);
+    float3 shL1_2 = float3(unity_SHAr.z, unity_SHAg.z, unity_SHAb.z);
+    float3 shL1_3 = float3(unity_SHAr.x, unity_SHAg.x, unity_SHAb.x);
+
+    float3 result = 0.0;
+    float4 a = float4(shL0.r, shL1_1.r, shL1_2.r, shL1_3.r);
+    float4 b = float4(shL0.g, shL1_1.g, shL1_2.g, shL1_3.g);
+    float4 c = float4(shL0.b, shL1_1.b, shL1_2.b, shL1_3.b);
+    result.r = SHEvalLinearL0L1_ZH3Hallucinate(a, normal);
+    result.g = SHEvalLinearL0L1_ZH3Hallucinate(b, normal);
+    result.b = SHEvalLinearL0L1_ZH3Hallucinate(c, normal);
+    return result;
+}
+
+float3 Irradiance_SphericalHarmonics(const float3 n, const bool useL2) {
+    float3 finalSH = float3(0,0,0); 
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_DEFAULT)
+        finalSH = SHEvalLinearL0L1(half4(n, 1.0));
+    #endif
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_GEOMETRICS)
+        float3 L0 = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
+        float3 L0L2 = float3(unity_SHBr.z, unity_SHBg.z, unity_SHBb.z) / 3.0;
+        L0 = (useL2) ? L0+L0L2 : L0-L0L2;
+        finalSH.r = shEvaluateDiffuseL1Geomerics_local(L0.r, unity_SHAr.xyz, n);
+        finalSH.g = shEvaluateDiffuseL1Geomerics_local(L0.g, unity_SHAg.xyz, n);
+        finalSH.b = shEvaluateDiffuseL1Geomerics_local(L0.b, unity_SHAb.xyz, n);
+    #endif
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_ZH3)
+        finalSH = SHEvalLinearL0L1_ZH3Hallucinate(half4(n, 1.0));
+    #endif
+
+    #if (SPHERICAL_HARMONICS_USE_L2 == 1)
+        if (useL2) finalSH += SHEvalLinearL2(half4(n, 1.0));
+    #endif    
+
+    return finalSH;
+}
+
+float3 Irradiance_SphericalHarmonics(const float3 n) {
+    return Irradiance_SphericalHarmonics(n, true);
+}
+
+#if UNITY_LIGHT_PROBE_PROXY_VOLUME
+half3 Irradiance_SampleProbeVolume (half4 normal, float3 worldPos)
+{
+    const float transformToLocal = unity_ProbeVolumeParams.y;
+    const float texelSizeX = unity_ProbeVolumeParams.z;
+
+    float3 position = (transformToLocal == 1.0f) ? mul(unity_ProbeVolumeWorldToObject, float4(worldPos, 1.0)).xyz : worldPos;
+    float3 texCoord = (position - unity_ProbeVolumeMin.xyz) * unity_ProbeVolumeSizeInv.xyz;
+    texCoord.x = texCoord.x * 0.25f;
+
+    float texCoordX = clamp(texCoord.x, 0.5f * texelSizeX, 0.25f - 0.5f * texelSizeX);
+
+    texCoord.x = texCoordX;
+    half4 SHAr = UNITY_SAMPLE_TEX3D_SAMPLER(unity_ProbeVolumeSH, unity_ProbeVolumeSH, texCoord);
+
+    texCoord.x = texCoordX + 0.25f;
+    half4 SHAg = UNITY_SAMPLE_TEX3D_SAMPLER(unity_ProbeVolumeSH, unity_ProbeVolumeSH, texCoord);
+
+    texCoord.x = texCoordX + 0.5f;
+    half4 SHAb = UNITY_SAMPLE_TEX3D_SAMPLER(unity_ProbeVolumeSH, unity_ProbeVolumeSH, texCoord);
+
+    half3 x1;
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_DEFAULT)
+        x1.r = dot(SHAr, normal);
+        x1.g = dot(SHAg, normal);
+        x1.b = dot(SHAb, normal);
+    #endif
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_GEOMETRICS)
+        x1.r = shEvaluateDiffuseL1Geomerics_local(SHAr.w, SHAr.rgb, normal);
+        x1.g = shEvaluateDiffuseL1Geomerics_local(SHAg.w, SHAg.rgb, normal);
+        x1.b = shEvaluateDiffuseL1Geomerics_local(SHAb.w, SHAb.rgb, normal);
+    #endif
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_ZH3)
+        x1.r = SHEvalLinearL0L1_ZH3Hallucinate(float4(SHAr.w, SHAr.rgb), normal);
+        x1.g = SHEvalLinearL0L1_ZH3Hallucinate(float4(SHAg.w, SHAg.rgb), normal);
+        x1.b = SHEvalLinearL0L1_ZH3Hallucinate(float4(SHAb.w, SHAb.rgb), normal);
+    #endif
+
+    return x1;
+}
+#endif
+
+#if defined(_VRCLV)
+half3 Irradiance_SampleVRCLightVolume(half3 normal, float3 worldPos, out Light derivedLight)
+{
+    derivedLight = (Light)0;
+    float3 samplePos = worldPos + normal * getLightVolumeSurfaceBias();
+    
+    float3 L0, L1r, L1g, L1b;
+    LightVolumeSH(samplePos, L0, L1r, L1g, L1b);
+
+    half3 irradiance = 0.0;
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_DEFAULT)
+        irradiance.r = dot(L1r, normal.xyz) + L0.r;
+        irradiance.g = dot(L1g, normal.xyz) + L0.g;
+        irradiance.b = dot(L1b, normal.xyz) + L0.b;
+    #endif
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_GEOMETRICS)
+        irradiance.r = shEvaluateDiffuseL1Geomerics_local(L0.r, L1r, normal.xyz);
+        irradiance.g = shEvaluateDiffuseL1Geomerics_local(L0.g, L1g, normal.xyz);
+        irradiance.b = shEvaluateDiffuseL1Geomerics_local(L0.b, L1b, normal.xyz);
+    #endif
+
+    #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_ZH3)
+        irradiance.r = shEvaluateDiffuseL1Geomerics_local(L0.r, L1r, normal.xyz);
+        irradiance.g = shEvaluateDiffuseL1Geomerics_local(L0.g, L1g, normal.xyz);
+        irradiance.b = shEvaluateDiffuseL1Geomerics_local(L0.b, L1b, normal.xyz);
+    #endif
+    
+    #if defined(LIGHTMAP_SPECULAR)
+    float3 nL1x = float3(L1r[0], L1g[0], L1b[0]);
+    float3 nL1y = float3(L1r[1], L1g[1], L1b[1]);
+    float3 nL1z = float3(L1r[2], L1g[2], L1b[2]);
+    float3 dominantDir = float3(luminance(nL1x), luminance(nL1y), luminance(nL1z));
+
+    derivedLight.l = dominantDir;
+    half directionality = max(FLT_EPS, length(derivedLight.l));
+    derivedLight.l /= directionality;
+
+    derivedLight.colorIntensity = float4(irradiance * directionality, 1.0);
+    derivedLight.attenuation = directionality;
+    derivedLight.NoL = saturate(dot(normal, derivedLight.l));
+    #endif
+
+    return irradiance;
+}
+
+half3 Irradiance_SampleVRCLightVolumeAdditive(half3 normal, float3 worldPos, out Light derivedLight)
+{
+    derivedLight = (Light)0;
+
+    if (!_UdonLightVolumeEnabled || _UdonLightVolumeAdditiveCount == 0) return 0;
+    
+    float3 L0, L1r, L1g, L1b;
+    LightVolumeAdditiveSH(worldPos, L0, L1r, L1g, L1b);
+
+    half3 irradiance = 0.0;
+    irradiance.r = dot(L1r, normal.xyz) + L0.r;
+    irradiance.g = dot(L1g, normal.xyz) + L0.g;
+    irradiance.b = dot(L1b, normal.xyz) + L0.b;
+    
+    #if defined(LIGHTMAP_SPECULAR)
+    float3 nL1x = float3(L1r[0], L1g[0], L1b[0]);
+    float3 nL1y = float3(L1r[1], L1g[1], L1b[1]);
+    float3 nL1z = float3(L1r[2], L1g[2], L1b[2]);
+    float3 dominantDir = float3(luminance(nL1x), luminance(nL1y), luminance(nL1z));
+
+    derivedLight.l = dominantDir;
+    half directionality = max(FLT_EPS, length(derivedLight.l));
+    derivedLight.l /= directionality;
+
+    derivedLight.colorIntensity = float4(irradiance * directionality, 1.0);
+    derivedLight.attenuation = directionality;
+    derivedLight.NoL = saturate(dot(normal, derivedLight.l));
+    #endif
+
+    return irradiance;
+}
+#endif
+
+half3 Irradiance_SphericalHarmonicsUnity (half3 normal, half3 ambient, float3 worldPos, out Light derivedLight)
+{
+    half3 ambient_contrib = 0.0;
+    derivedLight = (Light)0;
+
+#if defined(_VRCLV)
+    #if UNITY_LIGHT_PROBE_PROXY_VOLUME
+        if (unity_ProbeVolumeParams.x == 1.0)
+            ambient_contrib = Irradiance_SampleProbeVolume(half4(normal, 1.0), worldPos);
+        else
+            ambient_contrib = Irradiance_SampleVRCLightVolume(normal, worldPos, derivedLight);
+    #else
+        ambient_contrib = Irradiance_SampleVRCLightVolume(normal, worldPos, derivedLight);
+    #endif
+
+    ambient += max(half3(0, 0, 0), ambient_contrib);
+
+    #ifdef UNITY_COLORSPACE_GAMMA
+        ambient = LinearToGammaSpace (ambient);
+    #endif
+
+    return ambient;
+#else
+
+    #if UNITY_SAMPLE_FULL_SH_PER_PIXEL
+        #if UNITY_LIGHT_PROBE_PROXY_VOLUME
+            if (unity_ProbeVolumeParams.x == 1.0)
+                ambient_contrib = Irradiance_SampleProbeVolume(half4(normal, 1.0), worldPos);
+            else
+                ambient_contrib = Irradiance_SphericalHarmonics(normal, true);
+        #else
+            ambient_contrib = Irradiance_SphericalHarmonics(normal, true);
+        #endif
+
+            ambient += max(half3(0, 0, 0), ambient_contrib);
+
+        #ifdef UNITY_COLORSPACE_GAMMA
+            ambient = LinearToGammaSpace(ambient);
+        #endif
+    #elif (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
+        // Completely per-vertex
+    #else
+        #if UNITY_LIGHT_PROBE_PROXY_VOLUME
+            if (unity_ProbeVolumeParams.x == 1.0)
+                ambient_contrib = Irradiance_SampleProbeVolume (half4(normal, 1.0), worldPos);
+            else
+                ambient_contrib = Irradiance_SphericalHarmonics(normal, false);
+        #else
+            ambient_contrib = Irradiance_SphericalHarmonics(normal, false);
+        #endif
+
+        ambient = max(half3(0, 0, 0), ambient+ambient_contrib);
+        #ifdef UNITY_COLORSPACE_GAMMA
+            ambient = LinearToGammaSpace (ambient);
+        #endif
+    #endif
+
+    return ambient;
+#endif
+}
+
+float4 SampleLightmapBicubic(float2 uv)
+{
+    #if defined(SHADER_API_D3D11)
+        float width, height;
+        unity_Lightmap.GetDimensions(width, height);
+        float4 unity_Lightmap_TexelSize = float4(width, height, 1.0/width, 1.0/height);
+        return SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(unity_Lightmap, samplerunity_Lightmap),
+            uv, unity_Lightmap_TexelSize);
+    #else
+        return SAMPLE_TEXTURE2D(unity_Lightmap, samplerunity_Lightmap, uv);
+    #endif
+}
+
+float4 SampleLightmapDirBicubic(float2 uv)
+{
+    #if defined(SHADER_API_D3D11) && false
+        float width, height;
+        unity_LightmapInd.GetDimensions(width, height);
+        float4 unity_LightmapInd_TexelSize = float4(width, height, 1.0/width, 1.0/height);
+        return SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(unity_LightmapInd, samplerunity_Lightmap),
+            uv, unity_LightmapInd_TexelSize);
+    #else
+        return SAMPLE_TEXTURE2D(unity_LightmapInd, samplerunity_Lightmap, uv);
+    #endif
+}
+
+float4 SampleDynamicLightmapBicubic(float2 uv)
+{
+    #if defined(SHADER_API_D3D11)
+        float width, height;
+        unity_DynamicLightmap.GetDimensions(width, height);
+        float4 unity_DynamicLightmap_TexelSize = float4(width, height, 1.0/width, 1.0/height);
+        return SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(unity_DynamicLightmap, samplerunity_DynamicLightmap),
+            uv, unity_DynamicLightmap_TexelSize);
+    #else
+        return SAMPLE_TEXTURE2D(unity_DynamicLightmap, samplerunity_DynamicLightmap, uv);
+    #endif
+}
+
+float4 SampleDynamicLightmapDirBicubic(float2 uv)
+{
+    #if defined(SHADER_API_D3D11) && false
+        float width, height;
+        unity_DynamicDirectionality.GetDimensions(width, height);
+        float4 unity_DynamicDirectionality_TexelSize = float4(width, height, 1.0/width, 1.0/height);
+        return SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(unity_DynamicDirectionality, samplerunity_DynamicLightmap),
+            uv, unity_DynamicDirectionality_TexelSize);
+    #else
+        return SAMPLE_TEXTURE2D(unity_DynamicDirectionality, samplerunity_DynamicLightmap, uv);
+    #endif
+}
+
+inline float3 DecodeDirectionalLightmapSpecular(half3 color, half4 dirTex, half3 normalWorld, 
+    const bool isRealtimeLightmap, fixed4 realtimeNormalTex, out Light o_light)
+{
+    o_light = (Light)0;
+    o_light.colorIntensity = float4(color, 1.0);
+    o_light.l = dirTex.xyz * 2 - 1;
+
+    half directionality = max(0.001, length(o_light.l));
+    o_light.l /= directionality;
+
+    #ifdef DYNAMICLIGHTMAP_ON
+    if (isRealtimeLightmap)
+    {
+        half3 realtimeNormal = realtimeNormalTex.xyz * 2 - 1;
+        o_light.colorIntensity /= max(0.125, dot(realtimeNormal, o_light.l));
+    }
+    #endif
+
+    half3 ambient = o_light.colorIntensity * (1 - directionality);
+    o_light.colorIntensity = o_light.colorIntensity * directionality;
+    o_light.attenuation = directionality;
+    o_light.NoL = saturate(dot(normalWorld, o_light.l));
+
+    return color;
+}
+
+#if defined(USING_BAKERY) && defined(LIGHTMAP_ON)
+float3 DecodeRNMLightmap(half3 color, half2 lightmapUV, half3 normalTangent, float3x3 tangentToWorld, out Light o_light)
+{
+    const float rnmBasis0 = float3(0.816496580927726f, 0, 0.5773502691896258f);
+    const float rnmBasis1 = float3(-0.4082482904638631f, 0.7071067811865475f, 0.5773502691896258f);
+    const float rnmBasis2 = float3(-0.4082482904638631f, -0.7071067811865475f, 0.5773502691896258f);
+
+    float3 irradiance;
+    o_light = (Light)0;
+
+    #if defined(SHADER_API_D3D11)
+        float width, height;
+        _RNM0.GetDimensions(width, height);
+        float4 rnm_TexelSize = float4(width, height, 1.0/width, 1.0/height);
+        
+        float3 rnm0 = DecodeLightmap(SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(_RNM0, sampler_RNM0), lightmapUV, rnm_TexelSize));
+        float3 rnm1 = DecodeLightmap(SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(_RNM1, sampler_RNM0), lightmapUV, rnm_TexelSize));
+        float3 rnm2 = DecodeLightmap(SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(_RNM2, sampler_RNM0), lightmapUV, rnm_TexelSize));
+    #else
+        float3 rnm0 = DecodeLightmap(SAMPLE_TEXTURE2D(_RNM0, sampler_RNM0, lightmapUV));
+        float3 rnm1 = DecodeLightmap(SAMPLE_TEXTURE2D(_RNM1, sampler_RNM0, lightmapUV));
+        float3 rnm2 = DecodeLightmap(SAMPLE_TEXTURE2D(_RNM2, sampler_RNM0, lightmapUV));
+    #endif
+
+    normalTangent.g *= -1;
+
+    irradiance =  saturate(dot(rnmBasis0, normalTangent)) * rnm0
+                + saturate(dot(rnmBasis1, normalTangent)) * rnm1
+                + saturate(dot(rnmBasis2, normalTangent)) * rnm2;
+
+    #if defined(LIGHTMAP_SPECULAR)
+    float3 dominantDirT = rnmBasis0 * luminance(rnm0) +
+                          rnmBasis1 * luminance(rnm1) +
+                          rnmBasis2 * luminance(rnm2);
+
+    float3 dominantDirTN = normalize(dominantDirT);
+    float3 specColor = saturate(dot(rnmBasis0, dominantDirTN)) * rnm0 +
+                       saturate(dot(rnmBasis1, dominantDirTN)) * rnm1 +
+                       saturate(dot(rnmBasis2, dominantDirTN)) * rnm2;                        
+
+    o_light.l = normalize(mul(tangentToWorld, dominantDirT));
+    half directionality = max(0.001, length(o_light.l));
+    o_light.l /= directionality;
+
+    o_light.colorIntensity = float4(specColor * directionality, 1.0);
+    o_light.attenuation = directionality;
+    o_light.NoL = saturate(dot(normalTangent, dominantDirTN));
+    #endif
+
+    return irradiance;
+}
+
+float3 DecodeSHLightmap(half3 L0, half2 lightmapUV, half3 normalWorld, out Light o_light)
+{
+    float3 irradiance;
+    o_light = (Light)0;
+
+    #if defined(SHADER_API_D3D11)
+        float width, height;
+        _RNM0.GetDimensions(width, height);
+        float4 rnm_TexelSize = float4(width, height, 1.0/width, 1.0/height);
+        
+        float3 nL1x = SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(_RNM0, sampler_RNM0), lightmapUV, rnm_TexelSize);
+        float3 nL1y = SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(_RNM1, sampler_RNM0), lightmapUV, rnm_TexelSize);
+        float3 nL1z = SampleTexture2DBicubicFilter(TEXTURE2D_ARGS(_RNM2, sampler_RNM0), lightmapUV, rnm_TexelSize);
+    #else
+        float3 nL1x = SAMPLE_TEXTURE2D(_RNM0, sampler_RNM0, lightmapUV);
+        float3 nL1y = SAMPLE_TEXTURE2D(_RNM1, sampler_RNM0, lightmapUV);
+        float3 nL1z = SAMPLE_TEXTURE2D(_RNM2, sampler_RNM0, lightmapUV);
+    #endif
+
+    nL1x = nL1x * 2 - 1;
+    nL1y = nL1y * 2 - 1;
+    nL1z = nL1z * 2 - 1;
+    float3 L1x = nL1x * L0 * 2;
+    float3 L1y = nL1y * L0 * 2;
+    float3 L1z = nL1z * L0 * 2;
+
+    #ifdef BAKERY_SHNONLINEAR
+        float lumaL0 = dot(L0, float(1));
+        float lumaL1x = dot(L1x, float(1));
+        float lumaL1y = dot(L1y, float(1));
+        float lumaL1z = dot(L1z, float(1));
+
+        float lumaSH = shEvaluateDiffuseL1Geomerics_local(lumaL0, float3(lumaL1x, lumaL1y, lumaL1z), normalWorld);
+
+        #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_ZH3)
+            lumaSH = SHEvalLinearL0L1_ZH3Hallucinate(float4(lumaL0, lumaL1y, lumaL1z, lumaL1x), normalWorld);
+        #endif
+
+        irradiance = L0 + normalWorld.x * L1x + normalWorld.y * L1y + normalWorld.z * L1z;
+        float regularLumaSH = dot(irradiance, 1);
+        irradiance *= lerp(1, lumaSH / regularLumaSH, saturate(regularLumaSH*16));
+    #else
+        irradiance = L0 + normalWorld.x * L1x + normalWorld.y * L1y + normalWorld.z * L1z;
+    #endif
+
+    #if defined(LIGHTMAP_SPECULAR)
+    float3 dominantDir = float3(luminance(nL1x), luminance(nL1y), luminance(nL1z));
+
+    o_light.l = dominantDir;
+    half directionality = max(0.001, length(o_light.l));
+    o_light.l /= directionality;
+
+    o_light.colorIntensity = float4(irradiance * directionality, 1.0);
+    o_light.attenuation = directionality;
+    o_light.NoL = saturate(dot(normalWorld, o_light.l));
+    #endif
+
+    return irradiance;
+}
+
+float3 DecodeSHLightmapVertex(half3 L0, half3 ambientSH[3], half3 normalWorld, out Light o_light)
+{
+    float3 irradiance;
+    o_light = (Light)0;
+
+    float3 nL1x = ambientSH[0];
+    float3 nL1y = ambientSH[1];
+    float3 nL1z = ambientSH[2];
+
+    nL1x = nL1x * 2 - 1;
+    nL1y = nL1y * 2 - 1;
+    nL1z = nL1z * 2 - 1;
+    float3 L1x = nL1x * L0 * 2;
+    float3 L1y = nL1y * L0 * 2;
+    float3 L1z = nL1z * L0 * 2;
+
+    #ifdef BAKERY_SHNONLINEAR
+        float lumaL0 = dot(L0, float(1));
+        float lumaL1x = dot(L1x, float(1));
+        float lumaL1y = dot(L1y, float(1));
+        float lumaL1z = dot(L1z, float(1));
+        float lumaSH = shEvaluateDiffuseL1Geomerics_local(lumaL0, float3(lumaL1x, lumaL1y, lumaL1z), normalWorld);
+
+        #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_ZH3)
+            lumaSH = SHEvalLinearL0L1_ZH3Hallucinate(float4(lumaL0, lumaL1y, lumaL1z, lumaL1x), normalWorld);
+        #endif
+
+        irradiance = L0 + normalWorld.x * L1x + normalWorld.y * L1y + normalWorld.z * L1z;
+        float regularLumaSH = dot(irradiance, 1);
+        irradiance *= lerp(1, lumaSH / regularLumaSH, saturate(regularLumaSH*16));
+    #else
+        irradiance = L0 + normalWorld.x * L1x + normalWorld.y * L1y + normalWorld.z * L1z;
+    #endif
+
+    #if defined(LIGHTMAP_SPECULAR)
+    float3 dominantDir = float3(luminance(nL1x), luminance(nL1y), luminance(nL1z));
+
+    o_light.l = dominantDir;
+    half directionality = max(0.001, length(o_light.l));
+    o_light.l /= directionality;
+
+    o_light.colorIntensity = float4(irradiance * directionality, 1.0);
+    o_light.attenuation = directionality;
+    o_light.NoL = saturate(dot(normalWorld, o_light.l));
+    #endif
+
+    return irradiance;
+}
+#endif
+
+#if defined(_BAKERY_MONOSH)
+float3 DecodeMonoSHLightmap(half3 L0, half3 dominantDir, half3 normalWorld, out Light o_light, const bool remapDir = true)
+{
+    o_light = (Light)0;
+
+    float3 nL1 = remapDir? dominantDir * 2 - 1 : dominantDir;
+    float3 L1x = nL1.x * L0 * 2;
+    float3 L1y = nL1.y * L0 * 2;
+    float3 L1z = nL1.z * L0 * 2;
+
+    float3 sh;
+
+    #if BAKERY_SHNONLINEAR
+        float lumaL0 = dot(L0, 1);
+        float lumaL1x = dot(L1x, 1);
+        float lumaL1y = dot(L1y, 1);
+        float lumaL1z = dot(L1z, 1);
+        float lumaSH = shEvaluateDiffuseL1Geomerics_local(lumaL0, float3(lumaL1x, lumaL1y, lumaL1z), normalWorld);
+
+        #if (SPHERICAL_HARMONICS == SPHERICAL_HARMONICS_ZH3)
+            lumaSH = SHEvalLinearL0L1_ZH3Hallucinate(float4(lumaL0, lumaL1y, lumaL1z, lumaL1x), normalWorld);
+        #endif
+
+        sh = L0 + normalWorld.x * L1x + normalWorld.y * L1y + normalWorld.z * L1z;
+        float regularLumaSH = dot(sh, 1);
+
+        sh *= lerp(1, lumaSH / regularLumaSH, saturate(regularLumaSH*16));
+    #else
+        sh = L0 + normalWorld.x * L1x + normalWorld.y * L1y + normalWorld.z * L1z;
+    #endif
+
+    #if defined(LIGHTMAP_SPECULAR)
+    dominantDir = nL1;
+
+    o_light.l = dominantDir;
+    half directionality = max(0.001, length(o_light.l));
+    o_light.l /= directionality;
+
+    o_light.colorIntensity = float4(L0 * directionality, 1.0);
+    o_light.attenuation = directionality;
+    o_light.NoL = saturate(dot(normalWorld, o_light.l));
+    #endif
+
+    return sh;
+}
+#endif
+
+float IrradianceToExposureOcclusion(float3 irradiance)
+{
+    return saturate(length(irradiance + FLT_EPS) * getExposureOcclusionBias());
+}
+
 float3 PrefilteredDFG_LUT(float lod, float NoV) {
 	return UNITY_SAMPLE_TEX2D(_DFG, float2(NoV, lod));
 }
@@ -394,6 +1000,183 @@ float noiseR2(float2 pixel) {
   const float a1 = 0.75487766624669276;
   const float a2 = 0.569840290998;
   return frac(a1 * float(pixel.x) + a2 * float(pixel.y));
+}
+
+// Return light probes or lightmap.
+// Port of UnityGI_Irradiance without ShadingParams
+float3 UnityGI_Irradiance(
+    float3 worldNormal, 
+    float3 worldPos,
+    float4 lightmapUV,
+    float3 ambient,
+    float attenuation,
+    float3 tangentNormal,
+    float3x3 tangentToWorld,
+    #if defined(USING_BAKERY_VERTEXLMSH)
+        float3 ambientSH[3],
+    #elif defined(USING_BAKERY_VERTEXLMDIR)
+        float3 ambientDir,
+    #endif
+    out float occlusion, 
+    out Light derivedLight)
+{
+    float3 irradiance = ambient;
+    float3 irradianceForAO; 
+    occlusion = 1.0;
+    derivedLight = (Light)0;
+
+    #if UNITY_SHOULD_SAMPLE_SH
+        irradiance += Irradiance_SphericalHarmonicsUnity(worldNormal, ambient, worldPos, derivedLight);
+    #endif
+
+    irradianceForAO = irradiance;
+
+    // Should be stripped out at compile time if vertex LM mode is disabled.
+    if (getIsBakeryVertexMode() == false)
+    {
+    #if defined(LIGHTMAP_ON)
+        // Baked lightmaps
+        half4 bakedColorTex = SampleLightmapBicubic(lightmapUV.xy);
+        half3 bakedColor = DecodeLightmap(bakedColorTex);
+
+        #ifdef DIRLIGHTMAP_COMBINED
+            fixed4 bakedDirTex = SampleLightmapDirBicubic(lightmapUV.xy);
+
+            // Bakery's MonoSH mode replaces the regular directional lightmap
+            #if defined(_BAKERY_MONOSH)
+                irradiance = DecodeMonoSHLightmap(bakedColor, bakedDirTex, worldNormal, derivedLight);
+
+                irradianceForAO = irradiance;
+
+                #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                    irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                #endif
+            #else
+                irradiance = DecodeDirectionalLightmap(bakedColor, bakedDirTex, worldNormal);
+
+                irradianceForAO = irradiance;
+
+                #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                    irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                #endif
+
+                #if defined(LIGHTMAP_SPECULAR) 
+                    irradiance = DecodeDirectionalLightmapSpecular(bakedColor, bakedDirTex, worldNormal, false, 0, derivedLight);
+                #endif
+            #endif
+
+        #else // not directional lightmap
+
+            #if defined(USING_BAKERY)
+                #if defined(_BAKERY_RNM)
+                // bakery rnm mode
+                irradiance = DecodeRNMLightmap(bakedColor, lightmapUV.xy, tangentNormal, tangentToWorld, derivedLight);
+                #endif
+
+                #if defined(_BAKERY_SH)
+                // bakery sh mode
+                irradiance = DecodeSHLightmap(bakedColor, lightmapUV.xy, worldNormal, derivedLight);
+                #endif
+
+                irradianceForAO = irradiance;
+
+                #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                    irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                #endif
+
+            #else
+
+                irradiance += bakedColor;
+
+                irradianceForAO = irradiance;
+
+                #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                    irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                #endif
+            #endif
+
+        #endif
+    #endif
+    }
+    #if defined(USING_BAKERY_VERTEXLM)
+    if (getIsBakeryVertexMode() == true)
+    {
+        // Lightmap colour is already stored in ambient.
+        // If directionality is on, then ambientDir contains directionality.
+        // If SH is on, then ambientSH[3] contains the SH data.
+        half4 bakedColorTex = float4(ambient, 1.0);
+
+        #if defined(USING_BAKERY_VERTEXLMSH)
+            irradiance = DecodeSHLightmapVertex(ambient, ambientSH, worldNormal, derivedLight);
+            irradianceForAO = irradiance;
+            #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+            #endif
+        #else
+            #if defined(USING_BAKERY_VERTEXLMDIR)
+                #if defined(_BAKERY_MONOSH)
+                    irradiance = DecodeMonoSHLightmap(ambient, ambientDir, worldNormal, derivedLight, false);
+                    irradianceForAO = irradiance;
+                    #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                        irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                    #endif
+                #else
+                    irradiance = DecodeDirectionalLightmap(ambient, ambientDir, worldNormal);
+                    irradianceForAO = irradiance;
+                    #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                        irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                    #endif
+                    #if defined(LIGHTMAP_SPECULAR) 
+                        irradiance = DecodeDirectionalLightmapSpecular(ambient, ambientDir, worldNormal, false, 0, derivedLight);
+                    #endif
+                #endif 
+            #else
+                // No directionality, just light colour.
+                // Irradiance and IrradianceForAO already contain the irradiance, so just handle subtractive lighting. 
+                #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+                    irradiance = SubtractMainLightWithRealtimeAttenuationFromLightmap(irradiance, attenuation, bakedColorTex, worldNormal);
+                #endif
+            #endif
+        #endif 
+    }
+    #endif
+
+    #if defined(DYNAMICLIGHTMAP_ON)
+        // Dynamic lightmaps
+        fixed4 realtimeColorTex = SampleDynamicLightmapBicubic(lightmapUV.zw);
+        half3 realtimeColor = DecodeRealtimeLightmap(realtimeColorTex);
+
+        irradianceForAO += realtimeColor;
+
+        #ifdef DIRLIGHTMAP_COMBINED
+            half4 realtimeDirTex = SampleDynamicLightmapDirBicubic(lightmapUV.zw);
+            irradiance += DecodeDirectionalLightmap(realtimeColor, realtimeDirTex, worldNormal);
+        #else
+            irradiance += realtimeColor;
+        #endif
+    #endif
+    
+    // VRC Light Volumes also have an additive component which can be added over lightmapping.
+    #if defined(_VRCLV) && !UNITY_SHOULD_SAMPLE_SH
+        Light volumeLight = (Light)0;
+        irradiance += Irradiance_SampleVRCLightVolumeAdditive(worldNormal, worldPos, volumeLight);
+
+        // Merge lights, weighing each light's contribution by their intensity
+        float derivedLum = luminance(derivedLight.colorIntensity.rgb);
+        float volumeLum = luminance(volumeLight.colorIntensity.rgb);
+        float totalIntensity = derivedLum + volumeLum + FLT_EPS;
+        float derivedWeight = derivedLum / totalIntensity;
+        float volumeWeight = volumeLum / totalIntensity;
+
+        derivedLight.l = normalize(derivedLight.l * derivedWeight + volumeLight.l * volumeWeight);
+        derivedLight.colorIntensity = derivedLight.colorIntensity * derivedWeight + volumeLight.colorIntensity * volumeWeight;
+        derivedLight.attenuation = derivedLight.attenuation * derivedWeight + volumeLight.attenuation * volumeWeight;
+        derivedLight.NoL = derivedLight.NoL * derivedWeight + volumeLight.NoL * volumeWeight;
+    #endif
+
+    occlusion = IrradianceToExposureOcclusion(irradianceForAO);
+
+    return irradiance;
 }
 
 #endif
