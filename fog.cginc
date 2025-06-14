@@ -5,29 +5,28 @@
 #include "cnlohr.cginc"
 #include "interpolators.cginc"
 #include "globals.cginc"
+#include "LightVolumes.cginc"
 
 #if defined(_RAYMARCHED_FOG)
 
 struct FogParams {
     float3 color;
     float steps;
-    float density;
     float y_cutoff;
     texture2D dithering_noise;
     float4 dithering_noise_texelsize;
     texture3D density_noise;
     float4 density_noise_scale;
     float3 velocity;
-#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
-    float density_exponent;
-#endif
-#if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-    float height_density_start;
-    float height_density_half_life;
-#endif
-#if defined(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)
-    float height_density_minimum;
-#endif
+    // Physical description of the medium (all in metres or unit-less)
+    float mean_free_path;  //  ⟨s⟩  = 1 / σ_t
+    float albedo;          //  ω   = σ_s / σ_t  (0 … 1)
+    float g;               //  Henyey-Greenstein anisotropy (−1 … 1)
+    float height_scale;    //  H   where ρ(y)=ρ₀·exp(−y/H)
+    float height_offset;
+    float turbulence;      //  Strength of noise modulation (0 … 1)
+    float step_size;
+    float step_growth;
 #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
     texture2D emitter_texture;
     float4 emitter_texture_texelsize;
@@ -66,6 +65,16 @@ float3 getEmitterData(FogParams p, float3 pp)
 }
 #endif
 
+// ---------------------------------------------------------------------------
+// Henyey–Greenstein phase function
+static const float INV_FOUR_PI = 0.079577471545947667884f;  // 1/(4π)
+
+inline float PhaseHG(float cosTheta, float g)
+{
+    float g2 = g * g;
+    return INV_FOUR_PI * (1.0 - g2) / pow(1.0 + g2 - 2.0 * g * cosTheta, 1.5);
+}
+
 struct FogResult {
     float4 color;
     float depth;
@@ -96,7 +105,6 @@ FogResult raymarched_fog(v2f i, FogParams p)
     }
   }
   linearZ = min(linearZ, distance_to_y);
-  linearZ = min(linearZ, 1200);
   linearZ -= ro_epsilon;
 
   float dither = p.dithering_noise.SampleLevel(point_repeat_s,
@@ -104,54 +112,88 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
   const float frame = ((float) AudioLinkData(ALPASS_GENERALVU + int2(1, 0)).x);
   dither = frac(dither + PHI * frame);
-  ro += rd * dither;
-  linearZ -= dither;
 
-  float step_size = linearZ / p.steps;
+  // Exponential stepping parameters
+  float step_size = p.step_size;
+  float step_growth = p.step_growth;
+  
   float3 pp = ro;
-  float4 color = 0;
+  float max_dist = linearZ;
+  
+  float T = 1;    // Transmittance
+  float3 L = 0;   // Accumulated radiance
+  float traveled = 0;
+  
   [loop]
-  for (uint ii = 0; ii < p.steps; ++ii) {
-    pp += step_size * rd;
+  for (uint ii = 0; ii < p.steps && traveled < max_dist; ++ii)
+  {
+    // Clamp step size to avoid missing dense features
+    float current_step = min(step_size, 2.0 * p.mean_free_path);
+    
+    // Apply dithering to this step
+    float dithered_step = current_step * (1.0 - dither + dither * 2.0);
+    
+    // Advance position
+    pp += dithered_step * rd;
+    traveled += dithered_step;
 
+    // --- Density ----------------------------------------------------------
     float3 noise_coord = (pp + _Time[0] * p.velocity) * p.density_noise_scale.xyz;
+    float noise_sample = p.density_noise.SampleLevel(bilinear_repeat_s, noise_coord, 0).r;
+    float noise_factor = lerp(1.0 - 0.5 * p.turbulence, 1.0 + 0.5 * p.turbulence, noise_sample);
 
-    float cur_d = p.density_noise.SampleLevel(bilinear_repeat_s,
-        noise_coord, 0);
+    float height_factor = exp(-max(pp.y - p.height_offset, 0.0) / p.height_scale);
 
-#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
-    cur_d = pow(cur_d, p.density_exponent);
-#endif
+    float sigma_t = noise_factor * height_factor / max(p.mean_free_path, 1e-4);
+    float sigma_s = sigma_t * p.albedo;
 
-    cur_d *= p.density * step_size;
+    // Analytic integration over the segment
+    float exp_term = exp(-sigma_t * dithered_step);
 
-#if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-    float height_clamped = max(pp.y - p.height_density_start, 0);
-    // if half_life = 2 and start = 0, then
-    //   y=2 -> density = 1/2
-    //   y=4 -> density = 1/4
-    //   y=6 -> density = 1/8
-    // if half_life = 3 and start = 0, then
-    //   y=3 -> density = 1/2
-    //   y=6 -> density = 1/4
-    //   y=9 -> density = 1/8
-    float exponent = height_clamped / p.height_density_half_life;
-    float factor = pow(2, -exponent);
-#if defined(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)
-    factor = max(factor, p.height_density_minimum);
-#endif
-    cur_d *= factor;
-#endif
+    // If the segment is almost transparent, skip expensive work
+    if (sigma_t < 1e-6)
+    {
+      T *= exp_term;
+      continue;
+    }
 
-    cur_d = saturate(cur_d);
-
+    // --- Incoming radiance ------------------------------------------------
+    float3 L_in;
 #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
-    float4 cur_c = float4(getEmitterData(p, pp) * cur_d, cur_d);
+    L_in = getEmitterData(p, pp);
 #else
-    float4 cur_c = float4(p.color * cur_d, cur_d);
+    // Indirect from SH / light volumes
+    float3 l00, l01r, l01g, l01b;
+    LightVolumeSH(pp, l00, l01r, l01g, l01b);
+    float3 indirect = LightVolumeEvaluate(float3(0, 1, 0), l00, l01r, l01g, l01b);
+
+    // Direct from the dominant realtime light
+    float3 to_light = (_WorldSpaceLightPos0.w == 0.0) ? normalize(_WorldSpaceLightPos0.xyz)
+                                                     : normalize(_WorldSpaceLightPos0.xyz - pp);
+    float phase = PhaseHG(dot(to_light, -rd), p.g);
+    float3 direct = _LightColor0.rgb * phase;
+
+    L_in = (direct + indirect) * p.color;
 #endif
-    color += (1.0f - color.a) * cur_c;
+
+    // --- Accumulate radiance ---------------------------------------------
+    float scattering_integral = (sigma_s / sigma_t) * (1.0 - exp_term);
+    L += T * scattering_integral * L_in;
+
+    // Update transmittance
+    T *= exp_term;
+
+    // Early exit if virtually opaque
+    if (T < 1e-3)
+      break;
+      
+    // Grow step size exponentially
+    step_size *= step_growth;
   }
+  
+  float4 color;
+  color.rgb = L;
+  color.a = 1 - T;  // Alpha for proper compositing
 
   FogResult r;
   r.color = color;

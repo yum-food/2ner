@@ -317,15 +317,6 @@
 #pragma shader_feature_local _RAYMARCHED_FOG
 //endex
 
-//ifex _Raymarched_Fog_Height_Density_Enabled==0
-#pragma shader_feature_local _RAYMARCHED_FOG_HEIGHT_DENSITY
-#pragma shader_feature_local _CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM
-//endex
-
-//ifex _Raymarched_Fog_Density_Exponent_Enabled==0
-#pragma shader_feature_local _RAYMARCHED_FOG_DENSITY_EXPONENT
-//endex
-
 //ifex _Raymarched_Fog_Emitter_Texture_Enabled==0
 #pragma shader_feature_local _RAYMARCHED_FOG_EMITTER_TEXTURE
 //endex

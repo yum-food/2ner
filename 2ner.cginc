@@ -230,23 +230,20 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
     FogParams fog_params = {
       _Raymarched_Fog_Color.rgb,
       _Raymarched_Fog_Steps,
-      _Raymarched_Fog_Density,
       _Raymarched_Fog_Y_Cutoff,
       _Raymarched_Fog_Dithering_Noise,
       _Raymarched_Fog_Dithering_Noise_TexelSize,
       _Raymarched_Fog_Density_Noise,
       _Raymarched_Fog_Density_Noise_Scale,
       _Raymarched_Fog_Velocity.xyz,
-      #if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
-      _Raymarched_Fog_Density_Exponent,
-      #endif
-      #if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-      _Raymarched_Fog_Height_Density_Start,
-      _Raymarched_Fog_Height_Density_Half_Life,
-      #endif
-      #if defined(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)
-      _Custom30_Fog_Height_Density_Minimum,
-      #endif
+      _Raymarched_Fog_Mean_Free_Path,
+      _Raymarched_Fog_Albedo,
+      _Raymarched_Fog_G,
+      _Raymarched_Fog_Height_Scale,
+      _Raymarched_Fog_Height_Offset,
+      _Raymarched_Fog_Turbulence,
+      _Raymarched_Fog_Step_Size,
+      _Raymarched_Fog_Step_Growth,
       #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
       _Raymarched_Fog_Emitter_Texture,
       _Raymarched_Fog_Emitter_Texture_TexelSize,

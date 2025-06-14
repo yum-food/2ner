@@ -563,16 +563,14 @@ texture3D _Raymarched_Fog_Density_Noise;
 float4 _Raymarched_Fog_Density_Noise_Scale;
 float _Raymarched_Fog_Y_Cutoff;
 float3 _Raymarched_Fog_Velocity;
-#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
-float _Raymarched_Fog_Density_Exponent;
-#endif
-#if defined(_RAYMARCHED_FOG_HEIGHT_DENSITY)
-float _Raymarched_Fog_Height_Density_Start;
-float _Raymarched_Fog_Height_Density_Half_Life;
-#endif
-#if defined(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)
-float _Custom30_Fog_Height_Density_Minimum;
-#endif
+float _Raymarched_Fog_Mean_Free_Path;
+float _Raymarched_Fog_Albedo;
+float _Raymarched_Fog_G;
+float _Raymarched_Fog_Height_Scale;
+float _Raymarched_Fog_Height_Offset;
+float _Raymarched_Fog_Turbulence;
+float _Raymarched_Fog_Step_Size;
+float _Raymarched_Fog_Step_Growth;
 #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
 texture2D _Raymarched_Fog_Emitter_Texture;
 float4 _Raymarched_Fog_Emitter_Texture_TexelSize;

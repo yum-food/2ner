@@ -830,35 +830,19 @@ Shader "yum_food/2ner"
           [ThryToggle(_RAYMARCHED_FOG)] _Raymarched_Fog_Enabled("Enable", Float) = 0
           _Raymarched_Fog_Steps("Steps", Range(1, 32)) = 32
           _Raymarched_Fog_Color("Color", Color) = (0.3, 0.3, 0.3, 1)
-          _Raymarched_Fog_Density("Density", Float) = 1.0
           _Raymarched_Fog_Dithering_Noise("Dithering noise", 2D) = "black" {}
           _Raymarched_Fog_Density_Noise("Density noise", 3D) = "black" {}
           _Raymarched_Fog_Density_Noise_Scale("Density noise scale", Vector) = (1, 1, 1, 0)
           _Raymarched_Fog_Y_Cutoff("Y cutoff", Float) = -1000
           _Raymarched_Fog_Velocity("Velocity", Vector) = (1, -.2, 0, 0)
-
-          //ifex _Raymarched_Fog_Density_Exponent_Enabled==0
-          [HideInInspector] m_start_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
-            [ThryToggle(_RAYMARCHED_FOG_DENSITY_EXPONENT)] _Raymarched_Fog_Density_Exponent_Enabled("Enable", Float) = 0
-            _Raymarched_Fog_Density_Exponent("Exponent", Float) = 1
-          [HideInInspector] m_end_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
-          //endex
-
-          //ifex _Raymarched_Fog_Height_Density_Enabled==0
-          [HideInInspector] m_start_Raymarched_Fog_Height_Density("Height density", Float) = 0
-            [ThryToggle(_RAYMARCHED_FOG_HEIGHT_DENSITY)] _Raymarched_Fog_Height_Density_Enabled("Enable", Float) = 0
-            _Raymarched_Fog_Height_Density_Start("Start elevation", Float) = 0
-            _Raymarched_Fog_Height_Density_Half_Life("Half life", Float) = 1
-
-            //ifex _Custom30_Fog_Height_Density_Minimum_Enabled==0
-            [HideInInspector] m_start_Custom30_Fog_Height_Density_Minimum("Minimum", Float) = 0
-              [ThryToggle(_CUSTOM30_FOG_HEIGHT_DENSITY_MINIMUM)] _Custom30_Fog_Height_Density_Minimum_Enabled("Enable", Float) = 0
-              _Custom30_Fog_Height_Density_Minimum("Minimum factor", Float) = 0
-            [HideInInspector] m_end_Custom30_Fog_Height_Density_Minimum("Minimum", Float) = 0
-              //endex
-          [HideInInspector] m_end_Raymarched_Fog_Height_Density("Height density", Float) = 0
-          //endex
-
+          _Raymarched_Fog_Mean_Free_Path("Mean free path", Float) = 1
+          _Raymarched_Fog_Albedo("Albedo", Float) = 1
+          _Raymarched_Fog_G("G", Float) = 1
+          _Raymarched_Fog_Height_Scale("Height scale", Float) = 10
+          _Raymarched_Fog_Height_Offset("Height offset", Float) = 0
+          _Raymarched_Fog_Turbulence("Turbulence", Float) = 1
+          _Raymarched_Fog_Step_Size("Step size", Float) = 0.8
+          _Raymarched_Fog_Step_Growth("Step growth", Float) = 1.25
           //ifex _Raymarched_Fog_Emitter_Texture_Enabled==0
           [HideInInspector] m_start_Raymarched_Fog_Emitter_Texture("Emitter texture", Float) = 0
             [ThryToggle(_RAYMARCHED_FOG_EMITTER_TEXTURE)] _Raymarched_Fog_Emitter_Texture_Enabled("Enable", Float) = 0
