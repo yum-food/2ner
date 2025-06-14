@@ -151,7 +151,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     // Compute specular ambient occlusion
     float diffuseAO = pbr.ao;
-    float specularAO = computeSpecularAO(NoV, diffuseAO, pbr.roughness);
+    float specularAO = computeSpecularAO(NoV, diffuseAO * light.occlusion, pbr.roughness);
     float3 specularSingleBounceAO = singleBounceAO(specularAO) * energy_compensation;
 
     float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao * light.attenuation;
@@ -159,39 +159,6 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     indirect_standard = Fr + Fd;
   }
-
-  // Apply lightmap-derived directional light for metallic surfaces
-  float3 derivedLightContribution = 0;
-#if defined(_LIGHTMAP_SPECULAR) && defined(LIGHTMAP_ON) && defined(DIRLIGHTMAP_COMBINED)
-  if (light.derivedLight.directionality > 0.001) {
-    // Calculate lighting vectors for derived light
-    const float3 h_derived = normalize(light.view_dir + light.derivedLight.direction);
-    const float LoH_derived = saturate(dot(light.derivedLight.direction, h_derived));
-    const float NoH_derived = saturate(dot(pbr.normal, h_derived));
-    const float NoL_derived = light.derivedLight.NoL;
-    
-    // Apply specular contribution from lightmap (similar to Filament's approach)
-    const float reflectance = computeDielectricF0(_reflectance);
-    const float3 f0 = lerp(reflectance, pbr.albedo, pbr.metallic);
-    
-    // Calculate specular lobe for the derived light
-    float3 Fr_derived = specularLobe(pbr, f0, h_derived, LoH_derived, NoH_derived, NoV, NoL_derived) * PI;
-    
-    // Apply AO and energy compensation
-    float specularAO = computeSpecularAO(NoV, pbr.ao, pbr.roughness);
-    const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
-    const float3 energy_compensation = energyCompensation(dfg, f0);
-    
-    // The derived light contribution is weighted by metallic value
-    // This ensures metallic surfaces get shadowing from lightmaps via specular
-    derivedLightContribution = Fr_derived * light.derivedLight.color * 
-                              light.derivedLight.directionality * 
-                              specularAO * energy_compensation * NoL_derived;
-    
-    // For dielectrics, reduce the diffuse contribution to avoid double-counting
-    indirect_standard *= (1.0 - light.derivedLight.directionality * (1.0 - pbr.metallic));
-  }
-#endif
 
 #if defined(_MATERIAL_TYPE_CLOTH)
   float cloth_mask = _Cloth_Mask.Sample(linear_repeat_s, i.uv01.xy);
@@ -202,7 +169,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   float3 indirect = indirect_standard;
 #endif
 
-  return float4(direct + indirect + derivedLightContribution, pbr.albedo.a);
+  return float4(direct + indirect, pbr.albedo.a);
 }
 
 #endif  // __YUM_BRDF_INC

@@ -3,10 +3,6 @@
 
 #include "features.cginc"
 
-// Filamented global variables
-half _ExposureOcclusion;
-half _LightmapSpecularMaxSmoothness;
-
 #if defined(USING_BAKERY_VERTEXLM)
 float bakeryLightmapMode;
 #endif
@@ -113,6 +109,8 @@ float _Spherical_Harmonics;
 float _reflectance;
 float _specularAntiAliasingVariance;
 float _specularAntiAliasingThreshold;
+float _ExposureOcclusion;
+float _LightmapSpecularMaxSmoothness;
 
 #if defined(_METALLICS)
 float _Smoothness;

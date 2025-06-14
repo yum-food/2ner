@@ -1948,6 +1948,7 @@ Shader "yum_food/2ner"
     [HideInInspector] m_FilamentStuff("Filament stuff", Float) = 0
     [NonModifiableTextureData]_DFG("DFG", 2D) = "white" {}
     [ThryWideEnum(Water, 0.02, Skin, 0.028, Eyes, 0.025, Hair, 0.046, Teeth, 0.058, Fabric, 0.05, Stone, 0.045, Plastic, 0.045, Glass, 0.06, Gemstone, 0.07, Diamond, 0.18)]_reflectance("Reflectance", Float) = 0.028
+    _ExposureOcclusion("Exposure Occlusion", Float) = 1
     [Helpbox]_reflectance_help("Values are documented in the filament whitepaper here https://google.github.io/filament/Filament.html#toc4.8.3.2", Float) = 1
     //ifex _Material_Type_Cloth_Enabled==0
     [HideInInspector] m_start_Material_Type_Cloth("Cloth", Float) = 0

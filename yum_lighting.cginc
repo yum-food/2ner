@@ -253,9 +253,6 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.attenuation = getShadowAttenuation(i);
 #endif
 
-	// Use filamented's comprehensive irradiance calculation
-	float occlusion;
-	Light derivedLight;
 	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, i.binormal, i.normal)));
 	float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
 
@@ -274,8 +271,8 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 					// You'll need to add this to your v2f if using Bakery vertex directional
 					i.bakeryVertexDir,
 			#endif
-			occlusion,            // out occlusion
-			derivedLight          // out Light
+			light.occlusion,            // out occlusion
+			light.derivedLight          // out Light
 	);
 
 #if defined(_MIN_BRIGHTNESS)

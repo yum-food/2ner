@@ -397,6 +397,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS) || defined(OUTLINE_PASS) || defined(EXTRA_STENCIL_COLOR_PASS)
   YumLighting l = GetYumLighting(i, pbr);
+  //return float4(l.occlusion, l.occlusion, l.occlusion, 1);
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)
   applyMatcapsAndRimLighting(i, pbr, l);
