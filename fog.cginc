@@ -127,12 +127,13 @@ FogResult raymarched_fog(v2f i, FogParams p)
   [loop]
   for (uint ii = 0; ii < p.steps && traveled < max_dist; ++ii)
   {
-    // Clamp step size to avoid missing dense features
-    float current_step = min(step_size, 2.0 * p.mean_free_path);
-    
     // Apply dithering to this step
-    float dithered_step = current_step * (1.0 - dither + dither * 2.0);
-    
+    float cur_dither = frac(dither + (ii + 1) * PHI);
+    float dithered_step = step_size * (cur_dither + 0.5);
+    float remaining = max_dist - traveled;
+    remaining = max(remaining, 0.1);
+    dithered_step = min(dithered_step, remaining);
+
     // Advance position
     pp += dithered_step * rd;
     traveled += dithered_step;
