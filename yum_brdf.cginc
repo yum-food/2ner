@@ -91,7 +91,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     #endif
 
     // Cloth specular BRDF
-    float3 Fr = specularLobe(pbr, 0.04, h, LoH, NoH, NoV, NoL_wrapped_s);
+    float3 Fr = specularLobe(pbr, 0.04, h, LoH, NoH, NoV, NoL_wrapped_s) * light.attenuation;
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // No need to multiply by NoL when using subsurface scattering
@@ -117,7 +117,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     float3 Fd = pbr.albedo / PI;
     Fd *= (1.0 - pbr.metallic) * light.attenuation * pbr.ao;
-    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * pbr.ao * PI;
+    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * pbr.ao * PI * light.attenuation;
 
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
     direct_standard = color * light.direct;
@@ -154,7 +154,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float specularAO = computeSpecularAO(NoV, diffuseAO * light.occlusion, pbr.roughness);
     float3 specularSingleBounceAO = singleBounceAO(specularAO) * energy_compensation;
 
-    float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao * light.attenuation;
+    float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao;
     float3 Fr = E * light.specular * specularSingleBounceAO;
 
     indirect_standard = Fr + Fd;

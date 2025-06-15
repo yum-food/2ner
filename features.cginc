@@ -6,6 +6,10 @@
 #pragma shader_feature_local _MATERIAL_TYPE_CLOTH_SUBSURFACE
 //endex
 
+//ifex _Receive_Shadows_Enabled==0
+#pragma shader_feature_local _RECEIVE_SHADOWS
+//endex
+
 //ifex _Alpha_Multiplier_Enabled==0
 #pragma shader_feature_local _ALPHA_MULTIPLIER
 //endex

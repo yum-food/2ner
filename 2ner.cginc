@@ -1,6 +1,9 @@
 #ifndef __2NER_INC
 #define __2NER_INC
 
+#define HANDLE_SHADOWS_BLENDING_IN_GI
+
+#include "UnityStandardCoreMinimal.cginc"
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 #include "AutoLight.cginc"
@@ -186,15 +189,13 @@ v2f vert(appdata v) {
   o.tangent = v.tangent.xyz;
   o.binormal = cross(o.normal, o.tangent) * v.tangent.w;
 
-  UNITY_TRANSFER_LIGHTING(o, v.uv0);
+  UNITY_TRANSFER_LIGHTING(o, v.uv1);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
 #if defined(SHADOW_CASTER_PASS)
 	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
 #endif
 
-#if defined(SHADOWS_SCREEN)
   TRANSFER_SHADOW(o);
-#endif
 
   // Vertex color
   o.color = v.color;
@@ -460,7 +461,15 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   UNITY_APPLY_FOG(_unity_fogCoord, lit.rgb);
 
   return lit;
-#elif defined(SHADOW_CASTER_PASS) || defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS) || defined(DEPTH_PREPASS)
+#elif defined(SHADOW_CASTER_PASS)
+  // Apply dithering for LOD if needed
+  #ifdef LOD_FADE_CROSSFADE
+    UnityApplyDitherCrossFade(i.pos.xy);
+  #endif
+  
+  // Output proper shadow data
+  SHADOW_CASTER_FRAGMENT(i)
+defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS) || defined(DEPTH_PREPASS)
   return 0;
 #endif
 }

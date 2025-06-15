@@ -1,6 +1,8 @@
 #ifndef SERVICE_FILTERING_INCLUDED
 #define SERVICE_FILTERING_INCLUDED
 
+#include "SharedSamplingLib.hlsl"
+
 float4 cubic(float v)
 {
     float4 n = float4(1.0, 2.0, 3.0, 4.0) - v;

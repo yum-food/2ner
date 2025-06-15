@@ -5,6 +5,7 @@
 #include "AutoLight.cginc"
 #include "UnityPBSLighting.cginc"
 #include "UnityLightingCommon.cginc"
+#include "UnityStandardCoreMinimal.cginc"
 
 #include "features.cginc"
 #include "LightVolumes.cginc"
@@ -95,7 +96,12 @@ float getShadowAttenuation(v2f i)
 	float shadow = 1;
 	attenuation = 1;
 #endif
-	attenuation *= lerp(1, shadow, _Shadow_Strength);
+
+  attenuation *= shadow;
+
+  GetBakedAttenuation(attenuation, i.uv01.zw, i.worldPos);
+
+	attenuation = lerp(1, attenuation, _Shadow_Strength);
 	return attenuation;
 }
 
