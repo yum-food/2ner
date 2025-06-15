@@ -830,6 +830,8 @@ Shader "yum_food/2ner"
           [ThryToggle(_RAYMARCHED_FOG)] _Raymarched_Fog_Enabled("Enable", Float) = 0
           _Raymarched_Fog_Steps("Steps", Range(1, 32)) = 32
           _Raymarched_Fog_Color("Color", Color) = (0.3, 0.3, 0.3, 1)
+          _Raymarched_Fog_Direct_Light_Intensity("Direct light intensity", Float) = 1
+          _Raymarched_Fog_Indirect_Light_Intensity("Indirect light intensity", Float) = 1
           _Raymarched_Fog_Dithering_Noise("Dithering noise", 2D) = "black" {}
           _Raymarched_Fog_Density_Noise("Density noise", 3D) = "black" {}
           _Raymarched_Fog_Density_Noise_Scale("Density noise scale", Vector) = (1, 1, 1, 0)
@@ -2439,6 +2441,23 @@ Shader "yum_food/2ner"
 
       #include "2ner.cginc"
 
+      ENDCG
+    }
+    Pass {
+      Name "META"
+      Tags { "LightMode" = "Meta" }
+      
+      Cull Off
+      
+      CGPROGRAM
+      #pragma vertex vert_meta
+      #pragma fragment frag_meta
+      #pragma shader_feature _EMISSION
+      #pragma shader_feature _METALLICGLOSSMAP
+      #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+      
+      #define META_PASS
+      #include "UnityStandardMeta.cginc"
       ENDCG
     }
   }

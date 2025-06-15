@@ -1061,7 +1061,7 @@ class MESH_OT_smart_uv_project_normal_groups(BaseSubmeshOperator, UVOperatorMixi
     island_margin: FloatProperty(
         name="Island Margin",
         description="Margin between UV islands",
-        default=0.01,
+        default=0.003,
         min=0.0,
         max=0.5,
         precision=3

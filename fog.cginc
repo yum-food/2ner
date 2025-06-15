@@ -11,6 +11,8 @@
 
 struct FogParams {
     float3 color;
+    float direct_light_intensity;
+    float indirect_light_intensity;
     float steps;
     float y_cutoff;
     texture2D dithering_noise;
@@ -97,11 +99,11 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
   // Get intersection with plane at elevation y.
   float plane_y = p.y_cutoff;
-  float distance_to_y = 1E3;
+  float distance_to_y = 1E5;
   if (abs(rd.y) > 1E-6) {
     float t = (plane_y - ro.y) / rd.y;
     if (t > 0) {
-      distance_to_y = min(t, 1E3);
+      distance_to_y = min(t, 1E5);
     }
   }
   linearZ = min(linearZ, distance_to_y);
@@ -112,6 +114,16 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
   const float frame = ((float) AudioLinkData(ALPASS_GENERALVU + int2(1, 0)).x);
   dither = frac(dither + PHI * frame);
+
+  // -----------------------------------------------------------------------
+  // Loop-invariant values
+  float inv_mean_free_path = 1.0 / max(p.mean_free_path, 1e-4);
+  float turb_lo = 1.0 - 0.5 * p.turbulence;
+  float turb_hi = 1.0 + 0.5 * p.turbulence;
+  float3 time_offset = _Time[0] * p.velocity;
+
+  // Golden-ratio LCG seed
+  float dither_seq = frac(dither + PHI);
 
   // Exponential stepping parameters
   float step_size = p.step_size;
@@ -128,7 +140,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
   for (uint ii = 0; ii < p.steps && traveled < max_dist; ++ii)
   {
     // Apply dithering to this step
-    float cur_dither = frac(dither + (ii + 1) * PHI);
+    float cur_dither = dither_seq;
     float dithered_step = step_size * (cur_dither + 0.5);
     float remaining = max_dist - traveled;
     remaining = max(remaining, 0.1);
@@ -139,42 +151,52 @@ FogResult raymarched_fog(v2f i, FogParams p)
     traveled += dithered_step;
 
     // --- Density ----------------------------------------------------------
-    float3 noise_coord = (pp + _Time[0] * p.velocity) * p.density_noise_scale.xyz;
+    float3 noise_coord = (pp + time_offset) * p.density_noise_scale.xyz;
     float noise_sample = p.density_noise.SampleLevel(bilinear_repeat_s, noise_coord, 0).r;
-    float noise_factor = lerp(1.0 - 0.5 * p.turbulence, 1.0 + 0.5 * p.turbulence, noise_sample);
+    float fbm_f = 2.0f;
+    float fbm_a = 0.5f;
+    noise_sample += p.density_noise.SampleLevel(bilinear_repeat_s, noise_coord * fbm_f, 0).r * fbm_a;
+    fbm_f *= 2.0f;
+    fbm_a *= 0.5f;
+    noise_sample += p.density_noise.SampleLevel(bilinear_repeat_s, noise_coord * fbm_f, 0).r * fbm_a;
+    noise_sample *= 0.55f;
+
+    noise_sample *= noise_sample;
+
+    float noise_factor = lerp(turb_lo, turb_hi, noise_sample);
 
     float height_factor = exp(-max(pp.y - p.height_offset, 0.0) / p.height_scale);
 
-    float sigma_t = noise_factor * height_factor / max(p.mean_free_path, 1e-4);
+    float sigma_t = noise_factor * height_factor * inv_mean_free_path;
     float sigma_s = sigma_t * p.albedo;
 
     // Analytic integration over the segment
     float exp_term = exp(-sigma_t * dithered_step);
-
-    // If the segment is almost transparent, skip expensive work
-    if (sigma_t < 1e-6)
-    {
-      T *= exp_term;
-      continue;
-    }
 
     // --- Incoming radiance ------------------------------------------------
     float3 L_in;
 #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
     L_in = getEmitterData(p, pp);
 #else
-    // Indirect from SH / light volumes
+#if 1
+    float3 l00 = LightVolumeSH_L0(pp);
+    float3 l01r = 0;
+    float3 l01g = 0;
+    float3 l01b = 0;
+#else
     float3 l00, l01r, l01g, l01b;
     LightVolumeSH(pp, l00, l01r, l01g, l01b);
+#endif
     float3 indirect = LightVolumeEvaluate(float3(0, 1, 0), l00, l01r, l01g, l01b);
 
     // Direct from the dominant realtime light
     float3 to_light = (_WorldSpaceLightPos0.w == 0.0) ? normalize(_WorldSpaceLightPos0.xyz)
                                                      : normalize(_WorldSpaceLightPos0.xyz - pp);
-    float phase = PhaseHG(dot(to_light, -rd), p.g);
+    float phase = PhaseHG(dot(to_light, rd), p.g);
     float3 direct = _LightColor0.rgb * phase;
 
-    L_in = (direct + indirect) * p.color;
+    L_in = (direct * p.direct_light_intensity +
+        indirect * p.indirect_light_intensity) * p.color;
 #endif
 
     // --- Accumulate radiance ---------------------------------------------
@@ -185,9 +207,13 @@ FogResult raymarched_fog(v2f i, FogParams p)
     T *= exp_term;
 
     // Early exit if virtually opaque
-    if (T < 1e-3)
+    if (T < 1e-7)
       break;
       
+    // Advance LCG for the next step
+    dither_seq += PHI;
+    if (dither_seq >= 1.0) dither_seq -= 1.0;
+    
     // Grow step size exponentially
     step_size *= step_growth;
   }

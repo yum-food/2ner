@@ -34,6 +34,9 @@ v2f vert(appdata v) {
   // hide outlines when not locked.
   return (v2f) (0.0/0.0);
 #endif
+#if defined(_RAYMARCHED_FOG) && !defined(FORWARD_BASE_PASS)
+  return (v2f) (0.0/0.0);
+#endif
 #if defined(DEPTH_PREPASS) && !defined(_DEPTH_PREPASS)
   return (v2f) (0.0/0.0);
 #endif
@@ -221,7 +224,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.tangent = UnityObjectToWorldNormal(i.tangent);
   i.binormal = UnityObjectToWorldNormal(i.binormal);
 
-#if defined(_RAYMARCHED_FOG) && defined(FORWARD_BASE_PASS)
+#if defined(_RAYMARCHED_FOG)
   {
     // Many fields are overspecified as .rgb or .xyz. This is because thry's
     // shader locker will inline those fields (incorrectly) as float4. Unity's
@@ -229,6 +232,8 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
     // Overspecifying gets around the issue.
     FogParams fog_params = {
       _Raymarched_Fog_Color.rgb,
+      _Raymarched_Fog_Direct_Light_Intensity,
+      _Raymarched_Fog_Indirect_Light_Intensity,
       _Raymarched_Fog_Steps,
       _Raymarched_Fog_Y_Cutoff,
       _Raymarched_Fog_Dithering_Noise,
@@ -301,6 +306,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
     float4(i.tangent.z, i.binormal.z, i.normal.z, 0),
     float4(0, 0, 0, 1)
   );
+
 #if defined(_CUSTOM30)
 #if defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
@@ -339,6 +345,14 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   );
   YumPbr pbr = GetYumPbr(i, tangentToWorld);
 	pbr.ao *= ssao;
+
+#if defined(META_PASS)
+#if defined(_EMISSION)
+  return pbr.emission;
+#else
+  return 0;
+#endif
+#endif
 
 #if defined(_HARNACK_TRACING)
   HarnackTracingOutput harnack_output = HarnackTracing(i);

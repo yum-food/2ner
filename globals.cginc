@@ -555,6 +555,8 @@ float _SSAO_Bias;
 
 #if defined(_RAYMARCHED_FOG)
 float3 _Raymarched_Fog_Color;
+float _Raymarched_Fog_Direct_Light_Intensity;
+float _Raymarched_Fog_Indirect_Light_Intensity;
 float _Raymarched_Fog_Steps;
 float _Raymarched_Fog_Density;
 texture2D _Raymarched_Fog_Dithering_Noise;
