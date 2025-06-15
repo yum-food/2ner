@@ -219,23 +219,6 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 #endif
 }
 
-float3 SubtractMainLightWithRealtimeAttenuationFromLightmap(float3 lightmap, float attenuation, float4 bakedColorTex, float3 normalWorld) {
-    float3 shadowColor = unity_ShadowColor.rgb;
-    float shadowStrength = _LightShadowData.x;
-
-    // Calculate estimated light contribution that should be shadowed
-    float ndotl = saturate(dot(normalWorld, _WorldSpaceLightPos0.xyz));
-    float3 estimatedLightContributionMaskedByInverseOfShadow = ndotl * (1.0 - attenuation) * _LightColor0.rgb;
-    float3 subtractedLightmap = lightmap - estimatedLightContributionMaskedByInverseOfShadow;
-
-    // Apply shadow color and strength
-    float3 realtimeShadow = max(subtractedLightmap, shadowColor);
-    realtimeShadow = lerp(realtimeShadow, lightmap, shadowStrength);
-
-    // Pick darkest color
-    return min(lightmap, realtimeShadow);
-}
-
 YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	YumLighting light = (YumLighting) 0;
 
@@ -247,11 +230,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	light.direct = _LightColor0.rgb;
 	
 	// Calculate attenuation first, before diffuse lighting
-#if defined(LIGHTMAP_ON)
-  light.attenuation = 1;
-#else
   light.attenuation = getShadowAttenuation(i);
-#endif
 
 	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, i.binormal, i.normal)));
 	float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);

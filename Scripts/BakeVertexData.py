@@ -746,12 +746,12 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator, UVOperatorMixin)
     bl_description = "Pack UV islands vertically sorted by submesh Z position"
 
     padding: FloatProperty(
-        name="Island Padding",
-        description="Padding between UV islands",
-        default=0.02,
+        name="Island Padding (px)",
+        description="Padding between UV islands (in pixels, evaluated against the current render resolution). A value of 4.0 yields ~4 pixels of gap in the final packed result.",
+        default=4.0,
         min=0.0,
-        max=0.1,
-        precision=3
+        max=256.0,
+        precision=1
     )
 
     max_islands_per_row: IntProperty(
@@ -878,8 +878,19 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator, UVOperatorMixin)
         island_data.sort(key=lambda x: x['submesh_z'], reverse=True)
 
         # Pack islands
-        total_area = sum((d['width'] + self.padding) * (d['height'] + self.padding) 
-                        for d in island_data)
+        # Convert pixel padding to UV units based on render resolution (largest axis)
+        render = context.scene.render
+        tex_size = max(
+            render.resolution_x * render.resolution_percentage / 100.0,
+            render.resolution_y * render.resolution_percentage / 100.0,
+        ) or 1024.0  # Fallback to 1024 if resolution is unset/zero
+
+        padding_uv = self.padding / tex_size
+
+        total_area = sum(
+            (d['width'] + padding_uv) * (d['height'] + padding_uv)
+            for d in island_data
+        )
         target_size = min(0.95, math.sqrt(total_area) * 1.2)
         scale_factor = 0.95 / target_size if target_size > 1.0 else 1.0
 
@@ -890,9 +901,12 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator, UVOperatorMixin)
             width = data['width'] * scale_factor
             height = data['height'] * scale_factor
 
+            padding_scaled = padding_uv * scale_factor
+
             # Check if we need to start a new row
-            if current_row and (sum(d['width'] * scale_factor + self.padding for d in current_row) + width > target_size 
-                               or len(current_row) >= self.max_islands_per_row):
+            if current_row and (
+                sum(d['width'] * scale_factor + padding_scaled for d in current_row) + width > target_size
+                or len(current_row) >= self.max_islands_per_row):
                 # Place current row
                 current_u = 0.025
                 row_height = max(d['height'] * scale_factor for d in current_row)
@@ -906,9 +920,9 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator, UVOperatorMixin)
                         uv.x = uv.x * scale_factor + offset_u
                         uv.y = uv.y * scale_factor + offset_v
 
-                    current_u += row_data['width'] * scale_factor + self.padding
+                    current_u += row_data['width'] * scale_factor + padding_scaled
 
-                current_v -= row_height + self.padding
+                current_v -= row_height + padding_scaled
                 current_row = []
 
             current_row.append(data)
@@ -925,7 +939,7 @@ class MESH_OT_pack_uv_islands_by_submesh_z(BaseSubmeshOperator, UVOperatorMixin)
                     uv.x = uv.x * scale_factor + offset_u
                     uv.y = uv.y * scale_factor + offset_v
 
-                current_u += row_data['width'] * scale_factor + self.padding
+                current_u += row_data['width'] * scale_factor + padding_scaled
 
         # Update the mesh
         bmesh.update_edit_mesh(mesh)
