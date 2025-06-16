@@ -35,7 +35,8 @@ float3 specularLobe(YumPbr pbr, float f0,
   return (D * V) * F;
 #else
   // Fresnel
-  const float3 F = F_Schlick(f0, LoH);
+  float f90 = 0.5 + 2.0 * pbr.roughness * LoH * LoH;
+  const float3 F = F_Schlick(f0, f90, LoH);
   // Normal distribution function
   float D = D_GGX(pbr.roughness, NoH, h);
   // Geometric shadowing
@@ -115,7 +116,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     const float3 E = specularDFG(dfg, f0);
     const float3 energy_compensation = energyCompensation(dfg, f0);
 
-    float3 Fd = pbr.albedo / PI;
+    float3 Fd = pbr.albedo * Fd_Burley(pbr.roughness, NoV, NoL, LoH);
     Fd *= (1.0 - pbr.metallic) * light.attenuation * pbr.ao;
     float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * pbr.ao * PI * light.attenuation;
 

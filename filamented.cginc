@@ -877,6 +877,33 @@ float F_Schlick(float f0, float VoH) {
 	return f0 + (1.0 - f0) * pow5(1.0 - VoH);
 }
 
+float F_Schlick(float f0, float f90, float VoH) {
+    // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
+    return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+float3 F_Schlick(const float3 f0, float VoH) {
+    float f = pow5(1.0 - VoH);
+    return f + f0 * (1.0 - f);
+}
+
+float3 F_Schlick(const float3 f0, float f90, float VoH) {
+    // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
+    return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+float Fd_Lambert() {
+    return 1.0 / PI;
+}
+
+float Fd_Burley(float roughness, float NoV, float NoL, float LoH) {
+    // Burley 2012, "Physically-Based Shading at Disney"
+    float f90 = 0.5 + 2.0 * roughness * LoH * LoH;
+    float lightScatter = F_Schlick(1.0, f90, NoL);
+    float viewScatter = F_Schlick(1.0, f90, NoV);
+    return lightScatter * viewScatter * (1.0 / PI);
+}
+
 float V_SmithGGXCorrelated(float roughness, float NoV, float NoL) {
 	// Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"
 	float a2 = roughness * roughness;
