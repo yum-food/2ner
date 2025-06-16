@@ -153,7 +153,7 @@ v2f domain(
   o.eyeVec.w = 1;
 
   // TODO what about UNITY_LIGHTING_COORDS(7,8) and instance id and shit?
-  //UNITY_TRANSFER_LIGHTING(o, DOMAIN_INTERP(_unity_lightcoords));
+  UNITY_TRANSFER_LIGHTING(o, DOMAIN_INTERP(_unity_lightcoords));
   UNITY_TRANSFER_INSTANCE_ID(patch[0], o);
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
   return o;
