@@ -191,11 +191,10 @@ v2f vert(appdata v) {
 
   UNITY_TRANSFER_LIGHTING(o, v.uv1);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
+  TRANSFER_SHADOW(o);
 #if defined(SHADOW_CASTER_PASS)
 	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
 #endif
-
-  TRANSFER_SHADOW(o);
 
   // Vertex color
   o.color = v.color;
@@ -207,13 +206,14 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
-#if defined(_CUSTOM30) && defined(_DEPTH_PREPASS) && !defined(FORWARD_BASE_PASS)
-  return 0;
-#endif
 
   UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
   UNITY_SETUP_INSTANCE_ID(i);
   UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+
+#if defined(_CUSTOM30) && defined(_DEPTH_PREPASS) && !defined(FORWARD_BASE_PASS)
+  return 0;
+#endif
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
@@ -231,6 +231,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
     // shader locker will inline those fields (incorrectly) as float4. Unity's
     // shader compiler doesn't like that, demanding exact type correspondence.
     // Overspecifying gets around the issue.
+
     FogParams fog_params = {
       _Raymarched_Fog_Color.rgb,
       _Raymarched_Fog_Direct_Light_Intensity,
@@ -259,6 +260,17 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
       normalize(cross(_Raymarched_Fog_Emitter_Texture_World_Normal, _Raymarched_Fog_Emitter_Texture_World_Tangent)).xyz,
       _Raymarched_Fog_Emitter_Texture_World_Scale.xy,
       1.0f / _Raymarched_Fog_Emitter_Texture_World_Scale.xy,
+      _Raymarched_Fog_Emitter_Texture_Luminance,
+      _Raymarched_Fog_Emitter_Texture_Intensity,
+      #endif
+      #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE_WARPING)
+      _Raymarched_Fog_Emitter_Texture_Warping_Octaves,
+      _Raymarched_Fog_Emitter_Texture_Warping_Strength,
+      _Raymarched_Fog_Emitter_Texture_Warping_Scale,
+      _Raymarched_Fog_Emitter_Texture_Warping_Speed,
+      #endif
+      #if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+      _Raymarched_Fog_Density_Exponent,
       #endif
     };
     FogResult fog_result = raymarched_fog(i, fog_params);
@@ -301,23 +313,16 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
-  float4x4 tangentToWorld = float4x4(
-    float4(i.tangent.x, i.binormal.x, i.normal.x, 0),
-    float4(i.tangent.y, i.binormal.y, i.normal.y, 0),
-    float4(i.tangent.z, i.binormal.z, i.normal.z, 0),
-    float4(0, 0, 0, 1)
-  );
-
 #if defined(_CUSTOM30)
 #if defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
-  Custom30Output c30_out = BasicCube(i, tangentToWorld);
+  Custom30Output c30_out = BasicCube(i);
 #elif defined(_CUSTOM30_BASICWEDGE)
-  Custom30Output c30_out = BasicWedge(i, tangentToWorld);
+  Custom30Output c30_out = BasicWedge(i);
 #elif defined(_CUSTOM30_BASICPLATFORM)
-  Custom30Output c30_out = BasicPlatform(i, tangentToWorld);
+  Custom30Output c30_out = BasicPlatform(i);
 #elif defined(_CUSTOM30_RAINBOW)
-  Custom30Output c30_out = Rainbow(i, tangentToWorld);
+  Custom30Output c30_out = Rainbow(i);
 #else
   Custom30Output c30_out = (Custom30Output) 0;
 #endif
@@ -332,18 +337,18 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #endif
 
-  float ssao = 1;
-#if defined(_SSAO)
-	float2 debug;
-	ssao = get_ssao(i, tangentToWorld, debug);
-#endif
-
-  tangentToWorld = float4x4(
+  float4x4 tangentToWorld = float4x4(
     float4(i.tangent, 0),
     float4(i.binormal, 0),
     float4(i.normal, 0),
     float4(0, 0, 0, 1)
   );
+
+  float ssao = 1;
+#if defined(_SSAO)
+	float2 debug;
+	ssao = get_ssao(i, tangentToWorld, debug);
+#endif
   YumPbr pbr = GetYumPbr(i, tangentToWorld);
 	pbr.ao *= ssao;
 
@@ -469,7 +474,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   
   // Output proper shadow data
   SHADOW_CASTER_FRAGMENT(i)
-defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS) || defined(DEPTH_PREPASS)
+#elif defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS) || defined(DEPTH_PREPASS)
   return 0;
 #endif
 }

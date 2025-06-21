@@ -10,6 +10,10 @@
 #pragma shader_feature_local _RECEIVE_SHADOWS
 //endex
 
+//ifex _Cast_Shadows_Enabled==0
+#pragma shader_feature_local _CAST_SHADOWS
+//endex
+
 //ifex _Alpha_Multiplier_Enabled==0
 #pragma shader_feature_local _ALPHA_MULTIPLIER
 //endex
@@ -323,6 +327,14 @@
 
 //ifex _Raymarched_Fog_Emitter_Texture_Enabled==0
 #pragma shader_feature_local _RAYMARCHED_FOG_EMITTER_TEXTURE
+//endex
+
+//ifex _Raymarched_Fog_Emitter_Texture_Warping_Enabled==0
+#pragma shader_feature_local _RAYMARCHED_FOG_EMITTER_TEXTURE_WARPING
+//endex
+
+//ifex _Raymarched_Fog_Density_Exponent_Enabled==0
+#pragma shader_feature_local _RAYMARCHED_FOG_DENSITY_EXPONENT
 //endex
 
 //ifex _Unlit_Enabled==0

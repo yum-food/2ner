@@ -580,6 +580,17 @@ float3 _Raymarched_Fog_Emitter_Texture_World_Pos;
 float3 _Raymarched_Fog_Emitter_Texture_World_Normal;
 float3 _Raymarched_Fog_Emitter_Texture_World_Tangent;
 float2 _Raymarched_Fog_Emitter_Texture_World_Scale;
+float _Raymarched_Fog_Emitter_Texture_Luminance;
+float _Raymarched_Fog_Emitter_Texture_Intensity;
+#endif
+#if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE_WARPING)
+float _Raymarched_Fog_Emitter_Texture_Warping_Octaves;
+float _Raymarched_Fog_Emitter_Texture_Warping_Strength;
+float _Raymarched_Fog_Emitter_Texture_Warping_Scale;
+float _Raymarched_Fog_Emitter_Texture_Warping_Speed;
+#endif
+#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+float _Raymarched_Fog_Density_Exponent;
 #endif
 #endif  // _RAYMARCHED_FOG
 

@@ -2,7 +2,7 @@ Shader "yum_food/2ner"
 {
   // Certain parts of the Properties below are derived from Poiyomi's toon
   // shader. The license is available in this repository at the top of
-  // poi.cginc. B.
+  // poi.cginc. C.
 	Properties
   {
       [HideInInspector] shader_master_label("<color=#de719bff>2ner</color>", Float) = 0
@@ -845,6 +845,12 @@ Shader "yum_food/2ner"
           _Raymarched_Fog_Turbulence("Turbulence", Float) = 1
           _Raymarched_Fog_Step_Size("Step size", Float) = 0.8
           _Raymarched_Fog_Step_Growth("Step growth", Float) = 1.25
+          //ifex _Raymarched_Fog_Density_Exponent_Enabled==0
+          [HideInInspector] m_start_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
+            [ThryToggle(_RAYMARCHED_FOG_DENSITY_EXPONENT)] _Raymarched_Fog_Density_Exponent_Enabled("Enable", Float) = 0
+            _Raymarched_Fog_Density_Exponent("Exponent", Float) = 1
+          [HideInInspector] m_end_Raymarched_Fog_Density_Exponent("Density exponent", Float) = 0
+          //endex
           //ifex _Raymarched_Fog_Emitter_Texture_Enabled==0
           [HideInInspector] m_start_Raymarched_Fog_Emitter_Texture("Emitter texture", Float) = 0
             [ThryToggle(_RAYMARCHED_FOG_EMITTER_TEXTURE)] _Raymarched_Fog_Emitter_Texture_Enabled("Enable", Float) = 0
@@ -854,6 +860,19 @@ Shader "yum_food/2ner"
             _Raymarched_Fog_Emitter_Texture_World_Tangent("World tangent", Vector) = (0, 0, 0, 0)
             _Raymarched_Fog_Emitter_Texture_World_Scale("World scale", Vector) = (1, 1, 0, 0)
             _Raymarched_Fog_Emitter_Texture_World_Scale_Rcp("World scale reciprocal", Vector) = (1, 1, 0, 0)
+            _Raymarched_Fog_Emitter_Texture_Luminance("Luminance (W·sr⁻¹·m⁻²)", Float) = 100
+            _Raymarched_Fog_Emitter_Texture_Intensity("Intensity", Float) = 2000
+
+            //ifex _Raymarched_Fog_Emitter_Texture_Warping_Enabled==0
+            [HideInInspector] m_start_Raymarched_Fog_Emitter_Texture_Warping("Emitter texture warping", Float) = 0
+              [ThryToggle(_RAYMARCHED_FOG_EMITTER_TEXTURE_WARPING)] _Raymarched_Fog_Emitter_Texture_Warping_Enabled("Enable", Float) = 0
+              _Raymarched_Fog_Emitter_Texture_Warping_Octaves("Octaves", Float) = 1
+              _Raymarched_Fog_Emitter_Texture_Warping_Strength("Strength", Float) = 0.1
+              _Raymarched_Fog_Emitter_Texture_Warping_Scale("Scale", Float) = 0.1
+              _Raymarched_Fog_Emitter_Texture_Warping_Speed("Speed", Float) = 1.0
+            [HideInInspector] m_end_Raymarched_Fog_Emitter_Texture_Warping("Emitter texture warping", Float) = 0
+            //endex
+
           [HideInInspector] m_end_Raymarched_Fog_Emitter_Texture("Emitter texture", Float) = 0
           //endex
 
@@ -1836,7 +1855,7 @@ Shader "yum_food/2ner"
         //endex
         //ifex _Cast_Shadows_Enabled==0
         [HideInInspector] m_start_Shadow_Casting("Cast shadows", Float) = 0
-        [ThryToggle(_)] _Cast_Shadows_Enabled("Enable", Float) = 1
+        [ThryToggle(_CAST_SHADOWS)] _Cast_Shadows_Enabled("Enable", Float) = 1
         [HideInInspector] m_end_Shadow_Casting("Cast shadows", Float) = 0
         //endex
         //ifex _Wrapped_Lighting_Enabled==0
@@ -2390,59 +2409,21 @@ Shader "yum_food/2ner"
       ENDCG
     }
     //endex
+    //ifex _Cast_Shadows_Enabled==0
     Pass {
-      Name "ShadowCaster"
       Tags { "LightMode" = "ShadowCaster" }
 
-      ZWrite [_ZWrite]
-      ZTest [_ZTest]
-
-      //ifex _Stencil_Enabled==0
-			Stencil
-			{
-				Ref [_StencilRef]
-				ReadMask [_StencilReadMask]
-				WriteMask [_StencilWriteMask]
-				//ifex _StencilType==1
-				Comp [_StencilCompareFunction]
-				Pass [_StencilPassOp]
-				Fail [_StencilFailOp]
-				ZFail [_StencilZFailOp]
-				//endex
-
-				//ifex _StencilType==0
-				CompBack [_StencilBackCompareFunction]
-				PassBack [_StencilBackPassOp]
-				FailBack [_StencilBackFailOp]
-				ZFailBack [_StencilBackZFailOp]
-
-				CompFront [_StencilFrontCompareFunction]
-				PassFront [_StencilFrontPassOp]
-				FailFront [_StencilFrontFailOp]
-				ZFailFront [_StencilFrontZFailOp]
-				//endex
-			}
-      //endex
-
       CGPROGRAM
-      #pragma target 5.0
-      #pragma multi_compile_shadowcaster
       #pragma multi_compile_instancing
+      #pragma multi_compile_shadowcaster
       #pragma multi_compile_fog
-      #pragma vertex vert
-      #pragma fragment frag
+			#pragma vertex vert
+			#pragma fragment frag
 
-      //ifex _Tessellation_Enabled==0
-      #pragma hull hull
-      #pragma domain domain
-      //endex
-
-      #define SHADOW_CASTER_PASS
-
-      #include "2ner.cginc"
-
+			#include "mochie_shadow_caster.cginc"
       ENDCG
     }
+    //endex
     Pass {
       Name "META"
       Tags { "LightMode" = "Meta" }

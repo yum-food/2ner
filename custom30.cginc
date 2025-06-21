@@ -166,7 +166,7 @@ float3 BasicCube_normal(float3 p) {
   return normalize(n);
 }
 
-Custom30Output BasicCube(v2f i, float4x4 tangentToWorld) {
+Custom30Output BasicCube(v2f i) {
   float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
   float3 frag_to_origin = GetFragToOrigin(i);
 
@@ -246,7 +246,7 @@ float3 BasicWedge_normal(float3 p) {
   return normalize(n);
 }
 
-Custom30Output BasicWedge(v2f i, float4x4 tangentToWorld) {
+Custom30Output BasicWedge(v2f i) {
   float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
   float3 frag_to_origin = GetFragToOrigin(i);
 
@@ -347,7 +347,7 @@ float3 BasicPlatform_normal(float3 p) {
   return normalize(n);
 }
 
-Custom30Output BasicPlatform(v2f i, float4x4 tangentToWorld) {
+Custom30Output BasicPlatform(v2f i) {
   float3 obj_space_camera_pos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
   float3 frag_to_origin = GetFragToOrigin(i);
 

@@ -38,6 +38,17 @@ struct FogParams {
     float3 emitter_normal_x_tangent;
     float2 emitter_scale;  // [tangent scale in meters, bitangent scale in meters]
     float2 emitter_scale_rcp;
+    float emitter_luminance;
+    float emitter_intensity;
+#endif
+#if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE_WARPING)
+    float emitter_texture_warping_octaves;
+    float emitter_texture_warping_strength;
+    float emitter_texture_warping_scale;
+    float emitter_texture_warping_speed;
+#endif
+#if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+    float density_exponent;
 #endif
 };
 
@@ -56,14 +67,22 @@ float3 getEmitterData(FogParams p, float3 pp)
   uv *= 0.5;
   uv += 0.5;
 
+  #if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE_WARPING)
+  for (uint ii = 0; ii < p.emitter_texture_warping_octaves; ++ii) {
+    uv += p.dithering_noise.SampleLevel(bilinear_repeat_s,
+        uv * p.emitter_texture_warping_scale + _Time[0] * p.emitter_texture_warping_speed, 0).rgb
+        * p.emitter_texture_warping_strength;
+  }
+  #endif
+
   bool in_range = uv.x < 1 && uv.y < 1 && uv.x > 0 && uv.y > 0;
   [branch]
   if (!in_range) {
-    return p.color;
+    return 0;
   }
 
   float4 c = p.emitter_texture.SampleLevel(linear_clamp_s, uv, 0);
-  return lerp(p.color, c.rgb, c.a);
+  return lerp(0, c.rgb, c.a);
 }
 #endif
 
@@ -81,6 +100,15 @@ struct FogResult {
     float4 color;
     float depth;
 };
+
+float3 aces_filmic(float3 x) {
+  float a = 2.51f;
+  float b = 0.03f;
+  float c = 2.43f;
+  float d = 0.59f;
+  float e = 0.14f;
+  return saturate((x*(a*x+b))/(x*(c*x+d)+e));
+}
 
 FogResult raymarched_fog(v2f i, FogParams p)
 {
@@ -156,12 +184,15 @@ FogResult raymarched_fog(v2f i, FogParams p)
     float fbm_f = 2.0f;
     float fbm_a = 0.5f;
     noise_sample += p.density_noise.SampleLevel(bilinear_repeat_s, noise_coord * fbm_f, 0).r * fbm_a;
-    fbm_f *= 2.0f;
-    fbm_a *= 0.5f;
-    noise_sample += p.density_noise.SampleLevel(bilinear_repeat_s, noise_coord * fbm_f, 0).r * fbm_a;
-    noise_sample *= 0.55f;
+    noise_sample *= 0.66666666f;
 
-    noise_sample *= noise_sample;
+    #if defined(_RAYMARCHED_FOG_DENSITY_EXPONENT)
+    // The expected value (EV) of `noise_sample` is 0.5. If we set it to 1.0f
+    // then exponentiate, the EV will remain closer to 0.5f.
+    noise_sample += 0.5f;
+    noise_sample = pow(noise_sample, p.density_exponent);
+    noise_sample -= 0.5f;
+    #endif
 
     float noise_factor = lerp(turb_lo, turb_hi, noise_sample);
 
@@ -175,18 +206,13 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
     // --- Incoming radiance ------------------------------------------------
     float3 L_in;
-#if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
-    L_in = getEmitterData(p, pp);
-#else
-#if 1
+
+    // No need for directional SH coefficients. Skipping them saves 2 3D texture reads.
     float3 l00 = LightVolumeSH_L0(pp);
     float3 l01r = 0;
     float3 l01g = 0;
     float3 l01b = 0;
-#else
-    float3 l00, l01r, l01g, l01b;
-    LightVolumeSH(pp, l00, l01r, l01g, l01b);
-#endif
+
     float3 indirect = LightVolumeEvaluate(float3(0, 1, 0), l00, l01r, l01g, l01b);
 
     // Direct from the dominant realtime light
@@ -197,6 +223,29 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
     L_in = (direct * p.direct_light_intensity +
         indirect * p.indirect_light_intensity) * p.color;
+
+#if defined(_RAYMARCHED_FOG_EMITTER_TEXTURE)
+    // 1. emitted radiance of the pixel ------------------------------------
+    float3 Le = getEmitterData(p, pp) * p.emitter_luminance;   // [W·sr⁻¹·m⁻²]
+
+    // 2. direction and phase term -----------------------------------------
+    float3 w_e = normalize(p.emitter_world_pos - pp);          // to pixel centre
+    float  phase_e = PhaseHG(dot(w_e, rd), p.g);               // same HG phase
+
+    // 3. pixel's apparent solid angle (flat-quadrilateral approx) ---------
+    float  dist2     = dot(p.emitter_world_pos - pp,
+                           p.emitter_world_pos - pp);
+    float  pixel_area =
+        4.0f * p.emitter_scale.x * p.emitter_scale.y *
+        p.emitter_texture_texelsize.x * p.emitter_texture_texelsize.y;
+    float  solid_ang = pixel_area / dist2;           // Δω ≈ A / r²
+
+    // 4. additive in-scattered radiance from the display ------------------
+    float3 L_em = Le * solid_ang * phase_e * p.emitter_intensity;
+
+    // Use baked luminance as a cheap proxy for shadowing from terrain.
+    float indirect_brightness = luminance(indirect);
+    L_in += L_em * indirect_brightness * indirect_brightness;
 #endif
 
     // --- Accumulate radiance ---------------------------------------------
@@ -224,6 +273,7 @@ FogResult raymarched_fog(v2f i, FogParams p)
 
   FogResult r;
   r.color = color;
+
   //r.color.rgb = saturate(log(linearZ) / 5.0);
   //r.color.rgb = float3(screen_uv, 0);
   //r.color.a = d;

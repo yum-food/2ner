@@ -152,10 +152,12 @@ v2f domain(
   o.eyeVec.xyz = o.worldPos - _WorldSpaceCameraPos;
   o.eyeVec.w = 1;
 
-  // TODO what about UNITY_LIGHTING_COORDS(7,8) and instance id and shit?
-  UNITY_TRANSFER_LIGHTING(o, DOMAIN_INTERP(_unity_lightcoords));
+  UNITY_TRANSFER_LIGHTING(o, o.uv01.zw);
   UNITY_TRANSFER_INSTANCE_ID(patch[0], o);
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+#if defined(SHADOW_CASTER_PASS)
+	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
+#endif
   return o;
 }
 
