@@ -241,7 +241,8 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, i.binormal, i.normal)));
 	float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
 
-	light.diffuse = UnityGI_Irradiance(
+	// Use Bakery-aware irradiance function
+	light.diffuse = BakeryGI_Irradiance(
 			pbr.normal,           // worldNormal
 			i.worldPos,           // worldPos  
 			float4(i.uv01.zw, 0, 0),               // lightmapUV (xy = uv0, zw = uv1)
@@ -249,13 +250,6 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 			light.attenuation,    // attenuation
 			tangentNormal,        // tangentNormal
 			tangentToWorld,       // tangentToWorld
-			#if defined(USING_BAKERY_VERTEXLMSH)
-					// You'll need to add these to your v2f if using Bakery vertex SH
-					i.bakeryVertexSH,
-			#elif defined(USING_BAKERY_VERTEXLMDIR)
-					// You'll need to add this to your v2f if using Bakery vertex directional
-					i.bakeryVertexDir,
-			#endif
 			light.occlusion,            // out occlusion
 			light.derivedLight          // out Light
 	);

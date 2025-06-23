@@ -373,5 +373,12 @@
 #pragma shader_feature_local _GRAYSCALE_LIGHTMAPS
 //endex
 
+//ifex _Bakery_Enabled==0
+#pragma shader_feature_local _BAKERY
+#pragma shader_feature_local _BAKERY_RNM
+#pragma shader_feature_local _BAKERY_SH
+#pragma shader_feature_local _BAKERY_MONOSH
+//endex
+
 #endif  // __FEATURES_INC
 

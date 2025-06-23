@@ -236,6 +236,21 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+// Check if Bakery is available
+#if defined(_BAKERY_RNM) || defined(_BAKERY_SH) || defined(_BAKERY_MONOSH)
+    #define USING_BAKERY 1
+#endif
+
+// Bakery textures (Unity auto-binds these)
+#if defined(_BAKERY_RNM) || defined(_BAKERY_SH) || defined(_BAKERY_MONOSH)
+TEXTURE2D(_RNM0);
+TEXTURE2D(_RNM1);
+TEXTURE2D(_RNM2);
+SAMPLER(sampler_RNM0);
+#endif
+
+
+
 #define MIN_PERCEPTUAL_ROUGHNESS 0.045
 
 UNITY_DECLARE_TEX2D_FLOAT(_DFG);
@@ -1097,7 +1112,7 @@ float3 UnityGI_Irradiance(
             #if defined(USING_BAKERY)
                 #if defined(_BAKERY_RNM)
                 // bakery rnm mode
-                irradiance = DecodeRNMLightmap(bakedColor, lightmapUV.xy, tangentNormal, tangentToWorld, derivedLight);
+                irradiance = DecodeRNMLightmap(0, lightmapUV.xy, tangentNormal, tangentToWorld, derivedLight);
                 #endif
 
                 #if defined(_BAKERY_SH)
@@ -1125,6 +1140,7 @@ float3 UnityGI_Irradiance(
         #endif
     #endif
     }
+
     #if defined(USING_BAKERY_VERTEXLM)
     if (getIsBakeryVertexMode() == true)
     {
@@ -1206,5 +1222,39 @@ float3 UnityGI_Irradiance(
     return irradiance;
 }
 
-#endif
+// Simplified integration function using existing Unity/Bakery functions
+float3 BakeryGI_Irradiance(
+    float3 worldNormal,
+    float3 worldPos,
+    float4 lightmapUV,  // xy = uv0, zw = uv1
+    float3 ambient,
+    float attenuation,
+    float3 tangentNormal,
+    float3x3 tangentToWorld,
+    out float occlusion,
+    out Light derivedLight)
+{
+    // The existing UnityGI_Irradiance function already handles all Bakery modes correctly,
+    // including MonoSH via the DecodeMonoSHLightmap function that's already defined above
+    float3 ambientSH[3] = {float3(0,0,0), float3(0,0,0), float3(0,0,0)};
+    float3 ambientDir = float3(0,0,0);
+    
+    return UnityGI_Irradiance(
+        worldNormal,
+        worldPos,
+        lightmapUV,
+        ambient,
+        attenuation,
+        tangentNormal,
+        tangentToWorld,
+        #if defined(USING_BAKERY_VERTEXLMSH)
+            ambientSH,
+        #elif defined(USING_BAKERY_VERTEXLMDIR)
+            ambientDir,
+        #endif
+        occlusion,
+        derivedLight
+    );
+}
 
+#endif // __FILAMENTED_INC

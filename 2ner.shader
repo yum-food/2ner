@@ -1905,6 +1905,14 @@ Shader "yum_food/2ner"
           _LTCGI_DiffuseColor("Diffuse color", Color) = (1, 1, 1, 1)
         [HideInInspector] m_end_LTCGI("LTCGI", Float) = 0
         //endex
+        //ifex _Bakery_Enabled==0
+        [HideInInspector] m_start_Bakery("Bakery Lightmapping", Float) = 0
+          [ThryToggle(_BAKERY)] _Bakery_Enabled("Enable", Float) = 0
+          [ThryToggle(_BAKERY_RNM)] _Bakery_RNM_Enabled("RNM", Float) = 0
+          [ThryToggle(_BAKERY_SH)] _Bakery_SH_Enabled("SH", Float) = 0
+          [ThryToggle(_BAKERY_MONOSH)] _Bakery_MONOSH_Enabled("MonoSH", Float) = 0
+        [HideInInspector] m_end_Bakery("Bakery Lightmapping", Float) = 0
+        //endex
         //ifex _Grayscale_Lightmaps_Enabled==0
         [HideInInspector] m_start_Grayscale_Lightmaps("Grayscale Lightmaps", Float) = 0
           [ThryToggle(_GRAYSCALE_LIGHTMAPS)] _Grayscale_Lightmaps_Enabled("Enable", Float) = 0
