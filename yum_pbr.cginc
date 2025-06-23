@@ -8,6 +8,7 @@
 #include "glitter.cginc"
 #include "globals.cginc"
 #include "math.cginc"
+#include "oklab.cginc"
 #include "texture_utils.cginc"
 
 struct YumPbr {
@@ -133,6 +134,14 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 
   applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness);
   propagateRoughness(result.smoothness, result.roughness_perceptual, result.roughness);
+
+#if defined(_OKLCH_CORRECTION)
+  float3 lch = LRGBtoOKLCH(result.albedo.rgb);
+  lch.x = lch.x * _Oklch_Correction_L;
+  lch.y = lch.y * _Oklch_Correction_C;
+  lch.z = lch.z * _Oklch_Correction_H;
+  result.albedo.rgb = OKLCHtoLRGB(lch);
+#endif
 
   result.normal = normalize(mul(normal_tangent, tangentToWorld));
 

@@ -345,6 +345,7 @@ Shader "yum_food/2ner"
             _Decal0_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL0_TILING_MODE)] _Decal0_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL0_REPLACE_ALPHA)] _Decal0_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL0_MULTIPLY)] _Decal0_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal0_Normal_Enabled==0
             [HideInInspector] m_start_Decal0_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL0_NORMAL)] _Decal0_Normal_Enabled("Enable", Float) = 0
@@ -406,6 +407,7 @@ Shader "yum_food/2ner"
             _Decal1_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL1_TILING_MODE)] _Decal1_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL1_REPLACE_ALPHA)] _Decal1_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL1_MULTIPLY)] _Decal1_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal1_Normal_Enabled==0
             [HideInInspector] m_start_Decal1_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL1_NORMAL)] _Decal1_Normal_Enabled("Enable", Float) = 0
@@ -467,6 +469,7 @@ Shader "yum_food/2ner"
             _Decal2_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL2_TILING_MODE)] _Decal2_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL2_REPLACE_ALPHA)] _Decal2_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL2_MULTIPLY)] _Decal2_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal2_Normal_Enabled==0
             [HideInInspector] m_start_Decal2_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL2_NORMAL)] _Decal2_Normal_Enabled("Enable", Float) = 0
@@ -528,6 +531,7 @@ Shader "yum_food/2ner"
             _Decal3_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL3_TILING_MODE)] _Decal3_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL3_REPLACE_ALPHA)] _Decal3_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL3_MULTIPLY)] _Decal3_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal3_Normal_Enabled==0
             [HideInInspector] m_start_Decal3_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL3_NORMAL)] _Decal3_Normal_Enabled("Enable", Float) = 0
@@ -589,6 +593,7 @@ Shader "yum_food/2ner"
             _Decal4_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL4_TILING_MODE)] _Decal4_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL4_REPLACE_ALPHA)] _Decal4_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL4_MULTIPLY)] _Decal4_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal4_Normal_Enabled==0
             [HideInInspector] m_start_Decal4_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL4_NORMAL)] _Decal4_Normal_Enabled("Enable", Float) = 0
@@ -650,6 +655,7 @@ Shader "yum_food/2ner"
             _Decal5_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL5_TILING_MODE)] _Decal5_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL5_REPLACE_ALPHA)] _Decal5_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL5_MULTIPLY)] _Decal5_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal5_Normal_Enabled==0
             [HideInInspector] m_start_Decal5_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL5_NORMAL)] _Decal5_Normal_Enabled("Enable", Float) = 0
@@ -711,6 +717,7 @@ Shader "yum_food/2ner"
             _Decal6_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL6_TILING_MODE)] _Decal6_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL6_REPLACE_ALPHA)] _Decal6_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL6_MULTIPLY)] _Decal6_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal6_Normal_Enabled==0
             [HideInInspector] m_start_Decal6_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL6_NORMAL)] _Decal6_Normal_Enabled("Enable", Float) = 0
@@ -772,6 +779,7 @@ Shader "yum_food/2ner"
             _Decal7_UV_Channel("UV channel", Range(0, 3.1)) = 0
             [ThryToggle(_DECAL7_TILING_MODE)] _Decal7_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL7_REPLACE_ALPHA)] _Decal7_Replace_Alpha_Mode("Replace alpha", Float) = 0
+            [ThryToggle(_DECAL7_MULTIPLY)] _Decal7_Replace_Multiply_Mode("Multiply", Float) = 0
             //ifex _Decal7_Normal_Enabled==0
             [HideInInspector] m_start_Decal7_Normal("Normal", Float) = 0
               [ThryToggle(_DECAL7_NORMAL)] _Decal7_Normal_Enabled("Enable", Float) = 0
@@ -824,6 +832,17 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Decal7("Decal 7", Float) = 0
           //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
+
+        [HideInInspector] m_start_Color_Correction("Color correction", Float) = 0
+          //ifex _Oklch_Correction_Enabled==0
+          [HideInInspector] m_start_Oklch_Correction("Oklch", Float) = 0
+            [ThryToggle(_OKLCH_CORRECTION)] _Oklch_Correction_Enabled("Enable", Float) = 0
+            _Oklch_Correction_L("L", Float) = 1
+            _Oklch_Correction_C("C", Float) = 1
+            _Oklch_Correction_H("H", Float) = 1
+          [HideInInspector] m_end_Oklch_Correction("Oklch", Float) = 0
+          //endex
+        [HideInInspector] m_end_Color_Correction("Color correction", Float) = 0
 
         //ifex _Raymarched_Fog_Enabled==0
         [HideInInspector] m_start_Raymarched_Fog("Raymarched fog", Float) = 0

@@ -594,4 +594,10 @@ float _Raymarched_Fog_Density_Exponent;
 #endif
 #endif  // _RAYMARCHED_FOG
 
+#if defined(_OKLCH_CORRECTION)
+float _Oklch_Correction_L;
+float _Oklch_Correction_C;
+float _Oklch_Correction_H;
+#endif  // _OKLCH_CORRECTION
+
 #endif  // __GLOBALS_INC

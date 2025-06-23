@@ -72,7 +72,7 @@ float2 applyDomainWarping(DecalParams params, float2 uv) {
     float2 time_vec = float2(-0.83, 0.97) * _Time.y * params.domain_warping_speed;
 
     [loop]
-    for (uint ii = 0; ii < params.domain_warping_octaves; ii++) {
+    for (uint ii = 0; ii < (uint) params.domain_warping_octaves; ii++) {
         float2 noise_uv = warped_uv * frequency + time_vec * frequency;
         float2 noise_sample = params.domain_warping_noise.SampleLevel(trilinear_repeat_s, noise_uv, 0);
         float2 noise_offset = (noise_sample.xy * 2.0 - 1.0);
@@ -201,6 +201,9 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 #define APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, params)       \
     albedo = lerp(albedo, decal_albedo, decal_mask * params.opacity);
 
+#define APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, params)       \
+    albedo = lerp(albedo, decal_albedo * albedo, decal_mask * params.opacity);
+
 #define APPLY_DECAL_SEC05_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, params)        \
     float3 decal_normal = UnpackScaleNormal(                                                        \
             params.normalTex.Sample(trilinear_repeat_s, decal_uv),                                     \
@@ -247,6 +250,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL0_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL0_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -290,6 +295,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL1_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL1_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -333,6 +340,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL2_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL2_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -376,6 +385,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL3_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL3_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -419,6 +430,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL4_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL4_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -462,6 +475,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL5_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL5_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -505,6 +520,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL6_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL6_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
@@ -548,6 +565,8 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
         #if defined(_DECAL7_REPLACE_ALPHA)
         APPLY_DECAL_SEC04_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, decal);
+        #elif defined(_DECAL7_MULTIPLY)
+        APPLY_DECAL_SEC04_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, decal);
         #else
         APPLY_DECAL_SEC04_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, decal);
         #endif
