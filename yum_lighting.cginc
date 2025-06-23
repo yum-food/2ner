@@ -113,6 +113,13 @@ float3 getDirectLightDirection(v2f i) {
 #endif
 }
 
+float4 getDirectLightColorIntensity() {
+	// Properly separate light color from intensity like filamented
+	if (_LightColor0.w <= 0) return float4(0, 0, 0, 0);
+	_LightColor0 += 0.000001; // Avoid division by zero
+	return float4(_LightColor0.xyz / _LightColor0.w, _LightColor0.w);
+}
+
 float GetLodRoughness(float roughness) {
 	return roughness * (1.7 - 0.7 * roughness);
 }
@@ -195,7 +202,9 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 
   light.dir = getDirectLightDirection(i);
 
-	light.direct = _LightColor0.rgb;
+	// Use proper light color/intensity separation
+	float4 lightColorIntensity = getDirectLightColorIntensity();
+	light.direct = lightColorIntensity.rgb * lightColorIntensity.w;
 	
 	// Calculate attenuation first, before diffuse lighting
   light.attenuation = getShadowAttenuation(i);

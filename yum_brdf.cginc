@@ -10,6 +10,14 @@
 #include "yum_pbr.cginc"
 #include "yum_lighting.cginc"
 
+// Define Filament quality levels for proper f90 calculation
+#ifndef FILAMENT_QUALITY
+#define FILAMENT_QUALITY_LOW 0
+#define FILAMENT_QUALITY_NORMAL 1
+#define FILAMENT_QUALITY_HIGH 2
+#define FILAMENT_QUALITY FILAMENT_QUALITY_NORMAL
+#endif
+
 #if defined(_MATERIAL_TYPE_CLOTH)
 float D_Charlie(float roughness, float NoH) {
   // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
@@ -25,7 +33,7 @@ float V_Cloth(float NoV, float NoL) {
   return 1.0 / (4.0 * (NoL + NoV - NoL * NoV));
 }
 
-float3 specularLobe(YumPbr pbr, float f0,
+float3 specularLobe(YumPbr pbr, float3 f0,
     float3 h, float LoH, float NoH, float NoV, float NoL)
 {
 #if defined(_MATERIAL_TYPE_CLOTH)
@@ -34,9 +42,13 @@ float3 specularLobe(YumPbr pbr, float f0,
   float3 F = _Cloth_Sheen_Color;
   return (D * V) * F;
 #else
-  // Fresnel
-  float f90 = 0.5 + 2.0 * pbr.roughness * LoH * LoH;
+  // Use Filament's proper f90 calculation for better energy conservation
+#if FILAMENT_QUALITY == FILAMENT_QUALITY_LOW
+  const float3 F = F_Schlick(f0, LoH); // f90 = 1.0
+#else
+  float f90 = saturate(dot(f0, (50.0 * 0.33)));
   const float3 F = F_Schlick(f0, f90, LoH);
+#endif
   // Normal distribution function
   float D = D_GGX(pbr.roughness, NoH, h);
   // Geometric shadowing
@@ -47,6 +59,10 @@ float3 specularLobe(YumPbr pbr, float f0,
 
 float computeDielectricF0(float reflectance) {
   return 0.16 * reflectance * reflectance;
+}
+
+float3 computeDiffuseColor(float3 baseColor, float metallic) {
+  return baseColor * (1.0 - metallic);
 }
 
 float computeSpecularAO(float NoV, float visibility, float roughness) {
@@ -72,15 +88,13 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float NoV = max(1E-4, dot(pbr.normal, light.view_dir));
   const float NoH = saturate(dot(pbr.normal, h));
   const float VoL = saturate(dot(light.view_dir, light.dir));
-  const float f90 = 0.5 + 2 * pbr.roughness * LoH * LoH;
 
 #if defined(_MATERIAL_TYPE_CLOTH)
   // Cloth specific BRDF
   float3 direct_cloth;
   {
-    // Cloth diffuse BRDF - apply proper energy conservation
-    // Use a proper diffuse BRDF term instead of raw albedo
-    float3 Fd = pbr.albedo / PI;
+    // Cloth diffuse BRDF - use Fd_Lambert and multiply by PI to match Unity intensities
+    float3 Fd = pbr.albedo * Fd_Lambert() * PI;
     Fd *= light.attenuation;
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
@@ -91,8 +105,8 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
       Fd *= saturate(_Cloth_Subsurface_Color + NoL);
     #endif
 
-    // Cloth specular BRDF
-    float3 Fr = specularLobe(pbr, 0.04, h, LoH, NoH, NoV, NoL_wrapped_s) * light.attenuation;
+    // Cloth specular BRDF - multiply by PI to match Unity intensities
+    float3 Fr = specularLobe(pbr, float3(0.04, 0.04, 0.04), h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation;
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // No need to multiply by NoL when using subsurface scattering
@@ -105,21 +119,26 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
   float3 direct_standard;
   {
-    // Typical values for different materials listed here:
-    //   https://google.github.io/filament/Filament.html#toc4.8.3.2
-    // TODO expose an enum for different types of materials
-    const float reflectance = computeDielectricF0(_reflectance);
+    // Fix reflectance calculation - _reflectance is already a 0-1 value, not an f0 value
+    // Default reflectance for dielectrics is typically 0.5, which gives f0 = 0.04
+    const float dielectric_f0 = _reflectance;
     // f0 = amount of light reflected back when viewing surface at a right angle
-    // Change to match the design document
-    const float3 f0 = lerp(reflectance, pbr.albedo, pbr.metallic);
+    const float3 f0 = lerp(dielectric_f0, pbr.albedo, pbr.metallic);
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
     const float3 E = specularDFG(dfg, f0);
     const float3 energy_compensation = energyCompensation(dfg, f0);
 
-    float3 Fd = pbr.albedo * Fd_Burley(pbr.roughness, NoV, NoL, LoH);
-    Fd *= (1.0 - pbr.metallic) * light.attenuation * pbr.ao;
-    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * pbr.ao * PI * light.attenuation;
+    // Compute proper diffuse color with metallic blending
+    float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
+    
+    // Fd_Burley already includes 1/PI, so multiply by PI to match Unity intensities
+    float3 Fd = diffuseColor * Fd_Burley(pbr.roughness, NoV, NoL, LoH) * PI;
+    Fd *= light.attenuation * pbr.ao;
+    
+    // Multiply by PI to match Unity intensities (same as Filament's implementation)
+    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation;
 
+    // Apply energy compensation to specular term
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
     direct_standard = color * light.direct;
   }
@@ -144,8 +163,8 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
   float3 indirect_standard;
   {
-    const float reflectance = computeDielectricF0(_reflectance);
-    const float3 f0 = reflectance * (1.0 - pbr.metallic) + pbr.albedo * pbr.metallic;
+    const float dielectric_f0 = computeDielectricF0(_reflectance);
+    const float3 f0 = lerp(dielectric_f0, pbr.albedo, pbr.metallic);
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
     const float3 E = specularDFG(dfg, f0);
     const float3 energy_compensation = energyCompensation(dfg, f0);
@@ -155,7 +174,11 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float specularAO = computeSpecularAO(NoV, diffuseAO * light.occlusion, pbr.roughness);
     float3 specularSingleBounceAO = singleBounceAO(specularAO) * energy_compensation;
 
-    float3 Fd = pbr.albedo * light.diffuse * (1.0 - E) * (1.0 - pbr.metallic) * pbr.ao;
+    // Use proper diffuse color calculation
+    float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
+    float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao;
+    
+    // Apply energy compensation to indirect specular (critical fix)
     float3 Fr = E * light.specular * specularSingleBounceAO;
 
     indirect_standard = Fr + Fd;
