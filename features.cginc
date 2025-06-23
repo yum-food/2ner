@@ -369,5 +369,9 @@
 #pragma shader_feature_local _OKLCH_CORRECTION
 //endex
 
+//ifex _Grayscale_Lightmaps_Enabled==0
+#pragma shader_feature_local _GRAYSCALE_LIGHTMAPS
+//endex
+
 #endif  // __FEATURES_INC
 

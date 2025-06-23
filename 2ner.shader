@@ -1866,17 +1866,6 @@ Shader "yum_food/2ner"
           [HideInInspector] m_end_Fallback_Cubemap_Limit_Metallic("Limit override to metallic", Float) = 0
         [HideInInspector] m_end_Fallback_Cubemap("Fallback Cubemap", Float) = 0
         //endex
-        //ifex _Receive_Shadows_Enabled==0
-        [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
-        [ThryToggle(_RECEIVE_SHADOWS)] _Receive_Shadows_Enabled("Enable", Float) = 1
-        _Shadow_Strength("Shadow strength", Range(0, 1)) = 0.25
-        [HideInInspector] m_end_Shadow_Receiving("Shadows", Float) = 0
-        //endex
-        //ifex _Cast_Shadows_Enabled==0
-        [HideInInspector] m_start_Shadow_Casting("Cast shadows", Float) = 0
-        [ThryToggle(_CAST_SHADOWS)] _Cast_Shadows_Enabled("Enable", Float) = 1
-        [HideInInspector] m_end_Shadow_Casting("Cast shadows", Float) = 0
-        //endex
         //ifex _Wrapped_Lighting_Enabled==0
         [HideInInspector] m_start_WrappedLighting("Wrapped lighting", Float) = 0
         [ThryToggle(_WRAPPED_LIGHTING)] _Wrapped_Lighting_Enabled("Enable", Float) = 1
@@ -1916,6 +1905,11 @@ Shader "yum_food/2ner"
           _LTCGI_DiffuseColor("Diffuse color", Color) = (1, 1, 1, 1)
         [HideInInspector] m_end_LTCGI("LTCGI", Float) = 0
         //endex
+        //ifex _Grayscale_Lightmaps_Enabled==0
+        [HideInInspector] m_start_Grayscale_Lightmaps("Grayscale Lightmaps", Float) = 0
+          [ThryToggle(_GRAYSCALE_LIGHTMAPS)] _Grayscale_Lightmaps_Enabled("Enable", Float) = 0
+        [HideInInspector] m_end_Grayscale_Lightmaps("Grayscale Lightmaps", Float) = 0
+        //endex
 
       [HideInInspector] m_renderingOptions("Rendering Options", Float) = 0
 
@@ -1924,6 +1918,18 @@ Shader "yum_food/2ner"
       [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 1
       [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 0
       [Enum(Off, 0, On, 1)] _ZWrite("ZWrite", Int) = 1
+
+      //ifex _Receive_Shadows_Enabled==0
+      [HideInInspector] m_start_Shadow_Receiving("Receive shadows", Float) = 0
+      [ThryToggle(_RECEIVE_SHADOWS)] _Receive_Shadows_Enabled("Enable", Float) = 1
+      _Shadow_Strength("Shadow strength", Range(0, 1)) = 0.25
+      [HideInInspector] m_end_Shadow_Receiving("Shadows", Float) = 0
+      //endex
+      //ifex _Cast_Shadows_Enabled==0
+      [HideInInspector] m_start_Shadow_Casting("Cast shadows", Float) = 0
+      [ThryToggle(_CAST_SHADOWS)] _Cast_Shadows_Enabled("Enable", Float) = 1
+      [HideInInspector] m_end_Shadow_Casting("Cast shadows", Float) = 0
+      //endex
 
       //ifex _Depth_Prepass_Enabled==0
       [HideInInspector] m_start_Depth_Prepass("Depth Prepass", Float) = 0

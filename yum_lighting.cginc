@@ -259,6 +259,9 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 			light.occlusion,            // out occlusion
 			light.derivedLight          // out Light
 	);
+#if defined(_GRAYSCALE_LIGHTMAPS)
+  light.diffuse.gb = light.diffuse.r;
+#endif
 
 #if defined(_MIN_BRIGHTNESS)
   light.diffuse = max(_Min_Brightness, light.diffuse);
