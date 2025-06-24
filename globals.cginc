@@ -300,7 +300,14 @@ texture2D _Decal##n##_Domain_Warping_Noise; \
 float _Decal##n##_Domain_Warping_Octaves; \
 float _Decal##n##_Domain_Warping_Strength; \
 float _Decal##n##_Domain_Warping_Scale; \
-float _Decal##n##_Domain_Warping_Speed;
+float _Decal##n##_Domain_Warping_Speed; \
+\
+float3 _Decal##n##_Emission_Color; \
+float _Decal##n##_Emission_Strength; \
+\
+float _Decal##n##_Emissions_Proximity_Min_Distance; \
+float _Decal##n##_Emissions_Proximity_Max_Distance;
+
 #if defined(_DECAL0)
 DECLARE_DECAL_VARIABLES(0)
 #endif

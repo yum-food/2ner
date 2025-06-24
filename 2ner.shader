@@ -361,6 +361,21 @@ Shader "yum_food/2ner"
               _Decal0_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal0_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal0_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal0_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL0_EMISSIONS)] _Decal0_Emissions_Enabled("Enable", Float) = 0
+              _Decal0_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal0_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL0_EMISSION_MODE_ADD_PRODUCT)] _Decal0_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal0_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal0_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL0_EMISSIONS_PROXIMITY)] _Decal0_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal0_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal0_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal0_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal0_Emissions("Emissions", Float) = 0
+            //endex
             //ifex _Decal0_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal0_Domain_Warping("Domain warping", Float) = 0
               [ThryToggle(_DECAL0_DOMAIN_WARPING)] _Decal0_Domain_Warping_Enabled("Enable", Float) = 0
@@ -422,6 +437,21 @@ Shader "yum_food/2ner"
               _Decal1_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal1_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal1_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal1_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal1_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL1_EMISSIONS)] _Decal1_Emissions_Enabled("Enable", Float) = 0
+              _Decal1_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal1_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL1_EMISSION_MODE_ADD_PRODUCT)] _Decal1_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal1_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal1_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL1_EMISSIONS_PROXIMITY)] _Decal1_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal1_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal1_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal1_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal1_Emissions("Emissions", Float) = 0
             //endex
             //ifex _Decal1_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal1_Domain_Warping("Domain warping", Float) = 0
@@ -485,6 +515,21 @@ Shader "yum_food/2ner"
               _Decal2_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal2_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal2_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal2_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL2_EMISSIONS)] _Decal2_Emissions_Enabled("Enable", Float) = 0
+              _Decal2_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal2_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL2_EMISSION_MODE_ADD_PRODUCT)] _Decal2_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal2_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal2_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL2_EMISSIONS_PROXIMITY)] _Decal2_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal2_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal2_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal2_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal2_Emissions("Emissions", Float) = 0
+            //endex
             //ifex _Decal2_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal2_Domain_Warping("Domain warping", Float) = 0
               [ThryToggle(_DECAL2_DOMAIN_WARPING)] _Decal2_Domain_Warping_Enabled("Enable", Float) = 0
@@ -546,6 +591,21 @@ Shader "yum_food/2ner"
               _Decal3_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal3_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal3_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal3_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal3_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL3_EMISSIONS)] _Decal3_Emissions_Enabled("Enable", Float) = 0
+              _Decal3_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal3_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL3_EMISSION_MODE_ADD_PRODUCT)] _Decal3_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal3_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal3_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL3_EMISSIONS_PROXIMITY)] _Decal3_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal3_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal3_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal3_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal3_Emissions("Emissions", Float) = 0
             //endex
             //ifex _Decal3_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal3_Domain_Warping("Domain warping", Float) = 0
@@ -609,6 +669,21 @@ Shader "yum_food/2ner"
               _Decal4_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal4_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal4_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal4_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL4_EMISSIONS)] _Decal4_Emissions_Enabled("Enable", Float) = 0
+              _Decal4_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal4_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL4_EMISSION_MODE_ADD_PRODUCT)] _Decal4_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal4_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal4_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL4_EMISSIONS_PROXIMITY)] _Decal4_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal4_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal4_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal4_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal4_Emissions("Emissions", Float) = 0
+            //endex
             //ifex _Decal4_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal4_Domain_Warping("Domain warping", Float) = 0
               [ThryToggle(_DECAL4_DOMAIN_WARPING)] _Decal4_Domain_Warping_Enabled("Enable", Float) = 0
@@ -670,6 +745,21 @@ Shader "yum_food/2ner"
               _Decal5_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal5_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal5_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal5_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal5_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL5_EMISSIONS)] _Decal5_Emissions_Enabled("Enable", Float) = 0
+              _Decal5_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal5_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL5_EMISSION_MODE_ADD_PRODUCT)] _Decal5_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal5_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal5_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL5_EMISSIONS_PROXIMITY)] _Decal5_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal5_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal5_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal5_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal5_Emissions("Emissions", Float) = 0
             //endex
             //ifex _Decal5_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal5_Domain_Warping("Domain warping", Float) = 0
@@ -733,6 +823,21 @@ Shader "yum_food/2ner"
               _Decal6_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal6_Reflections("Reflections", Float) = 0
             //endex
+            //ifex _Decal6_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal6_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL6_EMISSIONS)] _Decal6_Emissions_Enabled("Enable", Float) = 0
+              _Decal6_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal6_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL6_EMISSION_MODE_ADD_PRODUCT)] _Decal6_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal6_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal6_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL6_EMISSIONS_PROXIMITY)] _Decal6_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal6_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal6_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal6_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal6_Emissions("Emissions", Float) = 0
+            //endex
             //ifex _Decal6_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal6_Domain_Warping("Domain warping", Float) = 0
               [ThryToggle(_DECAL6_DOMAIN_WARPING)] _Decal6_Domain_Warping_Enabled("Enable", Float) = 0
@@ -794,6 +899,21 @@ Shader "yum_food/2ner"
               _Decal7_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal7_Metallic("Metallic", Range(0, 1)) = 0.0
             [HideInInspector] m_end_Decal7_Reflections("Reflections", Float) = 0
+            //endex
+            //ifex _Decal7_Emissions_Enabled==0
+            [HideInInspector] m_start_Decal7_Emissions("Emissions", Float) = 0
+              [ThryToggle(_DECAL7_EMISSIONS)] _Decal7_Emissions_Enabled("Enable", Float) = 0
+              _Decal7_Emission_Color("Emission color", Color) = (1, 1, 1, 1)
+              _Decal7_Emission_Strength("Emission strength", Float) = 1
+              [ThryToggle(_DECAL7_EMISSION_MODE_ADD_PRODUCT)] _Decal7_Emission_Mode_Add_Product("Add product", Float) = 0
+              //ifex _Decal7_Emissions_Proximity_Enabled==0
+              [HideInInspector] m_start_Decal7_Emissions_Proximity("Proximity", Float) = 0
+                [ThryToggle(_DECAL7_EMISSIONS_PROXIMITY)] _Decal7_Emissions_Proximity_Enabled("Enable", Float) = 0
+                _Decal7_Emissions_Proximity_Min_Distance("Min distance", Float) = 0
+                _Decal7_Emissions_Proximity_Max_Distance("Max distance", Float) = 1
+              [HideInInspector] m_end_Decal7_Emissions_Proximity("Proximity", Float) = 0
+              //endex
+            [HideInInspector] m_end_Decal7_Emissions("Emissions", Float) = 0
             //endex
             //ifex _Decal7_Domain_Warping_Enabled==0
             [HideInInspector] m_start_Decal7_Domain_Warping("Domain warping", Float) = 0

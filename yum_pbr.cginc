@@ -14,9 +14,7 @@
 struct YumPbr {
   float4 albedo;
   float3 normal;
-#if defined(_EMISSION) || (defined(_GLITTER) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))) || defined(OUTLINE_PASS)
   float3 emission;
-#endif
   float smoothness;
   float roughness;
   float roughness_perceptual;
@@ -30,7 +28,7 @@ void propagateRoughness(in float smoothness, out float roughness_perceptual, out
 }
 
 YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
-  YumPbr result;
+  YumPbr result = (YumPbr)0;
 
   float2 raw_uv = i.uv01.xy;
 #if defined(_UV_DOMAIN_WARPING)
@@ -103,16 +101,14 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   result.albedo.a = saturate(result.albedo.a * _Alpha_Multiplier);
 #endif
 
+#if defined(FORWARD_BASE_PASS)
 #if defined(_EMISSION)
   result.emission = tex2D(_EmissionMap, UV_SCOFF(i, _EmissionMap_ST, /*which_channel=*/0)) * _EmissionColor;
 #endif
 #if defined(OUTLINE_PASS)
-#if defined(_EMISSION)
   result.emission += _Outline_Color * _Outline_Emission;
-#else
-  result.emission = _Outline_Color * _Outline_Emission;
 #endif
-#endif
+#endif  // FORWARD_BASE_PASS
 
 #if defined(_METALLICS)
   float4 metallic_gloss = tex2D(_MetallicGlossMap, UV_SCOFF(i, _MetallicGlossMap_ST, /*which_channel=*/0));
@@ -132,7 +128,7 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   result.ao = 1;
 #endif
 
-  applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness);
+  applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness, result.emission);
   result.smoothness = min(0.99, result.smoothness);
   propagateRoughness(result.smoothness, result.roughness_perceptual, result.roughness);
 
@@ -167,12 +163,7 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   float4 glitter_albedo = getGlitter(i, glitter_p, result.normal);
   result.albedo = alphaBlend(result.albedo, glitter_albedo);
 
-  float3 gitter_emission = glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;
-#if defined(_EMISSION)
-  result.emission += gitter_emission;
-#else
-  result.emission = gitter_emission;
-#endif
+  result.emission += glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;
 #endif
 
   return result;

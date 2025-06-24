@@ -130,6 +130,9 @@
 #pragma shader_feature_local _DECAL0_MULTIPLY
 #pragma shader_feature_local _DECAL0_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL0_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL0_EMISSIONS
+#pragma shader_feature_local _DECAL0_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL0_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal1_Enabled==0
 #pragma shader_feature_local _DECAL1
@@ -142,6 +145,9 @@
 #pragma shader_feature_local _DECAL1_MULTIPLY
 #pragma shader_feature_local _DECAL1_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL1_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL1_EMISSIONS
+#pragma shader_feature_local _DECAL1_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL1_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal2_Enabled==0
 #pragma shader_feature_local _DECAL2
@@ -154,6 +160,9 @@
 #pragma shader_feature_local _DECAL2_MULTIPLY
 #pragma shader_feature_local _DECAL2_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL2_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL2_EMISSIONS
+#pragma shader_feature_local _DECAL2_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL2_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal3_Enabled==0
 #pragma shader_feature_local _DECAL3
@@ -166,6 +175,9 @@
 #pragma shader_feature_local _DECAL3_MULTIPLY
 #pragma shader_feature_local _DECAL3_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL3_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL3_EMISSIONS
+#pragma shader_feature_local _DECAL3_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL3_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal4_Enabled==0
 #pragma shader_feature_local _DECAL4
@@ -178,6 +190,9 @@
 #pragma shader_feature_local _DECAL4_MULTIPLY
 #pragma shader_feature_local _DECAL4_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL4_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL4_EMISSIONS
+#pragma shader_feature_local _DECAL4_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL4_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal5_Enabled==0
 #pragma shader_feature_local _DECAL5
@@ -190,6 +205,9 @@
 #pragma shader_feature_local _DECAL5_MULTIPLY
 #pragma shader_feature_local _DECAL5_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL5_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL5_EMISSIONS
+#pragma shader_feature_local _DECAL5_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL5_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal6_Enabled==0
 #pragma shader_feature_local _DECAL6
@@ -202,6 +220,9 @@
 #pragma shader_feature_local _DECAL6_MULTIPLY
 #pragma shader_feature_local _DECAL6_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL6_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL6_EMISSIONS
+#pragma shader_feature_local _DECAL6_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL6_EMISSIONS_PROXIMITY
 //endex
 //ifex _Decal7_Enabled==0
 #pragma shader_feature_local _DECAL7
@@ -214,6 +235,9 @@
 #pragma shader_feature_local _DECAL7_MULTIPLY
 #pragma shader_feature_local _DECAL7_CMYK_WARPING_PLANES
 #pragma shader_feature_local _DECAL7_DOMAIN_WARPING
+#pragma shader_feature_local _DECAL7_EMISSIONS
+#pragma shader_feature_local _DECAL7_EMISSION_MODE_ADD_PRODUCT
+#pragma shader_feature_local _DECAL7_EMISSIONS_PROXIMITY
 //endex
 
 //ifex _3D_SDF_Enabled==0
