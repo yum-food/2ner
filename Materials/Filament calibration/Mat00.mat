@@ -15,6 +15,7 @@ Material:
   - _CAST_SHADOWS
   - _METALLICS
   - _RECEIVE_SHADOWS
+  - _SPHERICAL_HARMONICS_L1
   m_InvalidKeywords:
   - _BUMP_SHADOWS
   m_LightmapFlags: 4
@@ -458,6 +459,12 @@ Material:
     - _Decal0_Domain_Warping_Scale: 0.1
     - _Decal0_Domain_Warping_Speed: 1
     - _Decal0_Domain_Warping_Strength: 0.1
+    - _Decal0_Emission_Mode_Add_Product: 0
+    - _Decal0_Emission_Strength: 1
+    - _Decal0_Emissions_Enabled: 0
+    - _Decal0_Emissions_Proximity_Enabled: 0
+    - _Decal0_Emissions_Proximity_Max_Distance: 1
+    - _Decal0_Emissions_Proximity_Min_Distance: 0
     - _Decal0_Enabled: 0
     - _Decal0_Mask_Enabled: 0
     - _Decal0_Metallic: 0
@@ -485,6 +492,12 @@ Material:
     - _Decal1_Domain_Warping_Scale: 0.1
     - _Decal1_Domain_Warping_Speed: 1
     - _Decal1_Domain_Warping_Strength: 0.1
+    - _Decal1_Emission_Mode_Add_Product: 0
+    - _Decal1_Emission_Strength: 1
+    - _Decal1_Emissions_Enabled: 0
+    - _Decal1_Emissions_Proximity_Enabled: 0
+    - _Decal1_Emissions_Proximity_Max_Distance: 1
+    - _Decal1_Emissions_Proximity_Min_Distance: 0
     - _Decal1_Enabled: 0
     - _Decal1_Mask_Enabled: 0
     - _Decal1_Metallic: 0
@@ -512,6 +525,12 @@ Material:
     - _Decal2_Domain_Warping_Scale: 0.1
     - _Decal2_Domain_Warping_Speed: 1
     - _Decal2_Domain_Warping_Strength: 0.1
+    - _Decal2_Emission_Mode_Add_Product: 0
+    - _Decal2_Emission_Strength: 1
+    - _Decal2_Emissions_Enabled: 0
+    - _Decal2_Emissions_Proximity_Enabled: 0
+    - _Decal2_Emissions_Proximity_Max_Distance: 1
+    - _Decal2_Emissions_Proximity_Min_Distance: 0
     - _Decal2_Enabled: 0
     - _Decal2_Mask_Enabled: 0
     - _Decal2_Metallic: 0
@@ -539,6 +558,12 @@ Material:
     - _Decal3_Domain_Warping_Scale: 0.1
     - _Decal3_Domain_Warping_Speed: 1
     - _Decal3_Domain_Warping_Strength: 0.1
+    - _Decal3_Emission_Mode_Add_Product: 0
+    - _Decal3_Emission_Strength: 1
+    - _Decal3_Emissions_Enabled: 0
+    - _Decal3_Emissions_Proximity_Enabled: 0
+    - _Decal3_Emissions_Proximity_Max_Distance: 1
+    - _Decal3_Emissions_Proximity_Min_Distance: 0
     - _Decal3_Enabled: 0
     - _Decal3_Mask_Enabled: 0
     - _Decal3_Metallic: 0
@@ -566,6 +591,12 @@ Material:
     - _Decal4_Domain_Warping_Scale: 0.1
     - _Decal4_Domain_Warping_Speed: 1
     - _Decal4_Domain_Warping_Strength: 0.1
+    - _Decal4_Emission_Mode_Add_Product: 0
+    - _Decal4_Emission_Strength: 1
+    - _Decal4_Emissions_Enabled: 0
+    - _Decal4_Emissions_Proximity_Enabled: 0
+    - _Decal4_Emissions_Proximity_Max_Distance: 1
+    - _Decal4_Emissions_Proximity_Min_Distance: 0
     - _Decal4_Enabled: 0
     - _Decal4_Mask_Enabled: 0
     - _Decal4_Metallic: 0
@@ -593,6 +624,12 @@ Material:
     - _Decal5_Domain_Warping_Scale: 0.1
     - _Decal5_Domain_Warping_Speed: 1
     - _Decal5_Domain_Warping_Strength: 0.1
+    - _Decal5_Emission_Mode_Add_Product: 0
+    - _Decal5_Emission_Strength: 1
+    - _Decal5_Emissions_Enabled: 0
+    - _Decal5_Emissions_Proximity_Enabled: 0
+    - _Decal5_Emissions_Proximity_Max_Distance: 1
+    - _Decal5_Emissions_Proximity_Min_Distance: 0
     - _Decal5_Enabled: 0
     - _Decal5_Mask_Enabled: 0
     - _Decal5_Metallic: 0
@@ -620,6 +657,12 @@ Material:
     - _Decal6_Domain_Warping_Scale: 0.1
     - _Decal6_Domain_Warping_Speed: 1
     - _Decal6_Domain_Warping_Strength: 0.1
+    - _Decal6_Emission_Mode_Add_Product: 0
+    - _Decal6_Emission_Strength: 1
+    - _Decal6_Emissions_Enabled: 0
+    - _Decal6_Emissions_Proximity_Enabled: 0
+    - _Decal6_Emissions_Proximity_Max_Distance: 1
+    - _Decal6_Emissions_Proximity_Min_Distance: 0
     - _Decal6_Enabled: 0
     - _Decal6_Mask_Enabled: 0
     - _Decal6_Metallic: 0
@@ -647,6 +690,12 @@ Material:
     - _Decal7_Domain_Warping_Scale: 0.1
     - _Decal7_Domain_Warping_Speed: 1
     - _Decal7_Domain_Warping_Strength: 0.1
+    - _Decal7_Emission_Mode_Add_Product: 0
+    - _Decal7_Emission_Strength: 1
+    - _Decal7_Emissions_Enabled: 0
+    - _Decal7_Emissions_Proximity_Enabled: 0
+    - _Decal7_Emissions_Proximity_Max_Distance: 1
+    - _Decal7_Emissions_Proximity_Min_Distance: 0
     - _Decal7_Enabled: 0
     - _Decal7_Mask_Enabled: 0
     - _Decal7_Metallic: 0
@@ -969,7 +1018,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SphericalHarmonics: 1
-    - _Spherical_Harmonics_L1_Enabled: 0
+    - _Spherical_Harmonics_L1_Enabled: 1
     - _Spherize_Enabled: 0
     - _Spherize_Radius: 1
     - _Spherize_Strength: 1
@@ -1481,11 +1530,11 @@ Material:
     - _Wrapped_Lighting_Enabled: 0
     - _ZTest: 4
     - _ZWrite: 1
-    - _reflectance: 0.028
+    - _reflectance: 0.55
     - _reflectance_help: 1
     - _specularAntiAliasingThreshold: 0.25
     - _specularAntiAliasingVariance: 0.15
-    - m_FilamentStuff: 0
+    - m_FilamentStuff: 1
     - m_LUTs: 1
     - m_end_3D_SDF: 0
     - m_end_AO: 0
@@ -1503,6 +1552,8 @@ Material:
     - m_end_Decal0: 0
     - m_end_Decal0_CMYK_Warping_Planes: 0
     - m_end_Decal0_Domain_Warping: 0
+    - m_end_Decal0_Emissions: 0
+    - m_end_Decal0_Emissions_Proximity: 0
     - m_end_Decal0_Mask: 0
     - m_end_Decal0_Normal: 0
     - m_end_Decal0_Reflections: 0
@@ -1510,6 +1561,8 @@ Material:
     - m_end_Decal1: 0
     - m_end_Decal1_CMYK_Warping_Planes: 0
     - m_end_Decal1_Domain_Warping: 0
+    - m_end_Decal1_Emissions: 0
+    - m_end_Decal1_Emissions_Proximity: 0
     - m_end_Decal1_Mask: 0
     - m_end_Decal1_Normal: 0
     - m_end_Decal1_Reflections: 0
@@ -1517,6 +1570,8 @@ Material:
     - m_end_Decal2: 0
     - m_end_Decal2_CMYK_Warping_Planes: 0
     - m_end_Decal2_Domain_Warping: 0
+    - m_end_Decal2_Emissions: 0
+    - m_end_Decal2_Emissions_Proximity: 0
     - m_end_Decal2_Mask: 0
     - m_end_Decal2_Normal: 0
     - m_end_Decal2_Reflections: 0
@@ -1524,6 +1579,8 @@ Material:
     - m_end_Decal3: 0
     - m_end_Decal3_CMYK_Warping_Planes: 0
     - m_end_Decal3_Domain_Warping: 0
+    - m_end_Decal3_Emissions: 0
+    - m_end_Decal3_Emissions_Proximity: 0
     - m_end_Decal3_Mask: 0
     - m_end_Decal3_Normal: 0
     - m_end_Decal3_Reflections: 0
@@ -1531,6 +1588,8 @@ Material:
     - m_end_Decal4: 0
     - m_end_Decal4_CMYK_Warping_Planes: 0
     - m_end_Decal4_Domain_Warping: 0
+    - m_end_Decal4_Emissions: 0
+    - m_end_Decal4_Emissions_Proximity: 0
     - m_end_Decal4_Mask: 0
     - m_end_Decal4_Normal: 0
     - m_end_Decal4_Reflections: 0
@@ -1538,6 +1597,8 @@ Material:
     - m_end_Decal5: 0
     - m_end_Decal5_CMYK_Warping_Planes: 0
     - m_end_Decal5_Domain_Warping: 0
+    - m_end_Decal5_Emissions: 0
+    - m_end_Decal5_Emissions_Proximity: 0
     - m_end_Decal5_Mask: 0
     - m_end_Decal5_Normal: 0
     - m_end_Decal5_Reflections: 0
@@ -1545,6 +1606,8 @@ Material:
     - m_end_Decal6: 0
     - m_end_Decal6_CMYK_Warping_Planes: 0
     - m_end_Decal6_Domain_Warping: 0
+    - m_end_Decal6_Emissions: 0
+    - m_end_Decal6_Emissions_Proximity: 0
     - m_end_Decal6_Mask: 0
     - m_end_Decal6_Normal: 0
     - m_end_Decal6_Reflections: 0
@@ -1552,6 +1615,8 @@ Material:
     - m_end_Decal7: 0
     - m_end_Decal7_CMYK_Warping_Planes: 0
     - m_end_Decal7_Domain_Warping: 0
+    - m_end_Decal7_Emissions: 0
+    - m_end_Decal7_Emissions_Proximity: 0
     - m_end_Decal7_Mask: 0
     - m_end_Decal7_Normal: 0
     - m_end_Decal7_Reflections: 0
@@ -1661,7 +1726,7 @@ Material:
     - m_lightingOptions: 1
     - m_mainOptions: 1
     - m_reflectionOptions: 1
-    - m_renderingOptions: 0
+    - m_renderingOptions: 1
     - m_start_3D_SDF: 0
     - m_start_AO: 0
     - m_start_Alpha_Multiplier: 0
@@ -1678,6 +1743,8 @@ Material:
     - m_start_Decal0: 0
     - m_start_Decal0_CMYK_Warping_Planes: 0
     - m_start_Decal0_Domain_Warping: 0
+    - m_start_Decal0_Emissions: 0
+    - m_start_Decal0_Emissions_Proximity: 0
     - m_start_Decal0_Mask: 0
     - m_start_Decal0_Normal: 0
     - m_start_Decal0_Reflections: 0
@@ -1685,6 +1752,8 @@ Material:
     - m_start_Decal1: 0
     - m_start_Decal1_CMYK_Warping_Planes: 0
     - m_start_Decal1_Domain_Warping: 0
+    - m_start_Decal1_Emissions: 0
+    - m_start_Decal1_Emissions_Proximity: 0
     - m_start_Decal1_Mask: 0
     - m_start_Decal1_Normal: 0
     - m_start_Decal1_Reflections: 0
@@ -1692,6 +1761,8 @@ Material:
     - m_start_Decal2: 0
     - m_start_Decal2_CMYK_Warping_Planes: 0
     - m_start_Decal2_Domain_Warping: 0
+    - m_start_Decal2_Emissions: 0
+    - m_start_Decal2_Emissions_Proximity: 0
     - m_start_Decal2_Mask: 0
     - m_start_Decal2_Normal: 0
     - m_start_Decal2_Reflections: 0
@@ -1699,6 +1770,8 @@ Material:
     - m_start_Decal3: 0
     - m_start_Decal3_CMYK_Warping_Planes: 0
     - m_start_Decal3_Domain_Warping: 0
+    - m_start_Decal3_Emissions: 0
+    - m_start_Decal3_Emissions_Proximity: 0
     - m_start_Decal3_Mask: 0
     - m_start_Decal3_Normal: 0
     - m_start_Decal3_Reflections: 0
@@ -1706,6 +1779,8 @@ Material:
     - m_start_Decal4: 0
     - m_start_Decal4_CMYK_Warping_Planes: 0
     - m_start_Decal4_Domain_Warping: 0
+    - m_start_Decal4_Emissions: 0
+    - m_start_Decal4_Emissions_Proximity: 0
     - m_start_Decal4_Mask: 0
     - m_start_Decal4_Normal: 0
     - m_start_Decal4_Reflections: 0
@@ -1713,6 +1788,8 @@ Material:
     - m_start_Decal5: 0
     - m_start_Decal5_CMYK_Warping_Planes: 0
     - m_start_Decal5_Domain_Warping: 0
+    - m_start_Decal5_Emissions: 0
+    - m_start_Decal5_Emissions_Proximity: 0
     - m_start_Decal5_Mask: 0
     - m_start_Decal5_Normal: 0
     - m_start_Decal5_Reflections: 0
@@ -1720,6 +1797,8 @@ Material:
     - m_start_Decal6: 0
     - m_start_Decal6_CMYK_Warping_Planes: 0
     - m_start_Decal6_Domain_Warping: 0
+    - m_start_Decal6_Emissions: 0
+    - m_start_Decal6_Emissions_Proximity: 0
     - m_start_Decal6_Mask: 0
     - m_start_Decal6_Normal: 0
     - m_start_Decal6_Reflections: 0
@@ -1727,6 +1806,8 @@ Material:
     - m_start_Decal7: 0
     - m_start_Decal7_CMYK_Warping_Planes: 0
     - m_start_Decal7_Domain_Warping: 0
+    - m_start_Decal7_Emissions: 0
+    - m_start_Decal7_Emissions_Proximity: 0
     - m_start_Decal7_Mask: 0
     - m_start_Decal7_Normal: 0
     - m_start_Decal7_Reflections: 0
@@ -1813,7 +1894,7 @@ Material:
     - m_start_Shatter_Wave: 0
     - m_start_Shatter_Wave_Audiolink: 0
     - m_start_Shatter_Wave_Rotation: 0
-    - m_start_Spherical_Harmonics_L1: 0
+    - m_start_Spherical_Harmonics_L1: 1
     - m_start_Spherize: 0
     - m_start_Stencil: 0
     - m_start_StencilPassBackOptions: 0
@@ -1849,13 +1930,21 @@ Material:
     - _Custom30_BasicPlatform_Chamfer_Size: {r: 0.36, g: 0.78, b: 0.9, a: 1}
     - _Custom30_BasicPlatform_Size: {r: 1, g: 0.4, b: 0.2, a: 1}
     - _Decal0_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal0_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal1_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal1_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal2_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal2_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal3_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal3_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal4_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal4_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal5_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal5_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal6_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal6_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Decal7_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal7_Emission_Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ExtraStencilColor: {r: 1, g: 1, b: 1, a: 1}
     - _Gimmick_Eye_Effect_00_Count: {r: 1, g: 1, b: 1, a: 1}
