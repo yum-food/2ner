@@ -119,10 +119,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
   float3 direct_standard;
   {
-    // Fix reflectance calculation - _reflectance is already a 0-1 value, not an f0 value
-    // Default reflectance for dielectrics is typically 0.5, which gives f0 = 0.04
-    const float dielectric_f0 = _reflectance;
-    // f0 = amount of light reflected back when viewing surface at a right angle
+    const float dielectric_f0 = computeDielectricF0(_reflectance);
     const float3 f0 = lerp(dielectric_f0, pbr.albedo, pbr.metallic);
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
     const float3 E = specularDFG(dfg, f0);
@@ -178,7 +175,6 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
     float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao;
     
-    // Apply energy compensation to indirect specular (critical fix)
     float3 Fr = E * light.specular * specularSingleBounceAO;
 
     indirect_standard = Fr + Fd;

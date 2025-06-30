@@ -125,8 +125,10 @@ float GetLodRoughness(float roughness) {
 }
 
 float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_luminance) {
-  float roughness = GetLodRoughness(pbr.roughness_perceptual);
-	float3 reflect_dir = reflect(-view_dir, pbr.normal);
+  float3 reflect_dir = reflect(-view_dir, pbr.normal);
+  
+  // Apply dominant direction modification for rough surfaces
+  float3 dominant_reflect_dir = lerp(reflect_dir, pbr.normal, pbr.roughness * pbr.roughness);
 
   UnityGIInput data;
   data.worldPos = i.worldPos;
@@ -144,7 +146,8 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
   data.probePosition[1] = unity_SpecCube1_ProbePosition;
 #endif
 
-  const float3 env_refl = UnityGI_prefilteredRadiance(data, roughness, reflect_dir);
+  // Pass perceptualRoughness directly - UnityGI_prefilteredRadiance handles remapping internally
+  const float3 env_refl = UnityGI_prefilteredRadiance(data, pbr.roughness_perceptual, dominant_reflect_dir);
 
 #if defined(_FALLBACK_CUBEMAP)
   // Check if there's no valid scene cubemap
@@ -157,7 +160,7 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
       reflectVector = BoxProjectedCubemapDirection(reflectVector, data.worldPos, /*probe_position=*/0, /*box_min=*/-1, /*box_max=*/1);
     #endif
 
-    half mip = roughness * UNITY_SPECCUBE_LOD_STEPS;
+    half mip = pbr.roughness_perceptual * UNITY_SPECCUBE_LOD_STEPS;
     float4 envSample = UNITY_SAMPLE_TEXCUBE_LOD(_Fallback_Cubemap, reflectVector, mip);
     canned_refl = DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness * diffuse_luminance;
   }
@@ -173,6 +176,45 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
 }
 
 float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
+//#define YUM_SH9_STANDARD
+#if defined(YUM_SH9_STANDARD)
+  // Unity gives us the first three bands (L0-L2) of SH coefficients as follows:
+  //   unity_SHA*.w:   L0 coefficients
+  //   unity_SHA*.xyz: L1 coefficients
+  //   unity_SHB*:     first four of the L2 coefficients
+  //   unity_SHC:      last L2 coefficient
+
+  // Parse out coefficients into a simpler but less efficient format.
+  float3 L00  = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
+  float3 L1_1 = float3(unity_SHAr.x, unity_SHAg.x, unity_SHAb.x);
+  float3 L10  = float3(unity_SHAr.y, unity_SHAg.y, unity_SHAb.y);
+  float3 L11  = float3(unity_SHAr.z, unity_SHAg.z, unity_SHAb.z);
+  float3 L2_2 = float3(unity_SHBr.x, unity_SHBg.x, unity_SHBb.x);
+  float3 L2_1 = float3(unity_SHBr.y, unity_SHBg.y, unity_SHBb.y);
+  float3 L20  = float3(unity_SHBr.z, unity_SHBg.z, unity_SHBb.z);
+  float3 L21  = float3(unity_SHBr.w, unity_SHBg.w, unity_SHBb.w);
+  float3 L22  = unity_SHC;
+
+  // Equation 13 from "An Efficient Representation for Irradiance Environment
+  // Maps" by Ramamoorthi and Hanrahan. Note that the order of some
+  // coefficients is different, and normalization constants have been
+  // premultiplied by Unity.
+  float3 L0 = L00;
+  float3 L1 = L1_1 * n.x + L10 * n.y + L11 * n.z;
+  float3 L2 =
+    L2_2 * n.x * n.y +
+    L2_1 * n.y * n.z +
+    L20  * n.z * n.z +
+    L21 * n.x * n.z +
+    L22 * (n.x * n.x - n.y * n.y);
+
+  light.L00 = L00;
+  light.L01r = unity_SHAr.xyz;
+  light.L01g = unity_SHAg.xyz;
+  light.L01b = unity_SHAb.xyz;
+
+  return L0 + L1 + L2;
+#else
   LightVolumeSH(worldPos, light.L00, light.L01r, light.L01g, light.L01b);
 #if defined(_SPHERICAL_HARMONICS_L1)
   return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
@@ -183,6 +225,7 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
   } else {
     return LightVolumeEvaluate(n.xyz, light.L00, 0, 0, 0);
   }
+#endif
 #endif
 }
 

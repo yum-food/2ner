@@ -129,7 +129,8 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 #endif
 
   applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness, result.emission);
-  result.smoothness = min(0.99, result.smoothness);
+  const float min_roughness_perceptual = 0.045f;
+  result.smoothness = min(1.0f - min_roughness_perceptual, result.smoothness);
   propagateRoughness(result.smoothness, result.roughness_perceptual, result.roughness);
 
 #if defined(_OKLCH_CORRECTION)
