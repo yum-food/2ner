@@ -12,11 +12,11 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _CAST_SHADOWS
   - _METALLICS
-  m_InvalidKeywords:
-  - _
-  - _BUMP_SHADOWS
   - _RECEIVE_SHADOWS
+  m_InvalidKeywords:
+  - _BUMP_SHADOWS
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -27,8 +27,16 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _3D_SDF_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 2dc42dfedb2bc704d984f7990c6b816a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Cloth_Mask:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CubeMap:
@@ -37,6 +45,198 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DFG:
         m_Texture: {fileID: 2800000, guid: 53122c95e82e994448dce5a9c8346223, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal0_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal0_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal0_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal0_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal0_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal0_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal1_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal1_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal1_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal1_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal1_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal1_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal2_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal2_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal2_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal2_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal2_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal2_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal3_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal3_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal3_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal3_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal3_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal3_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal4_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal4_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal4_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal4_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal4_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal4_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal5_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal5_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal5_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal5_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal5_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal5_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal6_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal6_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal6_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal6_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal6_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal6_Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal7_CMYK_Warping_Planes_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal7_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal7_MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal7_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal7_MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Decal7_Normal:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -55,11 +255,23 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Fallback_Cubemap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Gimmick_Eye_Effect_00_Noise:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Glitter_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Letter_Grid_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Letter_Grid_Texture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -91,6 +303,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Matcap1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Matcap1_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -111,6 +331,18 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Raymarched_Fog_Density_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Raymarched_Fog_Dithering_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Raymarched_Fog_Emitter_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Rim_Lighting0_Mask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -127,6 +359,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SSAO_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SSFD_Noise:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -135,8 +371,36 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _UV_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Unigram_Letter_Grid_Glyphs:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Unigram_Letter_Grid_LUT:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Vertex_Domain_Warping_Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - Tessellation_Enabled: 1
+    - Tessellation_EnabledForwardAdd: 1
+    - Tessellation_EnabledForwardBase: 1
+    - Tessellation_EnabledShadowCaster: 1
+    - _3D_SDF_Enabled: 0
+    - _3D_SDF_UV_Channel: 0
+    - _3D_SDF_Z: 0
+    - _3D_SDF_Z_Speed: 0
     - _AddBlendOp: 4
     - _AddBlendOpAlpha: 4
     - _AddDstBlend: 1
@@ -146,6 +410,10 @@ Material:
     - _Alpha_Multiplier: 1
     - _Alpha_Multiplier_Enabled: 0
     - _Ambient_Occlusion_Enabled: 0
+    - _Bakery_Enabled: 0
+    - _Bakery_MONOSH_Enabled: 0
+    - _Bakery_RNM_Enabled: 0
+    - _Bakery_SH_Enabled: 0
     - _BlendOp: 0
     - _BlendOpAlpha: 0
     - _Brightness_Control_Enabled: 0
@@ -160,14 +428,250 @@ Material:
     - _Clearcoat_Roughness: 0.089
     - _Clearcoat_Strength: 1
     - _Clip: 0.5
+    - _Cloth_Direct_Multiplier: 1
+    - _Cloth_Indirect_Multiplier: 1
     - _Cull: 2
+    - _Custom30_BasicCube_Chamfer: 0
+    - _Custom30_BasicCube_Enabled: 0
+    - _Custom30_BasicCube_Hex_Bolts: 0
+    - _Custom30_BasicCube_Hex_Grip: 0
+    - _Custom30_BasicPlatform_Chamfer: 0
+    - _Custom30_BasicPlatform_Core_D: 0.05
+    - _Custom30_BasicPlatform_Enabled: 0
+    - _Custom30_BasicPlatform_Frame_D: 0.08
+    - _Custom30_BasicPlatform_Vertical: 0
+    - _Custom30_BasicPlatform_Y_Aligned: 0
+    - _Custom30_BasicWedge_Enabled: 0
+    - _Custom30_Enabled: 0
+    - _Custom30_Quaternion_UV_Channel_0: 2
+    - _Custom30_Quaternion_UV_Channel_1: 3
+    - _Custom30_Rainbow_Enabled: 0
+    - _Custom30_ro_Offset: 0
     - _Cutoff: 0.5
+    - _Decal0_Angle: 0
+    - _Decal0_CMYK_Warping_Planes_Enabled: 0
+    - _Decal0_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal0_CMYK_Warping_Planes_Speed: 1
+    - _Decal0_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal0_Domain_Warping_Enabled: 0
+    - _Decal0_Domain_Warping_Octaves: 1
+    - _Decal0_Domain_Warping_Scale: 0.1
+    - _Decal0_Domain_Warping_Speed: 1
+    - _Decal0_Domain_Warping_Strength: 0.1
+    - _Decal0_Enabled: 0
+    - _Decal0_Mask_Enabled: 0
+    - _Decal0_Metallic: 0
+    - _Decal0_Normal_Enabled: 0
+    - _Decal0_Normal_Scale: 1
+    - _Decal0_Opacity: 1
+    - _Decal0_Reflections_Enabled: 0
+    - _Decal0_Replace_Alpha_Mode: 0
+    - _Decal0_Replace_Multiply_Mode: 0
+    - _Decal0_SDF_Enabled: 0
+    - _Decal0_SDF_Invert: 0
+    - _Decal0_SDF_Px_Range: 2
+    - _Decal0_SDF_Softness: 0.01
+    - _Decal0_SDF_Threshold: 0.5
+    - _Decal0_Smoothness: 0.5
+    - _Decal0_Tiling_Mode: 0
+    - _Decal0_UV_Channel: 0
+    - _Decal1_Angle: 0
+    - _Decal1_CMYK_Warping_Planes_Enabled: 0
+    - _Decal1_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal1_CMYK_Warping_Planes_Speed: 1
+    - _Decal1_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal1_Domain_Warping_Enabled: 0
+    - _Decal1_Domain_Warping_Octaves: 1
+    - _Decal1_Domain_Warping_Scale: 0.1
+    - _Decal1_Domain_Warping_Speed: 1
+    - _Decal1_Domain_Warping_Strength: 0.1
+    - _Decal1_Enabled: 0
+    - _Decal1_Mask_Enabled: 0
+    - _Decal1_Metallic: 0
+    - _Decal1_Normal_Enabled: 0
+    - _Decal1_Normal_Scale: 1
+    - _Decal1_Opacity: 1
+    - _Decal1_Reflections_Enabled: 0
+    - _Decal1_Replace_Alpha_Mode: 0
+    - _Decal1_Replace_Multiply_Mode: 0
+    - _Decal1_SDF_Enabled: 0
+    - _Decal1_SDF_Invert: 0
+    - _Decal1_SDF_Px_Range: 2
+    - _Decal1_SDF_Softness: 0.01
+    - _Decal1_SDF_Threshold: 0.5
+    - _Decal1_Smoothness: 0.5
+    - _Decal1_Tiling_Mode: 0
+    - _Decal1_UV_Channel: 0
+    - _Decal2_Angle: 0
+    - _Decal2_CMYK_Warping_Planes_Enabled: 0
+    - _Decal2_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal2_CMYK_Warping_Planes_Speed: 1
+    - _Decal2_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal2_Domain_Warping_Enabled: 0
+    - _Decal2_Domain_Warping_Octaves: 1
+    - _Decal2_Domain_Warping_Scale: 0.1
+    - _Decal2_Domain_Warping_Speed: 1
+    - _Decal2_Domain_Warping_Strength: 0.1
+    - _Decal2_Enabled: 0
+    - _Decal2_Mask_Enabled: 0
+    - _Decal2_Metallic: 0
+    - _Decal2_Normal_Enabled: 0
+    - _Decal2_Normal_Scale: 1
+    - _Decal2_Opacity: 1
+    - _Decal2_Reflections_Enabled: 0
+    - _Decal2_Replace_Alpha_Mode: 0
+    - _Decal2_Replace_Multiply_Mode: 0
+    - _Decal2_SDF_Enabled: 0
+    - _Decal2_SDF_Invert: 0
+    - _Decal2_SDF_Px_Range: 2
+    - _Decal2_SDF_Softness: 0.01
+    - _Decal2_SDF_Threshold: 0.5
+    - _Decal2_Smoothness: 0.5
+    - _Decal2_Tiling_Mode: 0
+    - _Decal2_UV_Channel: 0
+    - _Decal3_Angle: 0
+    - _Decal3_CMYK_Warping_Planes_Enabled: 0
+    - _Decal3_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal3_CMYK_Warping_Planes_Speed: 1
+    - _Decal3_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal3_Domain_Warping_Enabled: 0
+    - _Decal3_Domain_Warping_Octaves: 1
+    - _Decal3_Domain_Warping_Scale: 0.1
+    - _Decal3_Domain_Warping_Speed: 1
+    - _Decal3_Domain_Warping_Strength: 0.1
+    - _Decal3_Enabled: 0
+    - _Decal3_Mask_Enabled: 0
+    - _Decal3_Metallic: 0
+    - _Decal3_Normal_Enabled: 0
+    - _Decal3_Normal_Scale: 1
+    - _Decal3_Opacity: 1
+    - _Decal3_Reflections_Enabled: 0
+    - _Decal3_Replace_Alpha_Mode: 0
+    - _Decal3_Replace_Multiply_Mode: 0
+    - _Decal3_SDF_Enabled: 0
+    - _Decal3_SDF_Invert: 0
+    - _Decal3_SDF_Px_Range: 2
+    - _Decal3_SDF_Softness: 0.01
+    - _Decal3_SDF_Threshold: 0.5
+    - _Decal3_Smoothness: 0.5
+    - _Decal3_Tiling_Mode: 0
+    - _Decal3_UV_Channel: 0
+    - _Decal4_Angle: 0
+    - _Decal4_CMYK_Warping_Planes_Enabled: 0
+    - _Decal4_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal4_CMYK_Warping_Planes_Speed: 1
+    - _Decal4_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal4_Domain_Warping_Enabled: 0
+    - _Decal4_Domain_Warping_Octaves: 1
+    - _Decal4_Domain_Warping_Scale: 0.1
+    - _Decal4_Domain_Warping_Speed: 1
+    - _Decal4_Domain_Warping_Strength: 0.1
+    - _Decal4_Enabled: 0
+    - _Decal4_Mask_Enabled: 0
+    - _Decal4_Metallic: 0
+    - _Decal4_Normal_Enabled: 0
+    - _Decal4_Normal_Scale: 1
+    - _Decal4_Opacity: 1
+    - _Decal4_Reflections_Enabled: 0
+    - _Decal4_Replace_Alpha_Mode: 0
+    - _Decal4_Replace_Multiply_Mode: 0
+    - _Decal4_SDF_Enabled: 0
+    - _Decal4_SDF_Invert: 0
+    - _Decal4_SDF_Px_Range: 2
+    - _Decal4_SDF_Softness: 0.01
+    - _Decal4_SDF_Threshold: 0.5
+    - _Decal4_Smoothness: 0.5
+    - _Decal4_Tiling_Mode: 0
+    - _Decal4_UV_Channel: 0
+    - _Decal5_Angle: 0
+    - _Decal5_CMYK_Warping_Planes_Enabled: 0
+    - _Decal5_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal5_CMYK_Warping_Planes_Speed: 1
+    - _Decal5_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal5_Domain_Warping_Enabled: 0
+    - _Decal5_Domain_Warping_Octaves: 1
+    - _Decal5_Domain_Warping_Scale: 0.1
+    - _Decal5_Domain_Warping_Speed: 1
+    - _Decal5_Domain_Warping_Strength: 0.1
+    - _Decal5_Enabled: 0
+    - _Decal5_Mask_Enabled: 0
+    - _Decal5_Metallic: 0
+    - _Decal5_Normal_Enabled: 0
+    - _Decal5_Normal_Scale: 1
+    - _Decal5_Opacity: 1
+    - _Decal5_Reflections_Enabled: 0
+    - _Decal5_Replace_Alpha_Mode: 0
+    - _Decal5_Replace_Multiply_Mode: 0
+    - _Decal5_SDF_Enabled: 0
+    - _Decal5_SDF_Invert: 0
+    - _Decal5_SDF_Px_Range: 2
+    - _Decal5_SDF_Softness: 0.01
+    - _Decal5_SDF_Threshold: 0.5
+    - _Decal5_Smoothness: 0.5
+    - _Decal5_Tiling_Mode: 0
+    - _Decal5_UV_Channel: 0
+    - _Decal6_Angle: 0
+    - _Decal6_CMYK_Warping_Planes_Enabled: 0
+    - _Decal6_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal6_CMYK_Warping_Planes_Speed: 1
+    - _Decal6_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal6_Domain_Warping_Enabled: 0
+    - _Decal6_Domain_Warping_Octaves: 1
+    - _Decal6_Domain_Warping_Scale: 0.1
+    - _Decal6_Domain_Warping_Speed: 1
+    - _Decal6_Domain_Warping_Strength: 0.1
+    - _Decal6_Enabled: 0
+    - _Decal6_Mask_Enabled: 0
+    - _Decal6_Metallic: 0
+    - _Decal6_Normal_Enabled: 0
+    - _Decal6_Normal_Scale: 1
+    - _Decal6_Opacity: 1
+    - _Decal6_Reflections_Enabled: 0
+    - _Decal6_Replace_Alpha_Mode: 0
+    - _Decal6_Replace_Multiply_Mode: 0
+    - _Decal6_SDF_Enabled: 0
+    - _Decal6_SDF_Invert: 0
+    - _Decal6_SDF_Px_Range: 2
+    - _Decal6_SDF_Softness: 0.01
+    - _Decal6_SDF_Threshold: 0.5
+    - _Decal6_Smoothness: 0.5
+    - _Decal6_Tiling_Mode: 0
+    - _Decal6_UV_Channel: 0
+    - _Decal7_Angle: 0
+    - _Decal7_CMYK_Warping_Planes_Enabled: 0
+    - _Decal7_CMYK_Warping_Planes_Scale: 0.1
+    - _Decal7_CMYK_Warping_Planes_Speed: 1
+    - _Decal7_CMYK_Warping_Planes_Strength: 0.1
+    - _Decal7_Domain_Warping_Enabled: 0
+    - _Decal7_Domain_Warping_Octaves: 1
+    - _Decal7_Domain_Warping_Scale: 0.1
+    - _Decal7_Domain_Warping_Speed: 1
+    - _Decal7_Domain_Warping_Strength: 0.1
+    - _Decal7_Enabled: 0
+    - _Decal7_Mask_Enabled: 0
+    - _Decal7_Metallic: 0
+    - _Decal7_Normal_Enabled: 0
+    - _Decal7_Normal_Scale: 1
+    - _Decal7_Opacity: 1
+    - _Decal7_Reflections_Enabled: 0
+    - _Decal7_Replace_Alpha_Mode: 0
+    - _Decal7_Replace_Multiply_Mode: 0
+    - _Decal7_SDF_Enabled: 0
+    - _Decal7_SDF_Invert: 0
+    - _Decal7_SDF_Px_Range: 2
+    - _Decal7_SDF_Softness: 0.01
+    - _Decal7_SDF_Threshold: 0.5
+    - _Decal7_Smoothness: 0.5
+    - _Decal7_Tiling_Mode: 0
+    - _Decal7_UV_Channel: 0
+    - _Depth_Prepass_Enabled: 0
     - _DetailNormalMapScale: 1
     - _Detail_Maps_Enabled: 0
     - _DstBlend: 0
     - _DstBlendAlpha: 10
     - _Emission_Enabled: 0
     - _EnableMetallic: 0
+    - _ExposureOcclusion: 1
     - _ExtraStencilColorBackCompareFunction: 8
     - _ExtraStencilColorBackFailOp: 0
     - _ExtraStencilColorBackPassOp: 0
@@ -188,6 +692,15 @@ Material:
     - _Eye_Effect_00_Enabled: 0
     - _FFBFStencilHelp0: 0
     - _FFBFStencilHelp1: 0
+    - _Face_Me_Enabled: 0
+    - _Face_Me_Enabled_Dynamic: 0
+    - _Fallback_Cubemap_Brightness: 1
+    - _Fallback_Cubemap_Enabled: 0
+    - _Fallback_Cubemap_Force: 0
+    - _Fallback_Cubemap_Limit_Metallic: 0
+    - _False_Color_Visualization_Enabled: 0
+    - _False_Color_Visualization_Luminance: 0
+    - _False_Color_Visualization_Luminance_Bounded: 0
     - _Focal_Length_Control_Enabled: 0
     - _Focal_Length_Enabled_Dynamic: 0
     - _Focal_Length_Multiplier: 1
@@ -213,9 +726,28 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _Grayscale_Lightmaps_Enabled: 0
+    - _Harnack_Tracing_Enabled: 0
+    - _Harnack_Tracing_Gyroid_Enabled: 0
+    - _Harnack_Tracing_Gyroid_Scale: 10
+    - _Harnack_Tracing_Gyroid_Speed: 0
     - _InvertSmoothness: 0
     - _LTCGI_Enabled: 0
     - _LTCGI_Strength: 1
+    - _Letter_Grid_Alpha_Threshold: 0.5
+    - _Letter_Grid_Blurriness: 0.5
+    - _Letter_Grid_Emission: 0
+    - _Letter_Grid_Enabled: 0
+    - _Letter_Grid_Global_Offset: 0
+    - _Letter_Grid_Metallic: 0
+    - _Letter_Grid_Min_Screen_Px_Range: 1
+    - _Letter_Grid_Padding: 0.02
+    - _Letter_Grid_Res_X: 1
+    - _Letter_Grid_Res_Y: 1
+    - _Letter_Grid_Roughness: 0.5
+    - _Letter_Grid_Screen_Px_Range: 10
+    - _Letter_Grid_Tex_Res_X: 16
+    - _Letter_Grid_Tex_Res_Y: 8
     - _MaskedStencil1BackCompareFunction: 8
     - _MaskedStencil1BackFailOp: 0
     - _MaskedStencil1BackPassOp: 0
@@ -288,18 +820,37 @@ Material:
     - _Matcap0_Quantization_Steps: 1
     - _Matcap0_Strength: 1
     - _Matcap0_Target_Mask: 1
+    - _Matcap1_Enabled: 0
+    - _Matcap1_Invert: 0
+    - _Matcap1_Mask_Enabled: 0
+    - _Matcap1_Mode: 0
+    - _Matcap1_Quantization_Enabled: 0
+    - _Matcap1_Quantization_Steps: 1
+    - _Matcap1_Strength: 1
+    - _Matcap1_Target_Mask: 1
+    - _Material_Type_Cloth_Enabled: 0
+    - _Material_Type_Cloth_Subsurface: 0
     - _Metallic: 0
     - _Metallics_Enabled: 1
     - _Min_Brightness: 0
     - _Min_Brightness_Enabled: 0
+    - _Mirror_UVs_In_Mirror_Enabled: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _Oklab_Brightness_Clamp_Enabled: 0
+    - _Oklab_Brightness_Clamp_Max: 1
+    - _Oklab_Brightness_Clamp_Min: 0
+    - _Oklch_Correction_C: 1
+    - _Oklch_Correction_Enabled: 0
+    - _Oklch_Correction_H: 1
+    - _Oklch_Correction_L: 1
     - _OutlineBlendOp: 0
     - _OutlineBlendOpAlpha: 4
     - _OutlineDstBlend: 0
     - _OutlineDstBlendAlpha: 0
     - _OutlineSrcBlend: 1
     - _OutlineSrcBlendAlpha: 1
+    - _Outline_Emission: 0
     - _Outline_Mask_Enabled: 0
     - _Outline_Mask_Invert: 0
     - _Outline_StencilBackCompareFunction: 8
@@ -328,6 +879,29 @@ Material:
     - _Quantize_NoL_Steps: 1
     - _Quantize_Specular_Enabled: 0
     - _Quantize_Specular_Steps: 1
+    - _Raymarched_Fog_Albedo: 1
+    - _Raymarched_Fog_Density_Exponent: 1
+    - _Raymarched_Fog_Density_Exponent_Enabled: 0
+    - _Raymarched_Fog_Direct_Light_Intensity: 1
+    - _Raymarched_Fog_Emitter_Texture_Enabled: 0
+    - _Raymarched_Fog_Emitter_Texture_Intensity: 2000
+    - _Raymarched_Fog_Emitter_Texture_Luminance: 100
+    - _Raymarched_Fog_Emitter_Texture_Warping_Enabled: 0
+    - _Raymarched_Fog_Emitter_Texture_Warping_Octaves: 1
+    - _Raymarched_Fog_Emitter_Texture_Warping_Scale: 0.1
+    - _Raymarched_Fog_Emitter_Texture_Warping_Speed: 1
+    - _Raymarched_Fog_Emitter_Texture_Warping_Strength: 0.1
+    - _Raymarched_Fog_Enabled: 0
+    - _Raymarched_Fog_G: 1
+    - _Raymarched_Fog_Height_Offset: 0
+    - _Raymarched_Fog_Height_Scale: 10
+    - _Raymarched_Fog_Indirect_Light_Intensity: 1
+    - _Raymarched_Fog_Mean_Free_Path: 1
+    - _Raymarched_Fog_Step_Growth: 1.25
+    - _Raymarched_Fog_Step_Size: 0.8
+    - _Raymarched_Fog_Steps: 32
+    - _Raymarched_Fog_Turbulence: 1
+    - _Raymarched_Fog_Y_Cutoff: -1000
     - _Receive_Shadows_Enabled: 1
     - _Rim_Lighting0_Angle_Limit_Enabled: 0
     - _Rim_Lighting0_Angle_Limit_Power: 1
@@ -373,6 +947,12 @@ Material:
     - _Rim_Lighting3_Quantization_Enabled: 0
     - _Rim_Lighting3_Quantization_Steps: 1
     - _Rim_Lighting3_Target_Mask: 1
+    - _SSAO_Bias: 0
+    - _SSAO_Enabled: 0
+    - _SSAO_Frame_Counter: 0
+    - _SSAO_Radius: 1
+    - _SSAO_Samples: 5
+    - _SSAO_Strength: 1
     - _SSFD_Enabled: 0
     - _SSFD_Max_Fwidth: 1
     - _SSFD_Scale: 1
@@ -382,10 +962,17 @@ Material:
     - _Saturation: 0
     - _ShaderOptimizerEnabled: 0
     - _Shadow_Strength: 0.25
+    - _Shatter_Wave_Audiolink_Enabled: 0
+    - _Shatter_Wave_Enabled: 0
+    - _Shatter_Wave_Rotation_Enabled: 0
     - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SphericalHarmonics: 1
+    - _Spherical_Harmonics_L1_Enabled: 0
+    - _Spherize_Enabled: 0
+    - _Spherize_Radius: 1
+    - _Spherize_Strength: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Stencil1Type: 0
@@ -409,16 +996,485 @@ Material:
     - _StencilWriteMask: 255
     - _StencilZFailOp: 0
     - _Stencil_Enabled: 0
+    - _Tessellation_Enabled: 0
+    - _Tessellation_Factor: 1
+    - _Tessellation_Heightmap_Direction_Control_Enabled: 0
+    - _Tessellation_Heightmap_Enabled: 0
+    - _Tessellation_Heightmap_Offset: 0
+    - _Tessellation_Heightmap_Scale: 1
+    - _Tessellation_Range_Factor_Distance_Far: 1
+    - _Tessellation_Range_Factor_Distance_Near: 1
+    - _Tessellation_Range_Factor_Enabled: 0
+    - _Tessellation_Range_Factor_Factor_Far: 1
+    - _Tessellation_Range_Factor_Factor_Near: 1
+    - _Tessellation_Range_Factor_Help: 0
     - _UVSec: 0
     - _UV_Domain_Warping_Enabled: 0
     - _UV_Domain_Warping_Spatial_Octaves: 1
     - _UV_Domain_Warping_Spatial_Scale: 0.1
+    - _UV_Domain_Warping_Spatial_Speed: 1
     - _UV_Domain_Warping_Spatial_Strength: 0.1
+    - _Unigram_Letter_Grid_Alpha_Threshold: 0.5
+    - _Unigram_Letter_Grid_Block00_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block01_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block02_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block03_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block04_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block05_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block06_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block07_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block08_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block09_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block10_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block11_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block12_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block13_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block14_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block15_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block16_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block17_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block18_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block19_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block20_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block21_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block22_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block23_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block24_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block25_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block26_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block27_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block28_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block29_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block30_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block31_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block32_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block33_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block34_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block35_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block36_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block37_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block38_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Block39_Visual_Pointer_Animated: 0
+    - _Unigram_Letter_Grid_Data_Block00_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block00_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block01_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block02_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block03_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block04_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block05_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block06_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block07_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block08_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block09_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block10_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block11_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block12_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block13_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block14_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block15_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block16_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block17_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block18_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block19_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block20_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block21_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block22_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block23_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block24_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block25_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block26_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block27_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block28_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block29_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block30_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block31_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block32_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block33_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block34_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block35_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block36_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block37_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block38_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum00_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum00_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum01_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum01_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum02_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum02_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum03_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum03_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum04_Byte00_Animated: 255
+    - _Unigram_Letter_Grid_Data_Block39_Datum04_Byte01_Animated: 255
+    - _Unigram_Letter_Grid_Enabled: 0
+    - _Unigram_Letter_Grid_Min_Screen_Px_Range: 1
+    - _Unigram_Letter_Grid_Padding: 0.02
+    - _Unigram_Letter_Grid_Res_X: 1
+    - _Unigram_Letter_Grid_Res_Y: 1
+    - _Unigram_Letter_Grid_Screen_Px_Range: 10
+    - _Unigram_Letter_Grid_Tex_Res_X: 16
+    - _Unigram_Letter_Grid_Tex_Res_Y: 8
+    - _Unlit_Enabled: 0
+    - _Vertex_Domain_Warping_Audiolink_Enabled: 0
+    - _Vertex_Domain_Warping_Audiolink_VU_Scale_Factor: 1
+    - _Vertex_Domain_Warping_Audiolink_VU_Strength_Factor: 1
     - _Vertex_Domain_Warping_Enabled: 0
+    - _Vertex_Domain_Warping_Octaves: 1
+    - _Vertex_Domain_Warping_Scale: 1
     - _Vertex_Domain_Warping_Spatial_Octaves: 1
     - _Vertex_Domain_Warping_Spatial_Scale: 1
     - _Vertex_Domain_Warping_Spatial_Strength: 0.1
     - _Vertex_Domain_Warping_Speed: 1
+    - _Vertex_Domain_Warping_Strength: 0.1
     - _Vertex_Domain_Warping_Temporal_Strength: 0.1
     - _Wrap_NoL_Diffuse_Strength: 0.25
     - _Wrap_NoL_Specular_Strength: 0.1
@@ -431,22 +1487,96 @@ Material:
     - _specularAntiAliasingVariance: 0.15
     - m_FilamentStuff: 0
     - m_LUTs: 1
+    - m_end_3D_SDF: 0
     - m_end_AO: 0
     - m_end_Alpha_Multiplier: 0
+    - m_end_Bakery: 0
     - m_end_Brightness_Control: 0
     - m_end_BumpShadows: 0
     - m_end_Clearcoat: 0
+    - m_end_Color_Correction: 0
+    - m_end_Custom30: 0
+    - m_end_Custom30_BasicCube: 0
+    - m_end_Custom30_BasicPlatform: 0
+    - m_end_Custom30_BasicWedge: 0
+    - m_end_Custom30_Rainbow: 0
+    - m_end_Decal0: 0
+    - m_end_Decal0_CMYK_Warping_Planes: 0
+    - m_end_Decal0_Domain_Warping: 0
+    - m_end_Decal0_Mask: 0
+    - m_end_Decal0_Normal: 0
+    - m_end_Decal0_Reflections: 0
+    - m_end_Decal0_SDF: 0
+    - m_end_Decal1: 0
+    - m_end_Decal1_CMYK_Warping_Planes: 0
+    - m_end_Decal1_Domain_Warping: 0
+    - m_end_Decal1_Mask: 0
+    - m_end_Decal1_Normal: 0
+    - m_end_Decal1_Reflections: 0
+    - m_end_Decal1_SDF: 0
+    - m_end_Decal2: 0
+    - m_end_Decal2_CMYK_Warping_Planes: 0
+    - m_end_Decal2_Domain_Warping: 0
+    - m_end_Decal2_Mask: 0
+    - m_end_Decal2_Normal: 0
+    - m_end_Decal2_Reflections: 0
+    - m_end_Decal2_SDF: 0
+    - m_end_Decal3: 0
+    - m_end_Decal3_CMYK_Warping_Planes: 0
+    - m_end_Decal3_Domain_Warping: 0
+    - m_end_Decal3_Mask: 0
+    - m_end_Decal3_Normal: 0
+    - m_end_Decal3_Reflections: 0
+    - m_end_Decal3_SDF: 0
+    - m_end_Decal4: 0
+    - m_end_Decal4_CMYK_Warping_Planes: 0
+    - m_end_Decal4_Domain_Warping: 0
+    - m_end_Decal4_Mask: 0
+    - m_end_Decal4_Normal: 0
+    - m_end_Decal4_Reflections: 0
+    - m_end_Decal4_SDF: 0
+    - m_end_Decal5: 0
+    - m_end_Decal5_CMYK_Warping_Planes: 0
+    - m_end_Decal5_Domain_Warping: 0
+    - m_end_Decal5_Mask: 0
+    - m_end_Decal5_Normal: 0
+    - m_end_Decal5_Reflections: 0
+    - m_end_Decal5_SDF: 0
+    - m_end_Decal6: 0
+    - m_end_Decal6_CMYK_Warping_Planes: 0
+    - m_end_Decal6_Domain_Warping: 0
+    - m_end_Decal6_Mask: 0
+    - m_end_Decal6_Normal: 0
+    - m_end_Decal6_Reflections: 0
+    - m_end_Decal6_SDF: 0
+    - m_end_Decal7: 0
+    - m_end_Decal7_CMYK_Warping_Planes: 0
+    - m_end_Decal7_Domain_Warping: 0
+    - m_end_Decal7_Mask: 0
+    - m_end_Decal7_Normal: 0
+    - m_end_Decal7_Reflections: 0
+    - m_end_Decal7_SDF: 0
+    - m_end_Decals: 0
+    - m_end_Depth_Prepass: 0
     - m_end_Detail_Maps: 0
     - m_end_Emission: 0
     - m_end_ExtraStencilColorPass: 0
     - m_end_ExtraStencilColorPassBackOptions: 0
     - m_end_ExtraStencilColorPassFrontOptions: 0
     - m_end_Eye_Effect_00: 0
+    - m_end_Face_Me: 0
+    - m_end_Fallback_Cubemap: 0
+    - m_end_Fallback_Cubemap_Limit_Metallic: 0
+    - m_end_False_Color_Visualization: 0
     - m_end_Focal_Length_Control: 0
     - m_end_Glitter: 0
     - m_end_Glitter_Angle_Limit: 0
     - m_end_Glitter_Mask: 0
+    - m_end_Grayscale_Lightmaps: 0
+    - m_end_Harnack_Tracing: 0
+    - m_end_Harnack_Tracing_Gyroid: 0
     - m_end_LTCGI: 0
+    - m_end_Letter_Grid: 0
     - m_end_MaskedStencil1PassBackOptions: 0
     - m_end_MaskedStencil1PassFrontOptions: 0
     - m_end_MaskedStencil2PassBackOptions: 0
@@ -462,9 +1592,17 @@ Material:
     - m_end_Matcap0: 0
     - m_end_Matcap0_Mask: 0
     - m_end_Matcap0_Quantization: 0
+    - m_end_Matcap1: 0
+    - m_end_Matcap1_Mask: 0
+    - m_end_Matcap1_Quantization: 0
     - m_end_Matcaps: 0
+    - m_end_Material_Type_Cloth: 0
+    - m_end_Material_Type_Cloth_Subsurface: 0
     - m_end_Metallic: 0
     - m_end_Min_Brightness: 0
+    - m_end_Mirror_UVs_In_Mirror: 0
+    - m_end_Oklab_Brightness_Clamp: 0
+    - m_end_Oklch_Correction: 0
     - m_end_Outline_Stencil: 0
     - m_end_Outline_StencilPassBackOptions: 0
     - m_end_Outline_StencilPassFrontOptions: 0
@@ -472,6 +1610,10 @@ Material:
     - m_end_OutlinesMask: 0
     - m_end_Quantize_NoL: 0
     - m_end_Quantize_Specular: 0
+    - m_end_Raymarched_Fog: 0
+    - m_end_Raymarched_Fog_Density_Exponent: 0
+    - m_end_Raymarched_Fog_Emitter_Texture: 0
+    - m_end_Raymarched_Fog_Emitter_Texture_Warping: 0
     - m_end_Rim_Lighting: 0
     - m_end_Rim_Lighting0: 0
     - m_end_Rim_Lighting0_Angle_Limit: 0
@@ -489,14 +1631,27 @@ Material:
     - m_end_Rim_Lighting3_Angle_Limit: 0
     - m_end_Rim_Lighting3_Mask: 0
     - m_end_Rim_Lighting3_Quantization: 0
+    - m_end_SSAO: 0
     - m_end_SSFD: 0
     - m_end_Shadow_Casting: 0
     - m_end_Shadow_Receiving: 0
+    - m_end_Shatter_Wave: 0
+    - m_end_Shatter_Wave_Audiolink: 0
+    - m_end_Shatter_Wave_Rotation: 0
+    - m_end_Spherical_Harmonics_L1: 0
+    - m_end_Spherize: 0
     - m_end_Stencil: 0
     - m_end_StencilPassBackOptions: 0
     - m_end_StencilPassFrontOptions: 0
+    - m_end_Tessellation: 0
+    - m_end_Tessellation_Heightmap: 0
+    - m_end_Tessellation_Heightmap_Direction_Control: 0
+    - m_end_Tessellation_Range_Factor: 0
     - m_end_UV_Domain_Warping: 0
+    - m_end_Unigram_Letter_Grid: 0
+    - m_end_Unlit: 0
     - m_end_Vertex_Domain_Warping: 0
+    - m_end_Vertex_Domain_Warping_Audiolink: 0
     - m_end_WrappedLighting: 0
     - m_end_alphaBlending: 0
     - m_end_blending: 0
@@ -507,22 +1662,96 @@ Material:
     - m_mainOptions: 1
     - m_reflectionOptions: 1
     - m_renderingOptions: 0
+    - m_start_3D_SDF: 0
     - m_start_AO: 0
     - m_start_Alpha_Multiplier: 0
+    - m_start_Bakery: 0
     - m_start_Brightness_Control: 0
     - m_start_BumpShadows: 1
     - m_start_Clearcoat: 1
+    - m_start_Color_Correction: 0
+    - m_start_Custom30: 0
+    - m_start_Custom30_BasicCube: 0
+    - m_start_Custom30_BasicPlatform: 0
+    - m_start_Custom30_BasicWedge: 0
+    - m_start_Custom30_Rainbow: 0
+    - m_start_Decal0: 0
+    - m_start_Decal0_CMYK_Warping_Planes: 0
+    - m_start_Decal0_Domain_Warping: 0
+    - m_start_Decal0_Mask: 0
+    - m_start_Decal0_Normal: 0
+    - m_start_Decal0_Reflections: 0
+    - m_start_Decal0_SDF: 0
+    - m_start_Decal1: 0
+    - m_start_Decal1_CMYK_Warping_Planes: 0
+    - m_start_Decal1_Domain_Warping: 0
+    - m_start_Decal1_Mask: 0
+    - m_start_Decal1_Normal: 0
+    - m_start_Decal1_Reflections: 0
+    - m_start_Decal1_SDF: 0
+    - m_start_Decal2: 0
+    - m_start_Decal2_CMYK_Warping_Planes: 0
+    - m_start_Decal2_Domain_Warping: 0
+    - m_start_Decal2_Mask: 0
+    - m_start_Decal2_Normal: 0
+    - m_start_Decal2_Reflections: 0
+    - m_start_Decal2_SDF: 0
+    - m_start_Decal3: 0
+    - m_start_Decal3_CMYK_Warping_Planes: 0
+    - m_start_Decal3_Domain_Warping: 0
+    - m_start_Decal3_Mask: 0
+    - m_start_Decal3_Normal: 0
+    - m_start_Decal3_Reflections: 0
+    - m_start_Decal3_SDF: 0
+    - m_start_Decal4: 0
+    - m_start_Decal4_CMYK_Warping_Planes: 0
+    - m_start_Decal4_Domain_Warping: 0
+    - m_start_Decal4_Mask: 0
+    - m_start_Decal4_Normal: 0
+    - m_start_Decal4_Reflections: 0
+    - m_start_Decal4_SDF: 0
+    - m_start_Decal5: 0
+    - m_start_Decal5_CMYK_Warping_Planes: 0
+    - m_start_Decal5_Domain_Warping: 0
+    - m_start_Decal5_Mask: 0
+    - m_start_Decal5_Normal: 0
+    - m_start_Decal5_Reflections: 0
+    - m_start_Decal5_SDF: 0
+    - m_start_Decal6: 0
+    - m_start_Decal6_CMYK_Warping_Planes: 0
+    - m_start_Decal6_Domain_Warping: 0
+    - m_start_Decal6_Mask: 0
+    - m_start_Decal6_Normal: 0
+    - m_start_Decal6_Reflections: 0
+    - m_start_Decal6_SDF: 0
+    - m_start_Decal7: 0
+    - m_start_Decal7_CMYK_Warping_Planes: 0
+    - m_start_Decal7_Domain_Warping: 0
+    - m_start_Decal7_Mask: 0
+    - m_start_Decal7_Normal: 0
+    - m_start_Decal7_Reflections: 0
+    - m_start_Decal7_SDF: 0
+    - m_start_Decals: 0
+    - m_start_Depth_Prepass: 0
     - m_start_Detail_Maps: 0
     - m_start_Emission: 0
     - m_start_ExtraStencilColorPass: 0
     - m_start_ExtraStencilColorPassBackOptions: 0
     - m_start_ExtraStencilColorPassFrontOptions: 0
     - m_start_Eye_Effect_00: 0
+    - m_start_Face_Me: 0
+    - m_start_Fallback_Cubemap: 0
+    - m_start_Fallback_Cubemap_Limit_Metallic: 0
+    - m_start_False_Color_Visualization: 0
     - m_start_Focal_Length_Control: 0
     - m_start_Glitter: 0
     - m_start_Glitter_Angle_Limit: 0
     - m_start_Glitter_Mask: 0
+    - m_start_Grayscale_Lightmaps: 0
+    - m_start_Harnack_Tracing: 0
+    - m_start_Harnack_Tracing_Gyroid: 0
     - m_start_LTCGI: 0
+    - m_start_Letter_Grid: 0
     - m_start_MaskedStencil1PassBackOptions: 0
     - m_start_MaskedStencil1PassFrontOptions: 0
     - m_start_MaskedStencil2PassBackOptions: 0
@@ -538,9 +1767,17 @@ Material:
     - m_start_Matcap0: 0
     - m_start_Matcap0_Mask: 0
     - m_start_Matcap0_Quantization: 0
+    - m_start_Matcap1: 0
+    - m_start_Matcap1_Mask: 0
+    - m_start_Matcap1_Quantization: 0
     - m_start_Matcaps: 0
+    - m_start_Material_Type_Cloth: 0
+    - m_start_Material_Type_Cloth_Subsurface: 0
     - m_start_Metallic: 1
     - m_start_Min_Brightness: 0
+    - m_start_Mirror_UVs_In_Mirror: 0
+    - m_start_Oklab_Brightness_Clamp: 0
+    - m_start_Oklch_Correction: 0
     - m_start_Outline_Stencil: 0
     - m_start_Outline_StencilPassBackOptions: 0
     - m_start_Outline_StencilPassFrontOptions: 0
@@ -548,6 +1785,10 @@ Material:
     - m_start_OutlinesMask: 0
     - m_start_Quantize_NoL: 0
     - m_start_Quantize_Specular: 0
+    - m_start_Raymarched_Fog: 0
+    - m_start_Raymarched_Fog_Density_Exponent: 0
+    - m_start_Raymarched_Fog_Emitter_Texture: 0
+    - m_start_Raymarched_Fog_Emitter_Texture_Warping: 0
     - m_start_Rim_Lighting: 0
     - m_start_Rim_Lighting0: 0
     - m_start_Rim_Lighting0_Angle_Limit: 0
@@ -565,14 +1806,27 @@ Material:
     - m_start_Rim_Lighting3_Angle_Limit: 0
     - m_start_Rim_Lighting3_Mask: 0
     - m_start_Rim_Lighting3_Quantization: 0
+    - m_start_SSAO: 0
     - m_start_SSFD: 0
     - m_start_Shadow_Casting: 0
     - m_start_Shadow_Receiving: 0
+    - m_start_Shatter_Wave: 0
+    - m_start_Shatter_Wave_Audiolink: 0
+    - m_start_Shatter_Wave_Rotation: 0
+    - m_start_Spherical_Harmonics_L1: 0
+    - m_start_Spherize: 0
     - m_start_Stencil: 0
     - m_start_StencilPassBackOptions: 0
     - m_start_StencilPassFrontOptions: 0
+    - m_start_Tessellation: 0
+    - m_start_Tessellation_Heightmap: 0
+    - m_start_Tessellation_Heightmap_Direction_Control: 0
+    - m_start_Tessellation_Range_Factor: 0
     - m_start_UV_Domain_Warping: 0
+    - m_start_Unigram_Letter_Grid: 0
+    - m_start_Unlit: 0
     - m_start_Vertex_Domain_Warping: 0
+    - m_start_Vertex_Domain_Warping_Audiolink: 0
     - m_start_WrappedLighting: 1
     - m_start_alphaBlending: 0
     - m_start_blending: 0
@@ -583,7 +1837,25 @@ Material:
     - shader_presets: 0
     - shader_properties_label_file: 0
     m_Colors:
+    - _3D_SDF_Color_0: {r: 1, g: 0, b: 0, a: 1}
+    - _3D_SDF_Color_1: {r: 0, g: 1, b: 0, a: 1}
+    - _3D_SDF_Color_2: {r: 0, g: 0, b: 1, a: 1}
+    - _3D_SDF_Color_3: {r: 1, g: 1, b: 0, a: 1}
+    - _3D_SDF_ST: {r: 1, g: 1, b: 0, a: 0}
+    - _3D_SDF_Thresholds: {r: 0.2, g: 0.4, b: 0.6, a: 0.8}
+    - _Cloth_Sheen_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Cloth_Subsurface_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0.25, g: 0.25, b: 0.25, a: 1}
+    - _Custom30_BasicPlatform_Chamfer_Size: {r: 0.36, g: 0.78, b: 0.9, a: 1}
+    - _Custom30_BasicPlatform_Size: {r: 1, g: 0.4, b: 0.2, a: 1}
+    - _Decal0_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal1_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal2_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal3_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal4_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal5_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal6_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Decal7_Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ExtraStencilColor: {r: 1, g: 1, b: 1, a: 1}
     - _Gimmick_Eye_Effect_00_Count: {r: 1, g: 1, b: 1, a: 1}
@@ -592,8 +1864,22 @@ Material:
     - _Glitter_Emission: {r: 1, g: 1, b: 1, a: 1}
     - _LTCGI_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
     - _LTCGI_SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Letter_Grid_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Letter_Grid_Data_Row_0: {r: 0, g: 0, b: 0, a: 0}
+    - _Letter_Grid_Data_Row_1: {r: 0, g: 0, b: 0, a: 0}
+    - _Letter_Grid_Data_Row_2: {r: 0, g: 0, b: 0, a: 0}
+    - _Letter_Grid_Data_Row_3: {r: 0, g: 0, b: 0, a: 0}
+    - _Letter_Grid_UV_Scale_Offset: {r: 1, g: 1, b: 0, a: 0}
     - _MetalReflectionTint: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Raymarched_Fog_Color: {r: 0.29999998, g: 0.29999998, b: 0.29999998, a: 1}
+    - _Raymarched_Fog_Density_Noise_Scale: {r: 1, g: 1, b: 1, a: 0}
+    - _Raymarched_Fog_Emitter_Texture_World_Normal: {r: 0, g: 0, b: 0, a: 0}
+    - _Raymarched_Fog_Emitter_Texture_World_Pos: {r: 0, g: 0, b: 0, a: 0}
+    - _Raymarched_Fog_Emitter_Texture_World_Scale: {r: 1, g: 1, b: 0, a: 0}
+    - _Raymarched_Fog_Emitter_Texture_World_Scale_Rcp: {r: 1, g: 1, b: 0, a: 0}
+    - _Raymarched_Fog_Emitter_Texture_World_Tangent: {r: 0, g: 0, b: 0, a: 0}
+    - _Raymarched_Fog_Velocity: {r: 1, g: -0.2, b: 0, a: 0}
     - _Rim_Lighting0_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
     - _Rim_Lighting0_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Rim_Lighting1_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
@@ -602,4 +1888,23 @@ Material:
     - _Rim_Lighting2_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Rim_Lighting3_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
     - _Rim_Lighting3_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Shatter_Wave_Amplitude: {r: 0.4, g: 0.4, b: 0.4, a: 0.4}
+    - _Shatter_Wave_Chronotensity_Time_Factor: {r: 1, g: 1, b: 1, a: 1}
+    - _Shatter_Wave_Chronotensity_Weights0: {r: 0, g: 0, b: 0, a: 0}
+    - _Shatter_Wave_Chronotensity_Weights1: {r: 0, g: 0, b: 0, a: 0}
+    - _Shatter_Wave_Chronotensity_Weights2: {r: 0, g: 0, b: 0, a: 0}
+    - _Shatter_Wave_Chronotensity_Weights3: {r: 0, g: 0, b: 0, a: 0}
+    - _Shatter_Wave_Direction0: {r: 0, g: 1, b: 0, a: 1}
+    - _Shatter_Wave_Direction1: {r: 0, g: 1, b: 0, a: 1}
+    - _Shatter_Wave_Direction2: {r: 0, g: 1, b: 0, a: 1}
+    - _Shatter_Wave_Direction3: {r: 0, g: 1, b: 0, a: 1}
+    - _Shatter_Wave_Period: {r: 4, g: 4, b: 4, a: 4}
+    - _Shatter_Wave_Power: {r: 5, g: 5, b: 5, a: 5}
+    - _Shatter_Wave_Rotation_Strength: {r: 1, g: 1, b: 1, a: 1}
+    - _Shatter_Wave_Speed: {r: 30, g: 30, b: 30, a: 30}
+    - _Shatter_Wave_Time_Offset: {r: 0, g: 0, b: 0, a: 0}
+    - _Shatter_Wave_Wavelength: {r: 1, g: 1, b: 1, a: 1}
+    - _Tessellation_Heightmap_Direction_Control_Vector: {r: 1, g: 0, b: 0, a: 1}
+    - _UV_Domain_Warping_Spatial_Direction: {r: 1, g: 1, b: 0, a: 0}
+    - _Unigram_Letter_Grid_UV_Scale_Offset: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
