@@ -313,12 +313,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.uv01.xy = eye_effect_00.uv;
 #endif
 
-  float4x4 tangentToWorld = float4x4(
-    float4(i.tangent, 0),
-    float4(i.binormal, 0),
-    float4(i.normal, 0),
-    float4(0, 0, 0, 1)
-  );
 #if defined(_CUSTOM30)
 #if defined(FORWARD_BASE_PASS) || (!defined(_DEPTH_PREPASS) && defined(SHADOW_CASTER_PASS))
 #if defined(_CUSTOM30_BASICCUBE)
@@ -343,7 +337,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #endif
 
-  tangentToWorld = float4x4(
+  float4x4 tangentToWorld = float4x4(
     float4(i.tangent, 0),
     float4(i.binormal, 0),
     float4(i.normal, 0),
@@ -356,7 +350,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 	ssao = get_ssao(i, tangentToWorld, debug);
 #endif
   YumPbr pbr = GetYumPbr(i, tangentToWorld);
-	//pbr.ao *= ssao;
 	pbr.albedo.rgb *= ssao;
 
 #if defined(META_PASS)

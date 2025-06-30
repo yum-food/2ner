@@ -177,7 +177,12 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 #if defined(_SPHERICAL_HARMONICS_L1)
   return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
 #else
-  return LightVolumeEvaluate(n.xyz, light.L00, 0, 0, 0);
+  [branch]
+  if (_UdonLightVolumeEnabled) {
+    return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
+  } else {
+    return LightVolumeEvaluate(n.xyz, light.L00, 0, 0, 0);
+  }
 #endif
 }
 

@@ -140,6 +140,12 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   result.albedo.rgb = OKLCHtoLRGB(lch);
 #endif
 
+#if defined(_OKLAB_BRIGHTNESS_CLAMP)
+  float3 lab = LRGBtoOKLAB(result.albedo.rgb);
+  lab.x = clamp(lab.x, _Oklab_Brightness_Clamp_Min, _Oklab_Brightness_Clamp_Max);
+  result.albedo.rgb = OKLABtoLRGB(lab);
+#endif
+
   result.normal = normalize(mul(normal_tangent, tangentToWorld));
 
 #if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)

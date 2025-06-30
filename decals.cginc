@@ -182,7 +182,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 #define APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float4 decal_albedo;                                                                            \
     {                                                                                               \
-        decal_albedo = params.mainTex.Sample(trilinear_repeat_s, decal_uv);                            \
+        decal_albedo = params.mainTex.SampleGrad(trilinear_repeat_s, decal_uv, ddx(raw_decal_uv), ddy(raw_decal_uv));                            \
         decal_albedo *= params.color;                                                               \
     }
 

@@ -962,6 +962,13 @@ Shader "yum_food/2ner"
             _Oklch_Correction_H("H", Float) = 1
           [HideInInspector] m_end_Oklch_Correction("Oklch", Float) = 0
           //endex
+          //ifex _Oklab_Brightness_Clamp_Enabled==0
+          [HideInInspector] m_start_Oklab_Brightness_Clamp("Oklab brightness clamp", Float) = 0
+            [ThryToggle(_OKLAB_BRIGHTNESS_CLAMP)] _Oklab_Brightness_Clamp_Enabled("Enable", Float) = 0
+            _Oklab_Brightness_Clamp_Min("Min", Float) = 0
+            _Oklab_Brightness_Clamp_Max("Max", Float) = 1
+          [HideInInspector] m_end_Oklab_Brightness_Clamp("Oklab brightness clamp", Float) = 0
+          //endex
         [HideInInspector] m_end_Color_Correction("Color correction", Float) = 0
 
         //ifex _Raymarched_Fog_Enabled==0

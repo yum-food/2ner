@@ -607,4 +607,9 @@ float _Oklch_Correction_C;
 float _Oklch_Correction_H;
 #endif  // _OKLCH_CORRECTION
 
+#if defined(_OKLAB_BRIGHTNESS_CLAMP)
+float _Oklab_Brightness_Clamp_Min;
+float _Oklab_Brightness_Clamp_Max;
+#endif  // _OKLAB_BRIGHTNESS_CLAMP
+
 #endif  // __GLOBALS_INC

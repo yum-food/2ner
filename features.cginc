@@ -393,6 +393,10 @@
 #pragma shader_feature_local _OKLCH_CORRECTION
 //endex
 
+//ifex _Oklab_Brightness_Clamp_Enabled==0
+#pragma shader_feature_local _OKLAB_BRIGHTNESS_CLAMP
+//endex
+
 //ifex _Grayscale_Lightmaps_Enabled==0
 #pragma shader_feature_local _GRAYSCALE_LIGHTMAPS
 //endex

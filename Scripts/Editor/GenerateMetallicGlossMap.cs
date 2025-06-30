@@ -40,7 +40,7 @@ public class GenerateMetallicGlossMap : EditorWindow
             ? Path.GetDirectoryName(AssetDatabase.GetAssetPath(metallicMap))
             : Path.GetDirectoryName(AssetDatabase.GetAssetPath(smoothnessMap));
         string filename = metallicMap != null ? metallicMap.name : "black";
-        string newPath = Path.Combine(directory, filename + "_metallicgloss.png");
+        string newPath = Path.Combine(directory, "metallic_gloss.png");
 
         // Create new texture
         int width = metallicMap != null ? metallicMap.width : smoothnessMap.width;
