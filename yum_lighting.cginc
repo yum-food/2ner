@@ -316,7 +316,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.specular *= _Brightness_Multiplier;
 #endif
 
-  light.NoL = dot(pbr.normal, light.dir);
+  light.NoL = saturate(dot(pbr.normal, light.dir));
 #if defined(_QUANTIZE_NOL)
   light.NoL = floor(light.NoL * _Quantize_NoL_Steps) / _Quantize_NoL_Steps;
 #endif
@@ -324,7 +324,6 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.NoL_wrapped_s = saturate(wrapNoL(light.NoL, _Wrap_NoL_Specular_Strength));
   light.NoL_wrapped_d = saturate(wrapNoL(light.NoL, _Wrap_NoL_Diffuse_Strength));
 #endif
-  light.NoL = saturate(light.NoL);
 
 	return light;
 }

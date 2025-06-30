@@ -129,7 +129,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
     
     // Fd_Burley already includes 1/PI, so multiply by PI to match Unity intensities
-    float3 Fd = diffuseColor * Fd_Burley(pbr.roughness, NoV, NoL, LoH) * PI;
+    float3 Fd = diffuseColor * Fd_Burley(pbr.roughness, NoV, NoL_wrapped_d, LoH) * PI;
     Fd *= light.attenuation * pbr.ao;
     
     // Multiply by PI to match Unity intensities (same as Filament's implementation)

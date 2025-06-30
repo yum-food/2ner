@@ -3,13 +3,17 @@
 
 #include "pema99.cginc"
 
-#define PI 3.14159265358979323846264
-#define TAU (2 * PI)
-#define HALF_PI (PI * 0.5)
+#define PI              3.14159265358979323846264f
+#define TAU             (2.0f * PI)
+#define HALF_PI         (PI * 0.5f)
+#define RCP_PI          (1.0f / PI)
+#define RCP_TAU         (1.0f / TAU)
 #define PHI             1.618033989f
+#define RCP_PHI         0.618033989f
 #define SQRT_2          1.414213562f
 #define SQRT_2_RCP      0.707106781f
 #define RCP_SQRT_2      0.707106781f
+#define RCP_SQRT_3      0.577350269f
 #define TWO_OVER_THREE  0.6666666666666666f
 #define SQRT_3_OVER_2   0.8660254037844386f
 #define EULERS_CONSTANT 2.718281828f
@@ -21,24 +25,22 @@ float pow5(float x)
   return (tmp * tmp) * x;
 }
 
+// Wrap NoL. Assume it's already clamped.
+// At k=0, you get standard lambertian shading.
+// At k=0.5, you get half-lambertian shading.
+// At k=1.0, you get flat shading.
+// k must be on [0, 1].
+// Energy preserving, within some small bound.
 float wrapNoL(float NoL, float k) {
-#if 0
-		// https://www.iro.umontreal.ca/~derek/files/jgt_wrap_final.pdf
-    return pow(max(1E-4, (NoL + k) / (1 + k)), 1 + k);
-#else
-    float k_sq = k * k;
-    float b = max(0, lerp(NoL, 1.0, k));
-    float p = -6.0 * k_sq + 5.0 * k + 1.0;
-    // Using the formula
-    float F = pow(b, p);
+  float lambertian = NoL;
+  float half_lambertian = pow(max(1e-4, (NoL + 0.5f) / (1.0f + 0.5f)), 2);
+  float flat = RCP_PI;
 
-    // Approximate integral of NoL with respect to theta
-    float I = (0.7856 * k_sq - 0.2148 * k) + 1.0;
-
-    float G = F / max(I, 1E-6);
-
-    return G;
-#endif
+  if (k < 0.5) {
+    return lerp(lambertian, half_lambertian, k * 2.0f);
+  } else {
+    return lerp(half_lambertian, flat, k * 2.0f - 1.0f);
+  }
 }
 
 float halfLambertianNoL(float NoL) {
