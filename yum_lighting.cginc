@@ -208,24 +208,50 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
     L21 * n.x * n.z +
     L22 * (n.x * n.x - n.y * n.y);
 
+#if defined(_WRAPPED_LIGHTING)
+  float wrap_term = _Wrap_NoL_Diffuse_Strength;
+  // Original coefficients: 1, 2/3, 1/4.
+  // Wrapped coefficients: 1, (2-w)/3, ((1-w)^2)/4.
+
+  // Setting w=0, the l1 band is:
+  //   (2-w)/3 = 2/3
+  //   2-w = 2
+  //   1-w/2 = 1
+  float l1_wrap = 1.0f - wrap_term * 0.75f;
+  L1 *= l1_wrap;
+
+  // The l2 band is:
+  //   ((1-w)^2)/4 = 1/4
+  //   (1-w)^2 = 1
+  float l2_wrap = (1.0f-wrap_term);
+  l2_wrap *= l2_wrap;
+  L2 *= l2_wrap;
+#else
+  float l1_wrap = 1.0f;
+#endif
+
   light.L00 = L00;
-  light.L01r = unity_SHAr.xyz;
-  light.L01g = unity_SHAg.xyz;
-  light.L01b = unity_SHAb.xyz;
+  light.L01r = unity_SHAr.xyz * l1_wrap;
+  light.L01g = unity_SHAg.xyz * l1_wrap;
+  light.L01b = unity_SHAb.xyz * l1_wrap;
 
   return L0 + L1 + L2;
 #else
   LightVolumeSH(worldPos, light.L00, light.L01r, light.L01g, light.L01b);
-#if defined(_SPHERICAL_HARMONICS_L1)
-  return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
-#else
-  [branch]
-  if (_UdonLightVolumeEnabled) {
-    return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
-  } else {
-    return LightVolumeEvaluate(n.xyz, light.L00, 0, 0, 0);
-  }
+
+#if defined(_WRAPPED_LIGHTING)
+  float wrap_term = _Wrap_NoL_Diffuse_Strength;
+  // Hack. Not energy preserving but sorta close. I think this looks better at fully flat mode.
+  float l1_wrap = 1.0f - wrap_term * 0.75f;
+  light.L01r *= l1_wrap;
+  light.L01g *= l1_wrap;
+  light.L01b *= l1_wrap;
 #endif
+
+  return light.L00 + float3(
+    dot(light.L01r, n.xyz),
+    dot(light.L01g, n.xyz),
+    dot(light.L01b, n.xyz));
 #endif
 }
 

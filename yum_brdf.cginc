@@ -99,10 +99,9 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // Energy conservative wrap diffuse for subsurface scattering
-      float wrap_diffuse = saturate((NoL + 0.5) / 2.25);
-      Fd *= wrap_diffuse;
+      Fd *= NoL_wrapped_d;
       // Apply subsurface color
-      Fd *= saturate(_Cloth_Subsurface_Color + NoL);
+      Fd *= saturate(_Cloth_Subsurface_Color + NoL_wrapped_d);
     #endif
 
     // Cloth specular BRDF - multiply by PI to match Unity intensities
@@ -110,9 +109,9 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // No need to multiply by NoL when using subsurface scattering
-      direct_cloth = (Fd + Fr * NoL) * light.direct * _Cloth_Direct_Multiplier;
+      direct_cloth = (Fd + Fr * NoL_wrapped_s) * light.direct * _Cloth_Direct_Multiplier;
     #else
-      direct_cloth = (Fd + Fr) * NoL * light.direct * _Cloth_Direct_Multiplier;
+      direct_cloth = (Fd + Fr) * NoL_wrapped_d * light.direct * _Cloth_Direct_Multiplier;
     #endif
   }
 #endif
