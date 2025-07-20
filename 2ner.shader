@@ -2,7 +2,7 @@ Shader "yum_food/2ner"
 {
   // Certain parts of the Properties below are derived from Poiyomi's toon
   // shader. The license is available in this repository at the top of
-  // poi.cginc. C.
+  // poi.cginc.
 	Properties
   {
       [HideInInspector] shader_master_label("<color=#de719bff>2ner</color>", Float) = 0

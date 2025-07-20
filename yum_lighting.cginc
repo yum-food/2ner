@@ -11,6 +11,7 @@
 #include "LightVolumes.cginc"
 #include "poi.cginc"
 #include "yum_pbr.cginc"
+#include "math.cginc"
 
 // fucking kill me
 #ifndef __LTCGI_INC
@@ -43,6 +44,54 @@ void ltcgi_cb_specular(inout ltcgi_acc acc, in ltcgi_output output) {
 #endif  // _LTCGI
 
 #endif  // __LTCGI_INC
+
+float3 Shade4PointLightsWrapped(
+    float4 lightPosX, float4 lightPosY, float4 lightPosZ,
+    float3 lightColor0, float3 lightColor1, float3 lightColor2, float3 lightColor3,
+    float4 lightAttenSq,
+    float3 pos, float3 normal, float wrapStrength)
+{
+    // to light vectors
+    float4 toLightX = lightPosX - pos.x;
+    float4 toLightY = lightPosY - pos.y;
+    float4 toLightZ = lightPosZ - pos.z;
+    
+    // squared lengths
+    float4 lengthSq = 0;
+    lengthSq += toLightX * toLightX;
+    lengthSq += toLightY * toLightY;
+    lengthSq += toLightZ * toLightZ;
+    
+    // NdotL
+    float4 ndotl = 0;
+    ndotl += toLightX * normal.x;
+    ndotl += toLightY * normal.y;
+    ndotl += toLightZ * normal.z;
+    
+    // correct NdotL
+    float4 corr = rsqrt(lengthSq);
+    ndotl = ndotl * corr;
+    
+    // Apply wrapped lighting
+    float4 wrappedNdotl;
+    wrappedNdotl.x = saturate(wrapNoL(ndotl.x, wrapStrength));
+    wrappedNdotl.y = saturate(wrapNoL(ndotl.y, wrapStrength));
+    wrappedNdotl.z = saturate(wrapNoL(ndotl.z, wrapStrength));
+    wrappedNdotl.w = saturate(wrapNoL(ndotl.w, wrapStrength));
+    
+    // attenuation
+    float4 atten = 1.0 / (1.0 + lengthSq * lightAttenSq);
+    float4 diff = wrappedNdotl * atten;
+    
+    // final color
+    float3 col = 0;
+    col += lightColor0 * diff.x;
+    col += lightColor1 * diff.y;
+    col += lightColor2 * diff.z;
+    col += lightColor3 * diff.w;
+    
+    return col;
+}
 
 struct YumLighting {
 	float3 view_dir;
@@ -300,7 +349,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.diffuse.gb = light.diffuse.r;
 #endif
 #else
-  light.diffuse = getIndirectDiffuse(i, 0, light);
+  light.diffuse = getIndirectDiffuse(i, float4(i.vertexLight, 0), light);
   light.occlusion = 1;
 #endif
 

@@ -30,7 +30,8 @@ struct v2f {
 	float3 binormal    : TEXCOORD6;
   float4 eyeVec      : TEXCOORD7; // eyeVec.xyz | fogCoord
   float4 color       : TEXCOORD8;
-  UNITY_LIGHTING_COORDS(9,10)
+  float3 vertexLight : TEXCOORD9;
+  UNITY_LIGHTING_COORDS(10,11)
 
   UNITY_VERTEX_INPUT_INSTANCE_ID
   UNITY_VERTEX_OUTPUT_STEREO

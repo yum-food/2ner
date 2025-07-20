@@ -198,6 +198,24 @@ v2f vert(appdata v) {
 
   // Vertex color
   o.color = v.color;
+
+  // Calculate vertex lights
+  #ifdef VERTEXLIGHT_ON
+    #if defined(_WRAPPED_LIGHTING)
+      o.vertexLight = Shade4PointLightsWrapped(
+        unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+        unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+        unity_4LightAtten0, o.worldPos, o.normal, _Wrap_NoL_Diffuse_Strength);
+    #else
+      o.vertexLight = Shade4PointLights(
+        unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+        unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+        unity_4LightAtten0, o.worldPos, o.normal);
+    #endif
+  #else
+    o.vertexLight = 0;
+  #endif
+
   return o;
 }
 
@@ -495,7 +513,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   #ifdef LOD_FADE_CROSSFADE
     UnityApplyDitherCrossFade(i.pos.xy);
   #endif
-  
+
   // Output proper shadow data
   SHADOW_CASTER_FRAGMENT(i)
 #elif defined(MASKED_STENCIL1_PASS) || defined(MASKED_STENCIL2_PASS) || defined(MASKED_STENCIL3_PASS) || defined(MASKED_STENCIL4_PASS) || defined(DEPTH_PREPASS)

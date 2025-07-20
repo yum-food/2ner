@@ -171,6 +171,7 @@ v2f domain(
   o.uv01     = DOMAIN_INTERP(uv01);
   o.uv23     = DOMAIN_INTERP(uv23);
   o.color     = DOMAIN_INTERP(color);
+  o.vertexLight     = DOMAIN_INTERP(vertexLight);
 
 #if defined(_TESSELLATION) && defined(_SHATTER_WAVE)
 #if defined(OUTLINE_PASS)
