@@ -23,6 +23,11 @@ float get_ssao(v2f i, float3x3 tangentToWorld, out float2 debug) {
       cos(ssao_theta), -sin(ssao_theta),
       sin(ssao_theta),  cos(ssao_theta));
 
+  [branch]
+  if (round(_SSAO_Samples) < 1) {
+    return 1;
+  }
+
   float ssao_occlusion = 0;
   const float ssao_eps = 1E-5;
   [loop]

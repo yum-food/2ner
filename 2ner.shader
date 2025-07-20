@@ -2213,10 +2213,10 @@ Shader "yum_food/2ner"
       [HideInInspector] m_end_Shadow_Casting("Cast shadows", Float) = 0
       //endex
 
-      //ifex _Spherical_Harmonics_L1_Enabled==0
-      [HideInInspector] m_start_Spherical_Harmonics_L1("L1 spherical harmonics", Float) = 0
-        [ThryToggle(_SPHERICAL_HARMONICS_L1)] _Spherical_Harmonics_L1_Enabled("Enable", Float) = 0
-      [HideInInspector] m_end_Spherical_Harmonics_L1("L1 spherical harmonics", Float) = 0
+      //ifex _Screen_Space_Normals_Enabled==0
+      [HideInInspector] m_start_Screen_Space_Normals("Screen Space Normals", Float) = 0
+        [ThryToggle(_SCREEN_SPACE_NORMALS)] _Screen_Space_Normals_Enabled("Enable", Float) = 0
+      [HideInInspector] m_end_Screen_Space_Normals("Screen Space Normals", Float) = 0
       //endex
 
       //ifex _Depth_Prepass_Enabled==0
