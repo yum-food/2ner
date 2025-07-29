@@ -202,7 +202,7 @@ v2f vert(appdata v) {
 }
 
 float4 frag(v2f i, uint facing : SV_IsFrontFace
-#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || (defined(_CUSTOM30) && !defined(_DEPTH_PREPASS)) || defined(_RAYMARCHED_FOG)
+#if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || (defined(_CUSTOM30) && !defined(_DEPTH_PREPASS)) || defined(_RAYMARCHED_FOG) || defined(_TESSELLATION_HEIGHTMAP)
   , out float depth : SV_DepthLessEqual
 #endif
 ) : SV_Target {
@@ -279,7 +279,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   }
 #endif
 
-#if defined(_SHATTER_WAVE) || defined(_TESSELLATION_HEIGHTMAP)
+#if defined(_SHATTER_WAVE)
   calcNormalInScreenSpace(i.normal, i.objPos);
 #endif
 
@@ -294,8 +294,17 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #if defined(_VERTEX_DOMAIN_WARPING)
         || _Vertex_Domain_Warping_Octaves > 0.1
 #endif
-#if defined(_TESSELLATION_HEIGHTMAP)
-        || _Tessellation_Heightmap_Scale > 1E-4
+#if defined(_TESSELLATION_HEIGHTMAP_0)
+        || _Tessellation_Heightmap_0_Scale > 1E-4
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_1)
+        || _Tessellation_Heightmap_1_Scale > 1E-4
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_2)
+        || _Tessellation_Heightmap_2_Scale > 1E-4
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_3)
+        || _Tessellation_Heightmap_3_Scale > 1E-4
 #endif
     ) {
       float4 clip_pos = UnityObjectToClipPos(i.objPos);

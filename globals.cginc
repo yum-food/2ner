@@ -499,12 +499,33 @@ float4 _Shatter_Wave_Rotation_Strength;
 float _Tessellation_Factor;
 #endif  // _TESSELLATION
 
-#if defined(_TESSELLATION_HEIGHTMAP)
-texture2D _Tessellation_Heightmap;
-float4 _Tessellation_Heightmap_ST;
-float _Tessellation_Heightmap_Scale;
-float _Tessellation_Heightmap_Offset;
-#endif  // _TESSELLATION_HEIGHTMAP
+#if defined(_TESSELLATION_HEIGHTMAP_0)
+texture2D _Tessellation_Heightmap_0;
+float4 _Tessellation_Heightmap_0_ST;
+float _Tessellation_Heightmap_0_Scale;
+float _Tessellation_Heightmap_0_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_0
+
+#if defined(_TESSELLATION_HEIGHTMAP_1)
+texture2D _Tessellation_Heightmap_1;
+float4 _Tessellation_Heightmap_1_ST;
+float _Tessellation_Heightmap_1_Scale;
+float _Tessellation_Heightmap_1_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_1
+
+#if defined(_TESSELLATION_HEIGHTMAP_2)
+texture2D _Tessellation_Heightmap_2;
+float4 _Tessellation_Heightmap_2_ST;
+float _Tessellation_Heightmap_2_Scale;
+float _Tessellation_Heightmap_2_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_2
+
+#if defined(_TESSELLATION_HEIGHTMAP_3)
+texture2D _Tessellation_Heightmap_3;
+float4 _Tessellation_Heightmap_3_ST;
+float _Tessellation_Heightmap_3_Scale;
+float _Tessellation_Heightmap_3_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_3
 
 #if defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
 float3 _Tessellation_Heightmap_Direction_Control_Vector;

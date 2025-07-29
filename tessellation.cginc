@@ -35,8 +35,12 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
     // un-transformed and maximally transformed locations. Technically we could
     // miss an intersection in the middle, but I haven't noticed any visible
     // popping with this approach.
-#if defined(_TESSELLATION_HEIGHTMAP)
-    float max_displacement = _Tessellation_Heightmap_Scale * 0.5 + _Tessellation_Heightmap_Offset;
+#if defined(_TESSELLATION_HEIGHTMAP) && (defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3))
+    float max_displacement = max(
+      max(_Tessellation_Heightmap_0_Scale * 0.5 + _Tessellation_Heightmap_0_Offset,
+          _Tessellation_Heightmap_1_Scale * 0.5 + _Tessellation_Heightmap_1_Offset),
+      max(_Tessellation_Heightmap_2_Scale * 0.5 + _Tessellation_Heightmap_2_Offset,
+          _Tessellation_Heightmap_3_Scale * 0.5 + _Tessellation_Heightmap_3_Offset));
 #else
     float max_displacement = 0;
 #endif
@@ -119,22 +123,29 @@ v2f domain(
 #endif
 #endif
 
-#if defined(_TESSELLATION_HEIGHTMAP)
-#if 1
-  float raw_noise = _Tessellation_Heightmap.SampleLevel(linear_repeat_s,
-      o.uv01.xy * _Tessellation_Heightmap_ST.xy, 0).r;
-  float height = raw_noise *
-      _Tessellation_Heightmap_Scale +
-      _Tessellation_Heightmap_Offset +
-      _Tessellation_Heightmap_Scale * -0.5;
-#else
-  // For whatever reason, it seems like the texture read is initially
-  // returning a small number when the mesh spawns in VRC. A procedural noise
-  // works around the issue.
-  float height = rand2(o.uv01.xy) * _Tessellation_Heightmap_Scale +
-      _Tessellation_Heightmap_Offset +
-      _Tessellation_Heightmap_Scale * -0.5;
+#if (defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3))
+  float height = 0;
+#if defined(_TESSELLATION_HEIGHTMAP_0)
+  float heightmap_0_sample = _Tessellation_Heightmap_0.SampleLevel(bilinear_repeat_s,
+      o.uv01.xy * _Tessellation_Heightmap_0_ST.xy, 0).r;
+  height += heightmap_0_sample * _Tessellation_Heightmap_0_Scale + _Tessellation_Heightmap_0_Offset;
 #endif
+#if defined(_TESSELLATION_HEIGHTMAP_1)
+  float heightmap_1_sample = _Tessellation_Heightmap_1.SampleLevel(bilinear_repeat_s,
+      o.uv01.xy * _Tessellation_Heightmap_1_ST.xy, 0).r;
+  height += heightmap_1_sample * _Tessellation_Heightmap_1_Scale + _Tessellation_Heightmap_1_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_2)
+  float heightmap_2_sample = _Tessellation_Heightmap_2.SampleLevel(bilinear_repeat_s,
+      o.uv01.xy * _Tessellation_Heightmap_2_ST.xy, 0).r;
+  height += heightmap_2_sample * _Tessellation_Heightmap_2_Scale + _Tessellation_Heightmap_2_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_3)
+  float heightmap_3_sample = _Tessellation_Heightmap_3.SampleLevel(bilinear_repeat_s,
+      o.uv01.xy * _Tessellation_Heightmap_3_ST.xy, 0).r;
+  height += heightmap_3_sample * _Tessellation_Heightmap_3_Scale + _Tessellation_Heightmap_3_Offset;
+#endif
+
 #if defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
   float3 heightmap_direction = mul(transpose(-float3x3(o.normal, o.tangent, o.binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
 #elif defined(OUTLINE_PASS) && !defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
@@ -152,7 +163,7 @@ v2f domain(
   o.eyeVec.xyz = o.worldPos - _WorldSpaceCameraPos;
   o.eyeVec.w = 1;
 
-  UNITY_TRANSFER_LIGHTING(o, o.uv01.zw);
+  //UNITY_TRANSFER_LIGHTING(o, v);
   UNITY_TRANSFER_INSTANCE_ID(patch[0], o);
   UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 #if defined(SHADOW_CASTER_PASS)

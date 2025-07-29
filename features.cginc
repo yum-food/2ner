@@ -326,7 +326,10 @@
 
 //ifex _Tessellation_Enabled==0
 #pragma shader_feature_local _TESSELLATION
-#pragma shader_feature_local _TESSELLATION_HEIGHTMAP
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_0
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_1
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_2
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_3
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL
 #pragma shader_feature_local _TESSELLATION_RANGE_FACTOR
 //endex

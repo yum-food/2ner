@@ -1644,10 +1644,30 @@ Shader "yum_food/2ner"
           [ThryToggle(_TESSELLATION)] _Tessellation_Enabled("Enable", Float) = 0
           _Tessellation_Factor("Factor", Range(1, 64)) = 1
           [HideInInspector] m_start_Tessellation_Heightmap("Heightmap", Float) = 0
-            [ThryToggle(_TESSELLATION_HEIGHTMAP)] _Tessellation_Heightmap_Enabled("Enable", Float) = 0
-            _Tessellation_Heightmap("Heightmap", 2D) = "black" {}
-            _Tessellation_Heightmap_Scale("Scale", Float) = 1
-            _Tessellation_Heightmap_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_0("Heightmap 0", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_0)] _Tessellation_Heightmap_0_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_0("Heightmap 0", 2D) = "black" {}
+              _Tessellation_Heightmap_0_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_0_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_0("Heightmap 0", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_1("Heightmap 1", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_1)] _Tessellation_Heightmap_1_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_1("Heightmap 1", 2D) = "black" {}
+              _Tessellation_Heightmap_1_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_1_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_1("Heightmap 1", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_2("Heightmap 2", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_2)] _Tessellation_Heightmap_2_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_2("Heightmap 2", 2D) = "black" {}
+              _Tessellation_Heightmap_2_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_2_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_2("Heightmap 2", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_3("Heightmap 3", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_3)] _Tessellation_Heightmap_3_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_3("Heightmap 3", 2D) = "black" {}
+              _Tessellation_Heightmap_3_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_3_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_3("Heightmap 3", Float) = 0
             [HideInInspector] m_start_Tessellation_Heightmap_Direction_Control("Direction control", Float) = 0
               [ThryToggle(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)] _Tessellation_Heightmap_Direction_Control_Enabled("Enable", Float) = 0
               _Tessellation_Heightmap_Direction_Control_Vector("Direction (normal/tangent/binormal)", Vector) = (1, 0, 0)
@@ -2145,7 +2165,7 @@ Shader "yum_food/2ner"
     Pass {
       Name "DEPTHPREPASS"
       Tags { }
-      
+
       ColorMask 0
       ZWrite On
       ZTest LEqual
@@ -2593,16 +2613,16 @@ Shader "yum_food/2ner"
     Pass {
       Name "META"
       Tags { "LightMode" = "Meta" }
-      
+
       Cull Off
-      
+
       CGPROGRAM
       #pragma vertex vert_meta
       #pragma fragment frag_meta
       #pragma shader_feature _EMISSION
       #pragma shader_feature _METALLICGLOSSMAP
       #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-      
+
       #define META_PASS
       #include "UnityStandardMeta.cginc"
       ENDCG
