@@ -333,6 +333,39 @@ DECLARE_DECAL_VARIABLES(6)
 DECLARE_DECAL_VARIABLES(7)
 #endif
 
+#if defined(_XZ_GRADIENT_NORMALS_0)
+texture2D _XZ_Gradient_Normals_0;
+float4 _XZ_Gradient_Normals_0_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_1)
+texture2D _XZ_Gradient_Normals_1;
+float4 _XZ_Gradient_Normals_1_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_2)
+texture2D _XZ_Gradient_Normals_2;
+float4 _XZ_Gradient_Normals_2_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_3)
+texture2D _XZ_Gradient_Normals_3;
+float4 _XZ_Gradient_Normals_3_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_4)
+texture2D _XZ_Gradient_Normals_4;
+float4 _XZ_Gradient_Normals_4_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_5)
+texture2D _XZ_Gradient_Normals_5;
+float4 _XZ_Gradient_Normals_5_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_6)
+texture2D _XZ_Gradient_Normals_6;
+float4 _XZ_Gradient_Normals_6_ST;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_7)
+texture2D _XZ_Gradient_Normals_7;
+float4 _XZ_Gradient_Normals_7_ST;
+#endif
+
 #if defined(_VERTEX_DOMAIN_WARPING)
 texture3D _Vertex_Domain_Warping_Noise;
 float _Vertex_Domain_Warping_Strength;

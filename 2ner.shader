@@ -953,6 +953,58 @@ Shader "yum_food/2ner"
           //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
 
+        [HideInInspector] m_start_XZ_Gradient_Normals("XZ Gradient Normals", Float) = 0
+          [ThryToggle(_XZ_GRADIENT_NORMALS)] _XZ_Gradient_Normals_Enabled("Enable", Float) = 0
+          //ifex _XZ_Gradient_Normals_0_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_0("Gradient 0", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_0)] _XZ_Gradient_Normals_0_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_0("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_0("Gradient 0", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_1_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_1("Gradient 1", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_1)] _XZ_Gradient_Normals_1_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_1("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_1("Gradient 1", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_2_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_2("Gradient 2", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_2)] _XZ_Gradient_Normals_2_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_2("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_2("Gradient 2", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_3_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_3("Gradient 3", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_3)] _XZ_Gradient_Normals_3_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_3("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_3("Gradient 3", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_4_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_4("Gradient 4", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_4)] _XZ_Gradient_Normals_4_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_4("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_4("Gradient 4", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_5_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_5("Gradient 5", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_5)] _XZ_Gradient_Normals_5_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_5("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_5("Gradient 5", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_6_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_6("Gradient 6", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_6)] _XZ_Gradient_Normals_6_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_6("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_6("Gradient 6", Float) = 0
+          //endex
+          //ifex _XZ_Gradient_Normals_7_Enabled==0
+          [HideInInspector] m_start_XZ_Gradient_Normals_7("Gradient 7", Float) = 0
+            [ThryToggle(_XZ_GRADIENT_NORMALS_7)] _XZ_Gradient_Normals_7_Enabled("Enable", Float) = 0
+            _XZ_Gradient_Normals_7("Texture", 2D) = "black" {}
+          [HideInInspector] m_end_XZ_Gradient_Normals_7("Gradient 7", Float) = 0
+          //endex
+        [HideInInspector] m_end_XZ_Gradient_Normals("XZ Gradient Normals", Float) = 0
+
         [HideInInspector] m_start_Color_Correction("Color correction", Float) = 0
           //ifex _Oklch_Correction_Enabled==0
           [HideInInspector] m_start_Oklch_Correction("Oklch", Float) = 0

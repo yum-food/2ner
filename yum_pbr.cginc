@@ -27,6 +27,50 @@ void propagateRoughness(in float smoothness, out float roughness_perceptual, out
   roughness = roughness_perceptual * roughness_perceptual;
 }
 
+#if defined(_XZ_GRADIENT_NORMALS)
+void applyGradientNormals(v2f i, inout YumPbr pbr) {
+  float2 uv = i.uv01.xy;
+
+  float2 gradient = 0;
+#if defined(_XZ_GRADIENT_NORMALS_0)
+  float2 g0_uv = uv * _XZ_Gradient_Normals_0_ST.xy;
+  gradient += _XZ_Gradient_Normals_0.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_1)
+  float2 g1_uv = uv * _XZ_Gradient_Normals_1_ST.xy;
+  gradient += _XZ_Gradient_Normals_1.SampleLevel(bilinear_repeat_s, g1_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_2)
+  float2 g2_uv = uv * _XZ_Gradient_Normals_2_ST.xy;
+  gradient += _XZ_Gradient_Normals_2.SampleLevel(bilinear_repeat_s, g2_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_3)
+  float2 g3_uv = uv * _XZ_Gradient_Normals_3_ST.xy;
+  gradient += _XZ_Gradient_Normals_3.SampleLevel(bilinear_repeat_s, g3_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_4)
+  float2 g4_uv = uv * _XZ_Gradient_Normals_4_ST.xy;
+  gradient += _XZ_Gradient_Normals_4.SampleLevel(bilinear_repeat_s, g4_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_5)
+  float2 g5_uv = uv * _XZ_Gradient_Normals_5_ST.xy;
+  gradient += _XZ_Gradient_Normals_5.SampleLevel(bilinear_repeat_s, g5_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_6)
+  float2 g6_uv = uv * _XZ_Gradient_Normals_6_ST.xy;
+  gradient += _XZ_Gradient_Normals_6.SampleLevel(bilinear_repeat_s, g6_uv, 0).rg;
+#endif
+#if defined(_XZ_GRADIENT_NORMALS_7)
+  float2 g7_uv = uv * _XZ_Gradient_Normals_7_ST.xy;
+  gradient += _XZ_Gradient_Normals_7.SampleLevel(bilinear_repeat_s, g7_uv, 0).rg;
+#endif
+
+  // Technically I think this is in object space but uhhh I'll deal with that later idk.
+  float3 gradient_normal = normalize(float3(-gradient.x, 1.0f, -gradient.y));
+  pbr.normal = gradient_normal;
+}
+#endif
+
 YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   YumPbr result = (YumPbr)0;
 
@@ -148,6 +192,10 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 #endif
 
   result.normal = normalize(mul(normal_tangent, tangentToWorld));
+
+#if defined(_XZ_GRADIENT_NORMALS)
+  applyGradientNormals(i, result);
+#endif
 
 #if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)
   GlitterParams glitter_p;

@@ -126,11 +126,11 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     // Compute proper diffuse color with metallic blending
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
-    
+
     // Fd_Burley already includes 1/PI, so multiply by PI to match Unity intensities
     float3 Fd = diffuseColor * Fd_Burley(pbr.roughness, NoV, NoL_wrapped_d, LoH) * PI;
     Fd *= light.attenuation * pbr.ao;
-    
+
     // Multiply by PI to match Unity intensities (same as Filament's implementation)
     float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation;
 
@@ -173,7 +173,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     // Use proper diffuse color calculation
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
     float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao;
-    
+
     float3 Fr = E * light.specular * specularSingleBounceAO;
 
     indirect_standard = Fr + Fd;

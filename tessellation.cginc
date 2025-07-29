@@ -35,7 +35,7 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
     // un-transformed and maximally transformed locations. Technically we could
     // miss an intersection in the middle, but I haven't noticed any visible
     // popping with this approach.
-#if defined(_TESSELLATION_HEIGHTMAP) && (defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3))
+#if defined(_TESSELLATION) && (defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3))
     float max_displacement = max(
       max(_Tessellation_Heightmap_0_Scale * 0.5 + _Tessellation_Heightmap_0_Offset,
           _Tessellation_Heightmap_1_Scale * 0.5 + _Tessellation_Heightmap_1_Offset),
@@ -123,7 +123,7 @@ v2f domain(
 #endif
 #endif
 
-#if (defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3))
+#if defined(_TESSELLATION) && (defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3))
   float height = 0;
 #if defined(_TESSELLATION_HEIGHTMAP_0)
   float heightmap_0_sample = _Tessellation_Heightmap_0.SampleLevel(bilinear_repeat_s,

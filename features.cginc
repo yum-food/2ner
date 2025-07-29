@@ -240,6 +240,34 @@
 #pragma shader_feature_local _DECAL7_EMISSIONS_PROXIMITY
 //endex
 
+//ifex _XZ_Gradient_Normals_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS
+//endex
+//ifex _XZ_Gradient_Normals_0_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_0
+//endex
+//ifex _XZ_Gradient_Normals_1_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_1
+//endex
+//ifex _XZ_Gradient_Normals_2_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_2
+//endex
+//ifex _XZ_Gradient_Normals_3_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_3
+//endex
+//ifex _XZ_Gradient_Normals_4_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_4
+//endex
+//ifex _XZ_Gradient_Normals_5_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_5
+//endex
+//ifex _XZ_Gradient_Normals_6_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_6
+//endex
+//ifex _XZ_Gradient_Normals_7_Enabled==0
+#pragma shader_feature_local _XZ_GRADIENT_NORMALS_7
+//endex
+
 //ifex _3D_SDF_Enabled==0
 #pragma shader_feature_local _3D_SDF
 //endex
