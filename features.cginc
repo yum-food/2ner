@@ -249,6 +249,24 @@
 //ifex _Gradient_Normals_0_Horizontal_Enabled==0
 #pragma shader_feature_local _GRADIENT_NORMALS_0_HORIZONTAL
 //endex
+//ifex _Gradient_Normals_1_Vertical_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_1_VERTICAL
+//endex
+//ifex _Gradient_Normals_1_Horizontal_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_1_HORIZONTAL
+//endex
+//ifex _Gradient_Normals_2_Vertical_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_2_VERTICAL
+//endex
+//ifex _Gradient_Normals_2_Horizontal_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_2_HORIZONTAL
+//endex
+//ifex _Gradient_Normals_3_Vertical_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_3_VERTICAL
+//endex
+//ifex _Gradient_Normals_3_Horizontal_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_3_HORIZONTAL
+//endex
 
 //ifex _3D_SDF_Enabled==0
 #pragma shader_feature_local _3D_SDF

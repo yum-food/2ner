@@ -17,6 +17,14 @@ void propagateRoughness(in float smoothness, out float roughness_perceptual, out
   roughness = roughness_perceptual * roughness_perceptual;
 }
 
+// Shitty hacky filtering, not in any way robust or mathematically sound.
+void filterGradient(v2f i, inout float2 g)
+{
+  float3 normal = normalize(float3(-g.x, 1.0f, -g.y));
+  float dn = length(fwidth(normal));
+  g *= saturate(0.05 / dn);
+}
+
 #if defined(_GRADIENT_NORMALS)
 void applyGradientNormals(v2f i, inout YumPbr pbr) {
   float2 uv = i.uv01.xy;
@@ -24,6 +32,7 @@ void applyGradientNormals(v2f i, inout YumPbr pbr) {
   // Math lifted from "Ocean waves simulation with Fast Fourier transform" by
   // Jump Trajectory.
   float2 gradient = 0;
+
 #if defined(_GRADIENT_NORMALS_0_VERTICAL)
   float2 g0_uv = uv * _Gradient_Normals_0_Vertical_ST.xy;
   float2 g0_dfy = _Gradient_Normals_0_Vertical.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
@@ -34,11 +43,58 @@ void applyGradientNormals(v2f i, inout YumPbr pbr) {
       g0_dfy[0] / (1 + g0_dfxz[0]),
       g0_dfy[1] / (1 + g0_dfxz[1])
       );
+  filterGradient(i, g0);
 #endif  // _GRADIENT_NORMALS_0_HORIZONTAL
   gradient += g0;
 #endif  // _GRADIENT_NORMALS_0_VERTICAL
 
+#if defined(_GRADIENT_NORMALS_1_VERTICAL)
+  float2 g1_uv = uv * _Gradient_Normals_1_Vertical_ST.xy;
+  float2 g1_dfy = _Gradient_Normals_1_Vertical.SampleLevel(bilinear_repeat_s, g1_uv, 0).rg;
+  float2 g1 = g1_dfy;
+#if defined(_GRADIENT_NORMALS_1_HORIZONTAL)
+  float2 g1_dfxz = _Gradient_Normals_1_Horizontal.SampleLevel(bilinear_repeat_s, g1_uv, 0).rg;
+  g1 = float2(
+      g1_dfy[0] / (1 + g1_dfxz[0]),
+      g1_dfy[1] / (1 + g1_dfxz[1])
+      );
+  filterGradient(i, g1);
+#endif  // _GRADIENT_NORMALS_1_HORIZONTAL
+  gradient += g1;
+#endif  // _GRADIENT_NORMALS_1_VERTICAL
+
+#if defined(_GRADIENT_NORMALS_2_VERTICAL)
+  float2 g2_uv = uv * _Gradient_Normals_2_Vertical_ST.xy;
+  float2 g2_dfy = _Gradient_Normals_2_Vertical.SampleLevel(bilinear_repeat_s, g2_uv, 0).rg;
+  float2 g2 = g2_dfy;
+#if defined(_GRADIENT_NORMALS_2_HORIZONTAL)
+  float2 g2_dfxz = _Gradient_Normals_2_Horizontal.SampleLevel(bilinear_repeat_s, g2_uv, 0).rg;
+  g2 = float2(
+      g2_dfy[0] / (1 + g2_dfxz[0]),
+      g2_dfy[1] / (1 + g2_dfxz[1])
+      );
+#endif  // _GRADIENT_NORMALS_2_HORIZONTAL
+  gradient += g2;
+#endif  // _GRADIENT_NORMALS_2_VERTICAL
+
+#if defined(_GRADIENT_NORMALS_3_VERTICAL)
+  float2 g3_uv = uv * _Gradient_Normals_3_Vertical_ST.xy;
+  float2 g3_dfy = _Gradient_Normals_3_Vertical.SampleLevel(bilinear_repeat_s, g3_uv, 0).rg;
+  float2 g3 = g3_dfy;
+#if defined(_GRADIENT_NORMALS_3_HORIZONTAL)
+  float2 g3_dfxz = _Gradient_Normals_3_Horizontal.SampleLevel(bilinear_repeat_s, g3_uv, 0).rg;
+  g3 = float2(
+      g3_dfy[0] / (1 + g3_dfxz[0]),
+      g3_dfy[1] / (1 + g3_dfxz[1])
+      );
+  filterGradient(i, g2);
+#endif  // _GRADIENT_NORMALS_3_HORIZONTAL
+
+  gradient += g3;
+#endif  // _GRADIENT_NORMALS_3_VERTICAL
+
   float3 gradient_normal = normalize(float3(-gradient.x, 1.0f, -gradient.y));
+
   pbr.normal = gradient_normal;
 }
 #endif

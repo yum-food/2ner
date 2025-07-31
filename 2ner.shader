@@ -971,6 +971,51 @@ Shader "yum_food/2ner"
 
           [HideInInspector] m_end_Gradient_Normals_0("Gradient 0", Float) = 0
           //endex
+
+          //ifex _Gradient_Normals_1_Vertical_Enabled==0
+          [HideInInspector] m_start_Gradient_Normals_1("Vertical displacement gradient 1", Float) = 0
+            [ThryToggle(_GRADIENT_NORMALS_1_VERTICAL)] _Gradient_Normals_1_Vertical_Enabled("Enable", Float) = 0
+            _Gradient_Normals_1_Vertical("(dfy/dx, dfy/dz)", 2D) = "black" {}
+
+            //ifex _Gradient_Normals_1_Horizontal_Enabled==0
+            [HideInInspector] m_start_Gradient_Normals_1_Horizontal("Horizontal displacement gradient", Float) = 0
+              [ThryToggle(_GRADIENT_NORMALS_1_HORIZONTAL)] _Gradient_Normals_1_Horizontal_Enabled("Enable", Float) = 0
+              _Gradient_Normals_1_Horizontal("(dfx/dx, dfz/dz)", 2D) = "black" {}
+            [HideInInspector] m_end_Gradient_Normals_1_Horizontal("Horizontal displacement gradient", Float) = 0
+            //endex
+
+          [HideInInspector] m_end_Gradient_Normals_1("Gradient 1", Float) = 0
+          //endex
+
+          //ifex _Gradient_Normals_2_Vertical_Enabled==0
+          [HideInInspector] m_start_Gradient_Normals_2("Vertical displacement gradient 2", Float) = 0
+            [ThryToggle(_GRADIENT_NORMALS_2_VERTICAL)] _Gradient_Normals_2_Vertical_Enabled("Enable", Float) = 0
+            _Gradient_Normals_2_Vertical("(dfy/dx, dfy/dz)", 2D) = "black" {}
+
+            //ifex _Gradient_Normals_2_Horizontal_Enabled==0
+            [HideInInspector] m_start_Gradient_Normals_2_Horizontal("Horizontal displacement gradient", Float) = 0
+              [ThryToggle(_GRADIENT_NORMALS_2_HORIZONTAL)] _Gradient_Normals_2_Horizontal_Enabled("Enable", Float) = 0
+              _Gradient_Normals_2_Horizontal("(dfx/dx, dfz/dz)", 2D) = "black" {}
+            [HideInInspector] m_end_Gradient_Normals_2_Horizontal("Horizontal displacement gradient", Float) = 0
+            //endex
+
+          [HideInInspector] m_end_Gradient_Normals_2("Gradient 2", Float) = 0
+          //endex
+
+          //ifex _Gradient_Normals_3_Vertical_Enabled==0
+          [HideInInspector] m_start_Gradient_Normals_3("Vertical displacement gradient 3", Float) = 0
+            [ThryToggle(_GRADIENT_NORMALS_3_VERTICAL)] _Gradient_Normals_3_Vertical_Enabled("Enable", Float) = 0
+            _Gradient_Normals_3_Vertical("(dfy/dx, dfy/dz)", 2D) = "black" {}
+
+            //ifex _Gradient_Normals_3_Horizontal_Enabled==0
+            [HideInInspector] m_start_Gradient_Normals_3_Horizontal("Horizontal displacement gradient", Float) = 0
+              [ThryToggle(_GRADIENT_NORMALS_3_HORIZONTAL)] _Gradient_Normals_3_Horizontal_Enabled("Enable", Float) = 0
+              _Gradient_Normals_3_Horizontal("(dfx/dx, dfz/dz)", 2D) = "black" {}
+            [HideInInspector] m_end_Gradient_Normals_3_Horizontal("Horizontal displacement gradient", Float) = 0
+            //endex
+
+          [HideInInspector] m_end_Gradient_Normals_3("Gradient 3", Float) = 0
+          //endex
         [HideInInspector] m_end_Gradient_Normals("Gradient Normals", Float) = 0
         //endex
 

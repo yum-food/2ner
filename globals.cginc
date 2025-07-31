@@ -342,6 +342,33 @@ texture2D _Gradient_Normals_0_Horizontal;
 float4 _Gradient_Normals_0_Horizontal_ST;
 #endif
 
+#if defined(_GRADIENT_NORMALS_1_VERTICAL)
+texture2D _Gradient_Normals_1_Vertical;
+float4 _Gradient_Normals_1_Vertical_ST;
+#endif
+#if defined(_GRADIENT_NORMALS_1_HORIZONTAL)
+texture2D _Gradient_Normals_1_Horizontal;
+float4 _Gradient_Normals_1_Horizontal_ST;
+#endif
+
+#if defined(_GRADIENT_NORMALS_2_VERTICAL)
+texture2D _Gradient_Normals_2_Vertical;
+float4 _Gradient_Normals_2_Vertical_ST;
+#endif
+#if defined(_GRADIENT_NORMALS_2_HORIZONTAL)
+texture2D _Gradient_Normals_2_Horizontal;
+float4 _Gradient_Normals_2_Horizontal_ST;
+#endif
+
+#if defined(_GRADIENT_NORMALS_3_VERTICAL)
+texture2D _Gradient_Normals_3_Vertical;
+float4 _Gradient_Normals_3_Vertical_ST;
+#endif
+#if defined(_GRADIENT_NORMALS_3_HORIZONTAL)
+texture2D _Gradient_Normals_3_Horizontal;
+float4 _Gradient_Normals_3_Horizontal_ST;
+#endif
+
 #if defined(_VERTEX_DOMAIN_WARPING)
 texture3D _Vertex_Domain_Warping_Noise;
 float _Vertex_Domain_Warping_Strength;
