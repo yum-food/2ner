@@ -338,10 +338,8 @@ texture2D _Gradient_Normals_0_Vertical;
 float4 _Gradient_Normals_0_Vertical_ST;
 #endif
 #if defined(_GRADIENT_NORMALS_0_HORIZONTAL)
-texture2D _Gradient_Normals_0_X;
-float4 _Gradient_Normals_0_X_ST;
-texture2D _Gradient_Normals_0_Z;
-float4 _Gradient_Normals_0_Z_ST;
+texture2D _Gradient_Normals_0_Horizontal;
+float4 _Gradient_Normals_0_Horizontal_ST;
 #endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)

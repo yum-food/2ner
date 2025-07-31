@@ -965,8 +965,7 @@ Shader "yum_food/2ner"
             //ifex _Gradient_Normals_0_Horizontal_Enabled==0
             [HideInInspector] m_start_Gradient_Normals_0_Horizontal("Horizontal displacement gradient", Float) = 0
               [ThryToggle(_GRADIENT_NORMALS_0_HORIZONTAL)] _Gradient_Normals_0_Horizontal_Enabled("Enable", Float) = 0
-              _Gradient_Normals_0_X("(dfx/dx, dfx/dz)", 2D) = "black" {}
-              _Gradient_Normals_0_Z("(dfz/dx, dfz/dz)", 2D) = "black" {}
+              _Gradient_Normals_0_Horizontal("(dfx/dx, dfz/dz)", 2D) = "black" {}
             [HideInInspector] m_end_Gradient_Normals_0_Horizontal("Horizontal displacement gradient", Float) = 0
             //endex
 

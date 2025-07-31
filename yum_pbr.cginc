@@ -29,11 +29,10 @@ void applyGradientNormals(v2f i, inout YumPbr pbr) {
   float2 g0_dfy = _Gradient_Normals_0_Vertical.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
   float2 g0 = g0_dfy;
 #if defined(_GRADIENT_NORMALS_0_HORIZONTAL)
-  float2 g0_dfx = _Gradient_Normals_0_X.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
-  float2 g0_dfz = _Gradient_Normals_0_Z.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
+  float2 g0_dfxz = _Gradient_Normals_0_Horizontal.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
   g0 = float2(
-      g0_dfy[0] / (1 + g0_dfx[0]),
-      g0_dfy[1] / (1 + g0_dfz[1])
+      g0_dfy[0] / (1 + g0_dfxz[0]),
+      g0_dfy[1] / (1 + g0_dfxz[1])
       );
 #endif  // _GRADIENT_NORMALS_0_HORIZONTAL
   gradient += g0;
