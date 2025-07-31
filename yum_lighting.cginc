@@ -126,9 +126,6 @@ float GetLodRoughness(float roughness) {
 
 float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_luminance) {
   float3 reflect_dir = reflect(-view_dir, pbr.normal);
-  
-  // Apply dominant direction modification for rough surfaces
-  float3 dominant_reflect_dir = lerp(reflect_dir, pbr.normal, pbr.roughness * pbr.roughness);
 
   UnityGIInput data;
   data.worldPos = i.worldPos;
@@ -146,8 +143,8 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
   data.probePosition[1] = unity_SpecCube1_ProbePosition;
 #endif
 
-  // Pass perceptualRoughness directly - UnityGI_prefilteredRadiance handles remapping internally
-  const float3 env_refl = UnityGI_prefilteredRadiance(data, pbr.roughness_perceptual, dominant_reflect_dir);
+  // Apply roughness adjustment to match filamented's behavior
+  float3 env_refl = UnityGI_prefilteredRadiance(data, pbr.roughness_perceptual, reflect_dir);
 
 #if defined(_FALLBACK_CUBEMAP)
   // Check if there's no valid scene cubemap
@@ -155,7 +152,7 @@ float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_lum
   if (!SceneHasReflections() || _Fallback_Cubemap_Force) {
     // Set up data for fallback sampling similar to Unity's system
     half3 reflectVector = reflect(-view_dir, pbr.normal);
-    
+
     #ifdef UNITY_SPECCUBE_BOX_PROJECTION
       reflectVector = BoxProjectedCubemapDirection(reflectVector, data.worldPos, /*probe_position=*/0, /*box_min=*/-1, /*box_max=*/1);
     #endif

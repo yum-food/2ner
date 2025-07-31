@@ -163,18 +163,16 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     const float3 f0 = lerp(dielectric_f0, pbr.albedo, pbr.metallic);
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
     const float3 E = specularDFG(dfg, f0);
-    const float3 energy_compensation = energyCompensation(dfg, f0);
 
+    const float3 energy_compensation = energyCompensation(dfg, f0);
     // Compute specular ambient occlusion
     float diffuseAO = pbr.ao;
-    float specularAO = computeSpecularAO(NoV, diffuseAO * light.occlusion, pbr.roughness);
-    float3 specularSingleBounceAO = singleBounceAO(specularAO) * energy_compensation;
 
     // Use proper diffuse color calculation
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
     float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao;
 
-    float3 Fr = E * light.specular * specularSingleBounceAO;
+    float3 Fr = E * light.specular;
 
     indirect_standard = Fr + Fd;
   }

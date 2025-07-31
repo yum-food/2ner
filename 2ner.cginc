@@ -306,6 +306,18 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #if defined(_TESSELLATION_HEIGHTMAP_3)
         || _Tessellation_Heightmap_3_Scale > 1E-4
 #endif
+#if defined(_TESSELLATION_HEIGHTMAP_4)
+        || _Tessellation_Heightmap_4_Scale > 1E-4
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_5)
+        || _Tessellation_Heightmap_5_Scale > 1E-4
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_6)
+        || _Tessellation_Heightmap_6_Scale > 1E-4
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_7)
+        || _Tessellation_Heightmap_7_Scale > 1E-4
+#endif
     ) {
       float4 clip_pos = UnityObjectToClipPos(i.objPos);
       depth = clip_pos.z / clip_pos.w;

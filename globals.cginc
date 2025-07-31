@@ -333,37 +333,15 @@ DECLARE_DECAL_VARIABLES(6)
 DECLARE_DECAL_VARIABLES(7)
 #endif
 
-#if defined(_XZ_GRADIENT_NORMALS_0)
-texture2D _XZ_Gradient_Normals_0;
-float4 _XZ_Gradient_Normals_0_ST;
+#if defined(_GRADIENT_NORMALS_0_VERTICAL)
+texture2D _Gradient_Normals_0_Vertical;
+float4 _Gradient_Normals_0_Vertical_ST;
 #endif
-#if defined(_XZ_GRADIENT_NORMALS_1)
-texture2D _XZ_Gradient_Normals_1;
-float4 _XZ_Gradient_Normals_1_ST;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_2)
-texture2D _XZ_Gradient_Normals_2;
-float4 _XZ_Gradient_Normals_2_ST;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_3)
-texture2D _XZ_Gradient_Normals_3;
-float4 _XZ_Gradient_Normals_3_ST;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_4)
-texture2D _XZ_Gradient_Normals_4;
-float4 _XZ_Gradient_Normals_4_ST;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_5)
-texture2D _XZ_Gradient_Normals_5;
-float4 _XZ_Gradient_Normals_5_ST;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_6)
-texture2D _XZ_Gradient_Normals_6;
-float4 _XZ_Gradient_Normals_6_ST;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_7)
-texture2D _XZ_Gradient_Normals_7;
-float4 _XZ_Gradient_Normals_7_ST;
+#if defined(_GRADIENT_NORMALS_0_HORIZONTAL)
+texture2D _Gradient_Normals_0_X;
+float4 _Gradient_Normals_0_X_ST;
+texture2D _Gradient_Normals_0_Z;
+float4 _Gradient_Normals_0_Z_ST;
 #endif
 
 #if defined(_VERTEX_DOMAIN_WARPING)
@@ -559,6 +537,34 @@ float4 _Tessellation_Heightmap_3_ST;
 float _Tessellation_Heightmap_3_Scale;
 float _Tessellation_Heightmap_3_Offset;
 #endif  // _TESSELLATION_HEIGHTMAP_3
+
+#if defined(_TESSELLATION_HEIGHTMAP_4)
+texture2D _Tessellation_Heightmap_4;
+float4 _Tessellation_Heightmap_4_ST;
+float _Tessellation_Heightmap_4_Scale;
+float _Tessellation_Heightmap_4_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_4
+
+#if defined(_TESSELLATION_HEIGHTMAP_5)
+texture2D _Tessellation_Heightmap_5;
+float4 _Tessellation_Heightmap_5_ST;
+float _Tessellation_Heightmap_5_Scale;
+float _Tessellation_Heightmap_5_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_5
+
+#if defined(_TESSELLATION_HEIGHTMAP_6)
+texture2D _Tessellation_Heightmap_6;
+float4 _Tessellation_Heightmap_6_ST;
+float _Tessellation_Heightmap_6_Scale;
+float _Tessellation_Heightmap_6_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_6
+
+#if defined(_TESSELLATION_HEIGHTMAP_7)
+texture2D _Tessellation_Heightmap_7;
+float4 _Tessellation_Heightmap_7_ST;
+float _Tessellation_Heightmap_7_Scale;
+float _Tessellation_Heightmap_7_Offset;
+#endif  // _TESSELLATION_HEIGHTMAP_7
 
 #if defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
 float3 _Tessellation_Heightmap_Direction_Control_Vector;

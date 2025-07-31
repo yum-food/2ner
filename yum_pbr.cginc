@@ -2,6 +2,7 @@
 #define __YUM_PBR
 
 #include "cnlohr.cginc"
+#include "data.cginc"
 #include "decals.cginc"
 #include "features.cginc"
 #include "filamented.cginc"
@@ -11,61 +12,33 @@
 #include "oklab.cginc"
 #include "texture_utils.cginc"
 
-struct YumPbr {
-  float4 albedo;
-  float3 normal;
-  float3 emission;
-  float smoothness;
-  float roughness;
-  float roughness_perceptual;
-  float metallic;
-  float ao;
-};
-
 void propagateRoughness(in float smoothness, out float roughness_perceptual, out float roughness) {
   roughness_perceptual = normalFiltering(1.0 - smoothness, float3(0, 0, 1));
   roughness = roughness_perceptual * roughness_perceptual;
 }
 
-#if defined(_XZ_GRADIENT_NORMALS)
+#if defined(_GRADIENT_NORMALS)
 void applyGradientNormals(v2f i, inout YumPbr pbr) {
   float2 uv = i.uv01.xy;
 
+  // Math lifted from "Ocean waves simulation with Fast Fourier transform" by
+  // Jump Trajectory.
   float2 gradient = 0;
-#if defined(_XZ_GRADIENT_NORMALS_0)
-  float2 g0_uv = uv * _XZ_Gradient_Normals_0_ST.xy;
-  gradient += _XZ_Gradient_Normals_0.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_1)
-  float2 g1_uv = uv * _XZ_Gradient_Normals_1_ST.xy;
-  gradient += _XZ_Gradient_Normals_1.SampleLevel(bilinear_repeat_s, g1_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_2)
-  float2 g2_uv = uv * _XZ_Gradient_Normals_2_ST.xy;
-  gradient += _XZ_Gradient_Normals_2.SampleLevel(bilinear_repeat_s, g2_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_3)
-  float2 g3_uv = uv * _XZ_Gradient_Normals_3_ST.xy;
-  gradient += _XZ_Gradient_Normals_3.SampleLevel(bilinear_repeat_s, g3_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_4)
-  float2 g4_uv = uv * _XZ_Gradient_Normals_4_ST.xy;
-  gradient += _XZ_Gradient_Normals_4.SampleLevel(bilinear_repeat_s, g4_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_5)
-  float2 g5_uv = uv * _XZ_Gradient_Normals_5_ST.xy;
-  gradient += _XZ_Gradient_Normals_5.SampleLevel(bilinear_repeat_s, g5_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_6)
-  float2 g6_uv = uv * _XZ_Gradient_Normals_6_ST.xy;
-  gradient += _XZ_Gradient_Normals_6.SampleLevel(bilinear_repeat_s, g6_uv, 0).rg;
-#endif
-#if defined(_XZ_GRADIENT_NORMALS_7)
-  float2 g7_uv = uv * _XZ_Gradient_Normals_7_ST.xy;
-  gradient += _XZ_Gradient_Normals_7.SampleLevel(bilinear_repeat_s, g7_uv, 0).rg;
-#endif
+#if defined(_GRADIENT_NORMALS_0_VERTICAL)
+  float2 g0_uv = uv * _Gradient_Normals_0_Vertical_ST.xy;
+  float2 g0_dfy = _Gradient_Normals_0_Vertical.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
+  float2 g0 = g0_dfy;
+#if defined(_GRADIENT_NORMALS_0_HORIZONTAL)
+  float2 g0_dfx = _Gradient_Normals_0_X.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
+  float2 g0_dfz = _Gradient_Normals_0_Z.SampleLevel(bilinear_repeat_s, g0_uv, 0).rg;
+  g0 = float2(
+      g0_dfy[0] / (1 + g0_dfx[0]),
+      g0_dfy[1] / (1 + g0_dfz[1])
+      );
+#endif  // _GRADIENT_NORMALS_0_HORIZONTAL
+  gradient += g0;
+#endif  // _GRADIENT_NORMALS_0_VERTICAL
 
-  // Technically I think this is in object space but uhhh I'll deal with that later idk.
   float3 gradient_normal = normalize(float3(-gradient.x, 1.0f, -gradient.y));
   pbr.normal = gradient_normal;
 }
@@ -193,7 +166,7 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 
   result.normal = normalize(mul(normal_tangent, tangentToWorld));
 
-#if defined(_XZ_GRADIENT_NORMALS)
+#if defined(_GRADIENT_NORMALS)
   applyGradientNormals(i, result);
 #endif
 

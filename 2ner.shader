@@ -953,57 +953,27 @@ Shader "yum_food/2ner"
           //endex
         [HideInInspector] m_end_Decals("Decals", Float) = 0
 
-        [HideInInspector] m_start_XZ_Gradient_Normals("XZ Gradient Normals", Float) = 0
-          [ThryToggle(_XZ_GRADIENT_NORMALS)] _XZ_Gradient_Normals_Enabled("Enable", Float) = 0
-          //ifex _XZ_Gradient_Normals_0_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_0("Gradient 0", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_0)] _XZ_Gradient_Normals_0_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_0("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_0("Gradient 0", Float) = 0
+        //ifex _Gradient_Normals_Enabled==0
+        [HideInInspector] m_start_Gradient_Normals("Gradient Normals", Float) = 0
+          [ThryToggle(_GRADIENT_NORMALS)] _Gradient_Normals_Enabled("Enable", Float) = 0
+
+          //ifex _Gradient_Normals_0_Vertical_Enabled==0
+          [HideInInspector] m_start_Gradient_Normals_0("Vertical displacement gradient 0", Float) = 0
+            [ThryToggle(_GRADIENT_NORMALS_0_VERTICAL)] _Gradient_Normals_0_Vertical_Enabled("Enable", Float) = 0
+            _Gradient_Normals_0_Vertical("(dfy/dx, dfy/dz)", 2D) = "black" {}
+
+            //ifex _Gradient_Normals_0_Horizontal_Enabled==0
+            [HideInInspector] m_start_Gradient_Normals_0_Horizontal("Horizontal displacement gradient", Float) = 0
+              [ThryToggle(_GRADIENT_NORMALS_0_HORIZONTAL)] _Gradient_Normals_0_Horizontal_Enabled("Enable", Float) = 0
+              _Gradient_Normals_0_X("(dfx/dx, dfx/dz)", 2D) = "black" {}
+              _Gradient_Normals_0_Z("(dfz/dx, dfz/dz)", 2D) = "black" {}
+            [HideInInspector] m_end_Gradient_Normals_0_Horizontal("Horizontal displacement gradient", Float) = 0
+            //endex
+
+          [HideInInspector] m_end_Gradient_Normals_0("Gradient 0", Float) = 0
           //endex
-          //ifex _XZ_Gradient_Normals_1_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_1("Gradient 1", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_1)] _XZ_Gradient_Normals_1_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_1("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_1("Gradient 1", Float) = 0
-          //endex
-          //ifex _XZ_Gradient_Normals_2_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_2("Gradient 2", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_2)] _XZ_Gradient_Normals_2_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_2("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_2("Gradient 2", Float) = 0
-          //endex
-          //ifex _XZ_Gradient_Normals_3_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_3("Gradient 3", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_3)] _XZ_Gradient_Normals_3_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_3("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_3("Gradient 3", Float) = 0
-          //endex
-          //ifex _XZ_Gradient_Normals_4_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_4("Gradient 4", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_4)] _XZ_Gradient_Normals_4_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_4("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_4("Gradient 4", Float) = 0
-          //endex
-          //ifex _XZ_Gradient_Normals_5_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_5("Gradient 5", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_5)] _XZ_Gradient_Normals_5_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_5("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_5("Gradient 5", Float) = 0
-          //endex
-          //ifex _XZ_Gradient_Normals_6_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_6("Gradient 6", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_6)] _XZ_Gradient_Normals_6_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_6("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_6("Gradient 6", Float) = 0
-          //endex
-          //ifex _XZ_Gradient_Normals_7_Enabled==0
-          [HideInInspector] m_start_XZ_Gradient_Normals_7("Gradient 7", Float) = 0
-            [ThryToggle(_XZ_GRADIENT_NORMALS_7)] _XZ_Gradient_Normals_7_Enabled("Enable", Float) = 0
-            _XZ_Gradient_Normals_7("Texture", 2D) = "black" {}
-          [HideInInspector] m_end_XZ_Gradient_Normals_7("Gradient 7", Float) = 0
-          //endex
-        [HideInInspector] m_end_XZ_Gradient_Normals("XZ Gradient Normals", Float) = 0
+        [HideInInspector] m_end_Gradient_Normals("Gradient Normals", Float) = 0
+        //endex
 
         [HideInInspector] m_start_Color_Correction("Color correction", Float) = 0
           //ifex _Oklch_Correction_Enabled==0
@@ -1696,6 +1666,7 @@ Shader "yum_food/2ner"
           [ThryToggle(_TESSELLATION)] _Tessellation_Enabled("Enable", Float) = 0
           _Tessellation_Factor("Factor", Range(1, 64)) = 1
           [HideInInspector] m_start_Tessellation_Heightmap("Heightmap", Float) = 0
+            [ThryToggle(_TESSELLATION_HEIGHTMAP_WORLD_SPACE)] _Tessellation_Heightmap_World_Space_Enabled("World space mode (RGB)", Float) = 0
             [HideInInspector] m_start_Tessellation_Heightmap_0("Heightmap 0", Float) = 0
               [ThryToggle(_TESSELLATION_HEIGHTMAP_0)] _Tessellation_Heightmap_0_Enabled("Enable", Float) = 0
               _Tessellation_Heightmap_0("Heightmap 0", 2D) = "black" {}
@@ -1720,6 +1691,30 @@ Shader "yum_food/2ner"
               _Tessellation_Heightmap_3_Scale("Scale", Float) = 1
               _Tessellation_Heightmap_3_Offset("Offset", Range(-1, 1)) = 0
             [HideInInspector] m_end_Tessellation_Heightmap_3("Heightmap 3", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_4("Heightmap 4", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_4)] _Tessellation_Heightmap_4_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_4("Heightmap 4", 2D) = "black" {}
+              _Tessellation_Heightmap_4_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_4_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_4("Heightmap 4", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_5("Heightmap 5", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_5)] _Tessellation_Heightmap_5_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_5("Heightmap 5", 2D) = "black" {}
+              _Tessellation_Heightmap_5_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_5_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_5("Heightmap 5", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_6("Heightmap 6", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_6)] _Tessellation_Heightmap_6_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_6("Heightmap 6", 2D) = "black" {}
+              _Tessellation_Heightmap_6_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_6_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_6("Heightmap 6", Float) = 0
+            [HideInInspector] m_start_Tessellation_Heightmap_7("Heightmap 7", Float) = 0
+              [ThryToggle(_TESSELLATION_HEIGHTMAP_7)] _Tessellation_Heightmap_7_Enabled("Enable", Float) = 0
+              _Tessellation_Heightmap_7("Heightmap 7", 2D) = "black" {}
+              _Tessellation_Heightmap_7_Scale("Scale", Float) = 1
+              _Tessellation_Heightmap_7_Offset("Offset", Range(-1, 1)) = 0
+            [HideInInspector] m_end_Tessellation_Heightmap_7("Heightmap 7", Float) = 0
             [HideInInspector] m_start_Tessellation_Heightmap_Direction_Control("Direction control", Float) = 0
               [ThryToggle(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)] _Tessellation_Heightmap_Direction_Control_Enabled("Enable", Float) = 0
               _Tessellation_Heightmap_Direction_Control_Vector("Direction (normal/tangent/binormal)", Vector) = (1, 0, 0)

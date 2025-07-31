@@ -240,32 +240,14 @@
 #pragma shader_feature_local _DECAL7_EMISSIONS_PROXIMITY
 //endex
 
-//ifex _XZ_Gradient_Normals_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS
+//ifex _Gradient_Normals_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS
 //endex
-//ifex _XZ_Gradient_Normals_0_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_0
+//ifex _Gradient_Normals_0_Vertical_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_0_VERTICAL
 //endex
-//ifex _XZ_Gradient_Normals_1_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_1
-//endex
-//ifex _XZ_Gradient_Normals_2_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_2
-//endex
-//ifex _XZ_Gradient_Normals_3_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_3
-//endex
-//ifex _XZ_Gradient_Normals_4_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_4
-//endex
-//ifex _XZ_Gradient_Normals_5_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_5
-//endex
-//ifex _XZ_Gradient_Normals_6_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_6
-//endex
-//ifex _XZ_Gradient_Normals_7_Enabled==0
-#pragma shader_feature_local _XZ_GRADIENT_NORMALS_7
+//ifex _Gradient_Normals_0_Horizontal_Enabled==0
+#pragma shader_feature_local _GRADIENT_NORMALS_0_HORIZONTAL
 //endex
 
 //ifex _3D_SDF_Enabled==0
@@ -354,10 +336,15 @@
 
 //ifex _Tessellation_Enabled==0
 #pragma shader_feature_local _TESSELLATION
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_WORLD_SPACE
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP_0
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP_1
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP_2
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP_3
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_4
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_5
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_6
+#pragma shader_feature_local _TESSELLATION_HEIGHTMAP_7
 #pragma shader_feature_local _TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL
 #pragma shader_feature_local _TESSELLATION_RANGE_FACTOR
 //endex

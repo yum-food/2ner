@@ -7,6 +7,7 @@
 #include "UnityImageBasedLighting.cginc"
 #include "UnityStandardUtils.cginc"
 
+#include "data.cginc"
 #include "math.cginc"
 
 // I made changes to this code.
@@ -1256,5 +1257,6 @@ float3 BakeryGI_Irradiance(
         derivedLight
     );
 }
+
 
 #endif // __FILAMENTED_INC
