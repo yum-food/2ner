@@ -99,6 +99,44 @@ void applyGradientNormals(v2f i, inout YumPbr pbr) {
 }
 #endif
 
+#if defined(_SEA_FOAM)
+void applySeaFoam(v2f i, inout YumPbr pbr) {
+  float2 uv = i.uv01.xy;
+
+  float4 slope = 0;
+
+  #if defined(_SEA_FOAM_0)
+    slope += _Sea_Foam_0_Slope.SampleLevel(bilinear_repeat_s, uv * _Sea_Foam_0_Slope_ST.xy, 0);
+  #endif
+  #if defined(_SEA_FOAM_1)
+    slope += _Sea_Foam_1_Slope.SampleLevel(bilinear_repeat_s, uv * _Sea_Foam_1_Slope_ST.xy, 0);
+  #endif
+  #if defined(_SEA_FOAM_2)
+    slope += _Sea_Foam_2_Slope.SampleLevel(bilinear_repeat_s, uv * _Sea_Foam_2_Slope_ST.xy, 0);
+  #endif
+  #if defined(_SEA_FOAM_3)
+    slope += _Sea_Foam_3_Slope.SampleLevel(bilinear_repeat_s, uv * _Sea_Foam_3_Slope_ST.xy, 0);
+  #endif
+
+  float dfx_dx = slope[0];
+  float dfy_dy = slope[1];
+  float dfx_dy = slope[3];
+
+  float Jxx = 1 + dfx_dx * _Sea_Foam_Lambda;
+  float Jyy = 1 + dfy_dy * _Sea_Foam_Lambda;
+  float Jxy = dfx_dy * _Sea_Foam_Lambda;
+
+  float det = Jxx * Jyy - Jxy * Jxy;
+  float foam_contribution = det;
+  foam_contribution += _Sea_Foam_Bias;
+  foam_contribution = saturate(foam_contribution);
+
+  pbr.albedo.rgb = lerp(pbr.albedo.rgb, _Sea_Foam_Color.rgb, foam_contribution * _Sea_Foam_Color.a);
+  pbr.smoothness = lerp(pbr.smoothness, 1.0f - _Sea_Foam_Roughness, foam_contribution);
+  propagateRoughness(pbr.smoothness, pbr.roughness_perceptual, pbr.roughness);
+}
+#endif
+
 YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   YumPbr result = (YumPbr)0;
 
@@ -223,6 +261,9 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 
 #if defined(_GRADIENT_NORMALS)
   applyGradientNormals(i, result);
+#endif
+#if defined(_SEA_FOAM)
+  applySeaFoam(i, result);
 #endif
 
 #if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)

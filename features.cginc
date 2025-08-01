@@ -268,6 +268,22 @@
 #pragma shader_feature_local _GRADIENT_NORMALS_3_HORIZONTAL
 //endex
 
+//ifex _Sea_Foam_Enabled==0
+#pragma shader_feature_local _SEA_FOAM
+//endex
+//ifex _Sea_Foam_0_Enabled==0
+#pragma shader_feature_local _SEA_FOAM_0
+//endex
+//ifex _Sea_Foam_1_Enabled==0
+#pragma shader_feature_local _SEA_FOAM_1
+//endex
+//ifex _Sea_Foam_2_Enabled==0
+#pragma shader_feature_local _SEA_FOAM_2
+//endex
+//ifex _Sea_Foam_3_Enabled==0
+#pragma shader_feature_local _SEA_FOAM_3
+//endex
+
 //ifex _3D_SDF_Enabled==0
 #pragma shader_feature_local _3D_SDF
 //endex

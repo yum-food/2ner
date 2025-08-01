@@ -1019,6 +1019,42 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Gradient_Normals("Gradient Normals", Float) = 0
         //endex
 
+        //ifex _Sea_Foam_Enabled==0
+        [HideInInspector] m_start_Sea_Foam("Sea foam", Float) = 0
+          [ThryToggle(_SEA_FOAM)] _Sea_Foam_Enabled("Enable", Float) = 0
+          _Sea_Foam_Color("Color", Color) = (1, 1, 1, 1)
+          _Sea_Foam_Roughness("Roughness", Float) = 0.85
+          _Sea_Foam_Lambda("Lambda", Range(0, 4)) = 1
+          _Sea_Foam_Power("Power", Range(0, 50)) = 1
+          _Sea_Foam_Factor("Factor", Range(0, 2)) = 1
+          _Sea_Foam_Bias("Bias", Range(-5, 5)) = 0
+          //ifex _Sea_Foam_0_Enabled==0
+          [HideInInspector] m_start_Sea_Foam_0("Sea foam 0", Float) = 0
+            [ThryToggle(_SEA_FOAM_0)] _Sea_Foam_0_Enabled("Enable", Float) = 0
+            _Sea_Foam_0_Slope("(dfx/dx, dfy/dy, 0, dfx/dy)", 2D) = "black" {}
+          [HideInInspector] m_end_Sea_Foam_0("Sea foam 0", Float) = 0
+          //endex
+          //ifex _Sea_Foam_1_Enabled==0
+          [HideInInspector] m_start_Sea_Foam_1("Sea foam 1", Float) = 0
+            [ThryToggle(_SEA_FOAM_1)] _Sea_Foam_1_Enabled("Enable", Float) = 0
+            _Sea_Foam_1_Slope("(dfx/dx, dfy/dy, 0, dfx/dy)", 2D) = "black" {}
+          [HideInInspector] m_end_Sea_Foam_1("Sea foam 1", Float) = 0
+          //endex
+          //ifex _Sea_Foam_2_Enabled==0
+          [HideInInspector] m_start_Sea_Foam_2("Sea foam 2", Float) = 0
+            [ThryToggle(_SEA_FOAM_2)] _Sea_Foam_2_Enabled("Enable", Float) = 0
+            _Sea_Foam_2_Slope("(dfx/dx, dfy/dy, 0, dfx/dy)", 2D) = "black" {}
+          [HideInInspector] m_end_Sea_Foam_2("Sea foam 2", Float) = 0
+          //endex
+          //ifex _Sea_Foam_3_Enabled==0
+          [HideInInspector] m_start_Sea_Foam_3("Sea foam 3", Float) = 0
+            [ThryToggle(_SEA_FOAM_3)] _Sea_Foam_3_Enabled("Enable", Float) = 0
+            _Sea_Foam_3_Slope("(dfx/dx, dfy/dy, 0, dfx/dy)", 2D) = "black" {}
+          [HideInInspector] m_end_Sea_Foam_3("Sea foam 3", Float) = 0
+          //endex
+        [HideInInspector] m_end_Sea_Foam("Sea foam", Float) = 0
+        //endex
+
         [HideInInspector] m_start_Color_Correction("Color correction", Float) = 0
           //ifex _Oklch_Correction_Enabled==0
           [HideInInspector] m_start_Oklch_Correction("Oklch", Float) = 0

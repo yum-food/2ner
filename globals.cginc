@@ -369,6 +369,32 @@ texture2D _Gradient_Normals_3_Horizontal;
 float4 _Gradient_Normals_3_Horizontal_ST;
 #endif
 
+#if defined(_SEA_FOAM)
+float4 _Sea_Foam_Color;
+float _Sea_Foam_Roughness;
+float _Sea_Foam_Lambda;
+float _Sea_Foam_Power;
+float _Sea_Foam_Factor;
+float _Sea_Foam_Bias;
+#endif
+
+#if defined(_SEA_FOAM_0)
+texture2D _Sea_Foam_0_Slope;
+float4    _Sea_Foam_0_Slope_ST;
+#endif
+#if defined(_SEA_FOAM_1)
+texture2D _Sea_Foam_1_Slope;
+float4    _Sea_Foam_1_Slope_ST;
+#endif
+#if defined(_SEA_FOAM_2)
+texture2D _Sea_Foam_2_Slope;
+float4    _Sea_Foam_2_Slope_ST;
+#endif
+#if defined(_SEA_FOAM_3)
+texture2D _Sea_Foam_3_Slope;
+float4    _Sea_Foam_3_Slope_ST;
+#endif
+
 #if defined(_VERTEX_DOMAIN_WARPING)
 texture3D _Vertex_Domain_Warping_Noise;
 float _Vertex_Domain_Warping_Strength;
