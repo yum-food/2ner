@@ -33,6 +33,10 @@ struct v2f {
   float3 vertexLight : TEXCOORD9;
   UNITY_LIGHTING_COORDS(10,11)
 
+#if defined(_TROCHOID)
+  float3 orig_pos : TEXCOORD12;
+#endif
+
   UNITY_VERTEX_INPUT_INSTANCE_ID
   UNITY_VERTEX_OUTPUT_STEREO
 };

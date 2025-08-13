@@ -1170,6 +1170,22 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_SSAO("SSAO", Float) = 0
         //endex
 
+        //ifex _Trochoid_Enabled==0
+        [HideInInspector] m_start_Trochoid("Trochoid", Float) = 0
+          [ThryToggle(_TROCHOID)] _Trochoid_Enabled("Enable", Float) = 0
+          _Trochoid_R("R", Range(0, 15)) = 1
+          _Trochoid_r("r", Range(0, 15)) = 1
+          _Trochoid_d("d", Range(0, 15)) = 1
+          _Trochoid_theta_k("Theta factor", Range(0, 64)) = 1
+          _Trochoid_t_k("Time factor", Range(0, 64)) = 1
+          _Trochoid_X_Scale("X scale", Range(0, 4)) = 1
+          _Trochoid_Y_Scale("Y scale", Range(0, 4)) = 1
+          _Trochoid_Z_Scale("Z scale", Range(0, 64)) = 1
+          _Trochoid_r_Power("r power", Range(0, 32)) = 1
+          [Gradient] _Trochoid_Color_Ramp("Color ramp", 2D) = "black" {}
+        [HideInInspector] m_end_Trochoid("Trochoid", Float) = 0
+        //endex
+
         //ifex _Letter_Grid_Enabled==0
         [HideInInspector] m_start_Letter_Grid("Letter grid", Float) = 0
           [ThryToggle(_LETTER_GRID)] _Letter_Grid_Enabled("Enable", Float) = 0
@@ -1744,7 +1760,8 @@ Shader "yum_food/2ner"
         //ifex _Tessellation_Enabled==0
         [HideInInspector] m_start_Tessellation("Tessellation", Float) = 0
           [ThryToggle(_TESSELLATION)] _Tessellation_Enabled("Enable", Float) = 0
-          _Tessellation_Factor("Factor", Range(1, 64)) = 1
+          _Tessellation_Factor("Factor", Range(1, 256)) = 1
+          _Tessellation_Frustum_Culling_Bias("Frustum culling bias", Float) = 35
           [HideInInspector] m_start_Tessellation_Heightmap("Heightmap", Float) = 0
             [ThryToggle(_TESSELLATION_HEIGHTMAP_WORLD_SPACE)] _Tessellation_Heightmap_World_Space_Enabled("World space mode (RGB)", Float) = 0
             [HideInInspector] m_start_Tessellation_Heightmap_0("Heightmap 0", Float) = 0
@@ -1800,14 +1817,6 @@ Shader "yum_food/2ner"
               _Tessellation_Heightmap_Direction_Control_Vector("Direction (normal/tangent/binormal)", Vector) = (1, 0, 0)
             [HideInInspector] m_end_Tessellation_Heightmap_Direction_Control("Direction control", Float) = 0
           [HideInInspector] m_end_Tessellation_Heightmap("Heightmap", Float) = 0
-          [HideInInspector] m_start_Tessellation_Range_Factor("Range-based factor", Float) = 0
-            [ThryToggle(_TESSELLATION_RANGE_FACTOR)] _Tessellation_Range_Factor_Enabled("Enable", Float) = 0
-            [Helpbox]_Tessellation_Range_Factor_Help("All distances are given in squared meters. For example, to set the far distance to 4 meters, enter 16.", Int) = 0
-            _Tessellation_Range_Factor_Distance_Near("Distance (near)", Float) = 1
-            _Tessellation_Range_Factor_Factor_Near("Factor (near)", Float) = 1
-            _Tessellation_Range_Factor_Distance_Far("Distance (far)", Float) = 1
-            _Tessellation_Range_Factor_Factor_Far("Factor (far)", Float) = 1
-          [HideInInspector] m_end_Tessellation_Range_Factor("Range-based factor", Float) = 0
           // Shit for thry
           [HideInInspector] Tessellation_Enabled("Enabled", Float) = 1
           [HideInInspector] Tessellation_EnabledForwardBase("Enabled (ForwardBase)", Float) = 1

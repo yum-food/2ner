@@ -25,6 +25,7 @@
 #include "ssao.cginc"
 #include "ssfd.cginc"
 #include "tessellation.cginc"
+#include "trochoid.cginc"
 #include "unigram_letter_grid.cginc"
 #include "vertex_domain_warping.cginc"
 #include "yum_brdf.cginc"
@@ -115,6 +116,11 @@ v2f vert(appdata v) {
 
 #if defined(_VERTEX_DOMAIN_WARPING)
   v.vertex.xyz = domainWarpVertexPosition(v.vertex.xyz);
+#endif
+
+#if defined(_TROCHOID)
+  o.orig_pos = v.vertex.xyz;
+  v.vertex.xyz = trochoid_map(v.vertex.xyz);
 #endif
 
 #if defined(OUTLINE_PASS)
@@ -299,6 +305,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
 #if defined(_SHATTER_WAVE)
   calcNormalInScreenSpace(i.normal, i.objPos);
+  i.normal = UnityObjectToWorldNormal(i.normal);
 #endif
 
 #if defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || defined(_TESSELLATION_HEIGHTMAP)
@@ -397,6 +404,24 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #else
   return 0;
 #endif
+#endif
+
+#if defined(_TROCHOID)
+  float3 normal_obj = trochoid_normal(i.orig_pos);
+
+  // We need tangents that are perpendicular to the new normal.
+  // A common way to generate them is to cross with a fixed "up" vector.
+  float3 tangent_obj = normalize(cross(normal_obj, float3(0, 1, 0)));
+  float3 binormal_obj = cross(normal_obj, tangent_obj);
+
+  i.normal = UnityObjectToWorldNormal(normal_obj);
+  i.tangent = float4(normalize(mul((float3x3)unity_ObjectToWorld, tangent_obj)), 1);
+  i.binormal = normalize(mul((float3x3)unity_ObjectToWorld, binormal_obj));
+  i.normal *= facing ? 1 : -1;
+
+  float theta = 1 - atan2(i.orig_pos.y, i.orig_pos.x) / PI;
+  float3 color = _Trochoid_Color_Ramp.SampleLevel(linear_clamp_s, float2(theta, 0.5), 0).rgb;
+  pbr.albedo.xyz = color;
 #endif
 
 #if defined(_HARNACK_TRACING)

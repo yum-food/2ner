@@ -5,6 +5,7 @@
 #include "interpolators.cginc"
 #include "math.cginc"
 #include "shatter_wave.cginc"
+#include "trochoid.cginc"
 
 //ifex _Tessellation_Enabled==0
 
@@ -13,127 +14,56 @@ struct tess_factors {
   float inside : SV_InsideTessFactor;
 };
 
-bool isInViewFrustum(float4 clipPos, float radius) {
-  return -clipPos.w - radius < clipPos.x && clipPos.x < clipPos.w + radius &&
-         -clipPos.w - radius < clipPos.y && clipPos.y < clipPos.w + radius &&
-         -clipPos.w - radius < clipPos.z && clipPos.z < clipPos.w + radius;
-}
-
-#if defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3) || defined(_TESSELLATION_HEIGHTMAP_4) || defined(_TESSELLATION_HEIGHTMAP_5) || defined(_TESSELLATION_HEIGHTMAP_6) || defined(_TESSELLATION_HEIGHTMAP_7)
-#define _TESSELLATION_HEIGHTMAP
-#endif
-
-float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent, float3 binormal) {
-#if defined(_TESSELLATION) && defined(_TESSELLATION_HEIGHTMAP)
-  float3 height = 0;
-#if defined(_TESSELLATION_HEIGHTMAP_0)
-  float3 heightmap_0_sample = _Tessellation_Heightmap_0.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_0_ST.xy, 0);
-  height += heightmap_0_sample * _Tessellation_Heightmap_0_Scale + _Tessellation_Heightmap_0_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_1)
-  float3 heightmap_1_sample = _Tessellation_Heightmap_1.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_1_ST.xy, 0);
-  height += heightmap_1_sample * _Tessellation_Heightmap_1_Scale + _Tessellation_Heightmap_1_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_2)
-  float3 heightmap_2_sample = _Tessellation_Heightmap_2.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_2_ST.xy, 0);
-  height += heightmap_2_sample * _Tessellation_Heightmap_2_Scale + _Tessellation_Heightmap_2_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_3)
-  float3 heightmap_3_sample = _Tessellation_Heightmap_3.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_3_ST.xy, 0);
-  height += heightmap_3_sample * _Tessellation_Heightmap_3_Scale + _Tessellation_Heightmap_3_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_4)
-  float3 heightmap_4_sample = _Tessellation_Heightmap_4.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_4_ST.xy, 0);
-  height += heightmap_4_sample * _Tessellation_Heightmap_4_Scale + _Tessellation_Heightmap_4_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_5)
-  float3 heightmap_5_sample = _Tessellation_Heightmap_5.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_5_ST.xy, 0);
-  height += heightmap_5_sample * _Tessellation_Heightmap_5_Scale + _Tessellation_Heightmap_5_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_6)
-  float3 heightmap_6_sample = _Tessellation_Heightmap_6.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_6_ST.xy, 0);
-  height += heightmap_6_sample * _Tessellation_Heightmap_6_Scale + _Tessellation_Heightmap_6_Offset;
-#endif
-#if defined(_TESSELLATION_HEIGHTMAP_7)
-  float3 heightmap_7_sample = _Tessellation_Heightmap_7.SampleLevel(bilinear_repeat_s,
-      uv * _Tessellation_Heightmap_7_ST.xy, 0);
-  height += heightmap_7_sample * _Tessellation_Heightmap_7_Scale + _Tessellation_Heightmap_7_Offset;
-#endif
-
-#if defined(_TESSELLATION_HEIGHTMAP_WORLD_SPACE)
-  objPos.xyz += mul(unity_WorldToObject, height).xyz;
-#else
-#if defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
-  float3 heightmap_direction = mul(transpose(-float3x3(normal, tangent, binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
-#elif defined(OUTLINE_PASS) && !defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
-  float3 heightmap_direction = -normal;
-#elif !defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
-  float3 heightmap_direction = mul(transpose(float3x3(normal, tangent, binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
-#else
-  float3 heightmap_direction = normal;
-#endif
-  objPos.xyz += heightmap_direction * height;
-#endif
-
-#endif  // _TESSELLATION_HEIGHTMAP
-  return objPos;
+bool cullPatch(float4 p0, float4 p1, float4 p2, float bias) {
+  return
+    (p0.x < -p0.w - bias && p1.x < -p1.w - bias && p2.x < -p2.w - bias) ||
+    (p0.x > p0.w + bias && p1.x > p1.w + bias && p2.x > p2.w + bias) ||
+    (p0.y < -p0.w - bias && p1.y < -p1.w - bias && p2.y < -p2.w - bias) ||
+    (p0.y > p0.w + bias && p1.y > p1.w + bias && p2.y > p2.w + bias) ||
+    (p0.z < -p0.w - bias && p1.z < -p1.w - bias && p2.z < -p2.w - bias) ||
+    (p0.z > p0.w + bias && p1.z > p1.w + bias && p2.z > p2.w + bias);
 }
 
 tess_factors patch_constant(InputPatch<v2f, 3> patch) {
   tess_factors f;
+
 #if defined(_TESSELLATION)
-#if defined(_TESSELLATION_RANGE_FACTOR)
-  float3 vec = getCenterCamPos() - patch[0].worldPos.xyz;
-  float d2 = dot(vec, vec);
-  float factor = lerp(
-      _Tessellation_Range_Factor_Factor_Near,
-      _Tessellation_Range_Factor_Factor_Far,
-      smoothstep(
-        _Tessellation_Range_Factor_Distance_Near,
-        _Tessellation_Range_Factor_Distance_Far,
-        d2));
-#else
-  float factor = _Tessellation_Factor;
-#endif
-#else
-  float factor = 1;
-#endif
+  float4 p0 = patch[0].pos;
+  float4 p1 = patch[1].pos;
+  float4 p2 = patch[2].pos;
 
-#if defined(_TESSELLATION_HEIGHTMAP)
-  [branch] 
-  if (factor > 3) {
-    // Scuffed occlusion culling. Need to know what the position will be after displacement
-    // in order to do it right. "Scuffed" because we repeat work :/ this same transform gets
-    // applied in the domain shader. This isn't so bad if we assume that we're tessellating
-    // at a relatively high factor.
-    float3 p0newObjPos = applyHeightmap(patch[0].objPos, patch[0].uv01.xy, patch[0].normal, patch[0].tangent, patch[0].binormal);
-    float3 p1newObjPos = applyHeightmap(patch[1].objPos, patch[1].uv01.xy, patch[1].normal, patch[1].tangent, patch[1].binormal);
-    float3 p2newObjPos = applyHeightmap(patch[2].objPos, patch[2].uv01.xy, patch[2].normal, patch[2].tangent, patch[2].binormal);
-    float4 p0newClipPos = UnityObjectToClipPos(p0newObjPos);
-    float4 p1newClipPos = UnityObjectToClipPos(p1newObjPos);
-    float4 p2newClipPos = UnityObjectToClipPos(p2newObjPos);
-    // Dirty hack to prevent objects that are currently outside the view frustum,
-    // but which are after displacement, from being culled.
-    float radius = 0.3;
-    bool inViewFrustum0 = isInViewFrustum(p0newClipPos, radius);
-    bool inViewFrustum1 = isInViewFrustum(p1newClipPos, radius);
-    bool inViewFrustum2 = isInViewFrustum(p2newClipPos, radius);
-    bool inViewFrustum = inViewFrustum0 || inViewFrustum1 || inViewFrustum2;
-    factor = inViewFrustum ? factor : 1;
+  [branch]
+  if (cullPatch(p0, p1, p2, _Tessellation_Frustum_Culling_Bias)) {
+    f.edge[0] = 1;
+    f.edge[1] = 1;
+    f.edge[2] = 1;
+    f.inside = 1;
+    return f;
   }
+
+  // https://catlikecoding.com/unity/tutorials/advanced-rendering/tessellation/
+  float2 p0_clip = p0.xy / p0.w;
+  float2 p1_clip = p1.xy / p1.w;
+  float2 p2_clip = p2.xy / p2.w;
+
+  float l01 = distance(p0_clip, p1_clip);
+  float l12 = distance(p1_clip, p2_clip);
+  float l20 = distance(p2_clip, p0_clip);
+
+  float edgeLength = _Tessellation_Factor;
+
+  f.edge[2] = l01 * edgeLength;
+  f.edge[0] = l12 * edgeLength;
+  f.edge[1] = l20 * edgeLength;
+
+  f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) * 0.333333f;
+#else
+  f.edge[0] = 1;
+  f.edge[1] = 1;
+  f.edge[2] = 1;
+  f.inside = 1;
 #endif
 
-  f.edge[0] = factor;
-  f.edge[1] = factor;
-  f.edge[2] = factor;
-  f.inside = factor;
   return f;
 }
 
@@ -172,6 +102,13 @@ v2f domain(
   o.uv23     = DOMAIN_INTERP(uv23);
   o.color     = DOMAIN_INTERP(color);
   o.vertexLight     = DOMAIN_INTERP(vertexLight);
+#if defined(_TROCHOID)
+  o.orig_pos = DOMAIN_INTERP(orig_pos);
+#endif
+
+#if defined(_TESSELLATION) && defined(_TROCHOID)
+  o.objPos.xyz = trochoid_map(o.orig_pos.xyz);
+#endif
 
 #if defined(_TESSELLATION) && defined(_SHATTER_WAVE)
 #if defined(OUTLINE_PASS)

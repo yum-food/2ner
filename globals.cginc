@@ -559,6 +559,7 @@ float4 _Shatter_Wave_Rotation_Strength;
 
 #if defined(_TESSELLATION)
 float _Tessellation_Factor;
+float _Tessellation_Frustum_Culling_Bias;
 #endif  // _TESSELLATION
 
 #if defined(_TESSELLATION_HEIGHTMAP_0)
@@ -722,5 +723,18 @@ float _Oklch_Correction_H;
 float _Oklab_Brightness_Clamp_Min;
 float _Oklab_Brightness_Clamp_Max;
 #endif  // _OKLAB_BRIGHTNESS_CLAMP
+
+#if defined(_TROCHOID)
+float _Trochoid_R;
+float _Trochoid_r;
+float _Trochoid_d;
+float _Trochoid_theta_k;
+float _Trochoid_t_k;
+float _Trochoid_X_Scale;
+float _Trochoid_Y_Scale;
+float _Trochoid_Z_Scale;
+float _Trochoid_r_Power;
+texture2D _Trochoid_Color_Ramp;
+#endif  // _TROCHOID
 
 #endif  // __GLOBALS_INC

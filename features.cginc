@@ -464,5 +464,9 @@
 #pragma shader_feature_local _SCREEN_SPACE_NORMALS
 //endex
 
+//ifex _Trochoid_Enabled==0
+#pragma shader_feature_local _TROCHOID
+//endex
+
 #endif  // __FEATURES_INC
 
