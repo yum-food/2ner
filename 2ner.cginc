@@ -303,7 +303,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   }
 #endif
 
-#if defined(_SHATTER_WAVE)
+#if defined(_SHATTER_WAVE) || defined(_SCREEN_SPACE_NORMALS)
   calcNormalInScreenSpace(i.normal, i.objPos);
   i.normal = UnityObjectToWorldNormal(i.normal);
 #endif

@@ -24,6 +24,72 @@ bool cullPatch(float4 p0, float4 p1, float4 p2, float bias) {
     (p0.z > p0.w + bias && p1.z > p1.w + bias && p2.z > p2.w + bias);
 }
 
+#if defined(_TESSELLATION_HEIGHTMAP_0) || defined(_TESSELLATION_HEIGHTMAP_1) || defined(_TESSELLATION_HEIGHTMAP_2) || defined(_TESSELLATION_HEIGHTMAP_3) || defined(_TESSELLATION_HEIGHTMAP_4) || defined(_TESSELLATION_HEIGHTMAP_5) || defined(_TESSELLATION_HEIGHTMAP_6) || defined(_TESSELLATION_HEIGHTMAP_7)
+#define _TESSELLATION_HEIGHTMAP
+#endif
+
+float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent, float3 binormal) {
+#if defined(_TESSELLATION) && defined(_TESSELLATION_HEIGHTMAP)
+  float3 height = 0;
+#if defined(_TESSELLATION_HEIGHTMAP_0)
+  float3 heightmap_0_sample = _Tessellation_Heightmap_0.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_0_ST.xy, 0);
+  height += heightmap_0_sample * _Tessellation_Heightmap_0_Scale + _Tessellation_Heightmap_0_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_1)
+  float3 heightmap_1_sample = _Tessellation_Heightmap_1.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_1_ST.xy, 0);
+  height += heightmap_1_sample * _Tessellation_Heightmap_1_Scale + _Tessellation_Heightmap_1_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_2)
+  float3 heightmap_2_sample = _Tessellation_Heightmap_2.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_2_ST.xy, 0);
+  height += heightmap_2_sample * _Tessellation_Heightmap_2_Scale + _Tessellation_Heightmap_2_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_3)
+  float3 heightmap_3_sample = _Tessellation_Heightmap_3.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_3_ST.xy, 0);
+  height += heightmap_3_sample * _Tessellation_Heightmap_3_Scale + _Tessellation_Heightmap_3_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_4)
+  float3 heightmap_4_sample = _Tessellation_Heightmap_4.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_4_ST.xy, 0);
+  height += heightmap_4_sample * _Tessellation_Heightmap_4_Scale + _Tessellation_Heightmap_4_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_5)
+  float3 heightmap_5_sample = _Tessellation_Heightmap_5.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_5_ST.xy, 0);
+  height += heightmap_5_sample * _Tessellation_Heightmap_5_Scale + _Tessellation_Heightmap_5_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_6)
+  float3 heightmap_6_sample = _Tessellation_Heightmap_6.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_6_ST.xy, 0);
+  height += heightmap_6_sample * _Tessellation_Heightmap_6_Scale + _Tessellation_Heightmap_6_Offset;
+#endif
+#if defined(_TESSELLATION_HEIGHTMAP_7)
+  float3 heightmap_7_sample = _Tessellation_Heightmap_7.SampleLevel(bilinear_repeat_s,
+      uv * _Tessellation_Heightmap_7_ST.xy, 0);
+  height += heightmap_7_sample * _Tessellation_Heightmap_7_Scale + _Tessellation_Heightmap_7_Offset;
+#endif
+
+#if defined(_TESSELLATION_HEIGHTMAP_WORLD_SPACE)
+  objPos.xyz += mul(unity_WorldToObject, height).xyz;
+#else
+#if defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = mul(transpose(-float3x3(normal, tangent, binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
+#elif defined(OUTLINE_PASS) && !defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = -normal;
+#elif !defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = mul(transpose(float3x3(normal, tangent, binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
+#else
+  float3 heightmap_direction = normal;
+#endif
+  objPos.xyz += heightmap_direction * height;
+#endif
+#endif  // _TESSELLATION_HEIGHTMAP
+  return objPos;
+}
+
 tess_factors patch_constant(InputPatch<v2f, 3> patch) {
   tess_factors f;
 
