@@ -60,6 +60,7 @@
 
 //ifex _Clearcoat_Enabled==0
 #pragma shader_feature_local _CLEARCOAT
+#pragma shader_feature_local _CLEARCOAT_GEOMETRIC_NORMALS
 //endex
 
 //ifex _Metallics_Enabled==0

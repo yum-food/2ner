@@ -63,6 +63,7 @@ Shader "yum_food/2ner"
         //ifex _Detail_Maps_Enabled==0
         [HideInInspector] m_start_Detail_Maps("Detail maps", Float) = 0
           [ThryToggle(_DETAIL_MAPS)]_Detail_Maps_Enabled("Enable", Float) = 0
+          _Detail_Maps_UV_Channel("UV channel", Range(0, 3.1)) = 0
           _DetailMask("Mask", 2D) = "white" {}
           _DetailAlbedoMap("Base color", 2D) = "white" {}
           [Normal]_DetailNormalMap("Normals", 2D) = "bump" {}
@@ -83,7 +84,9 @@ Shader "yum_food/2ner"
       //ifex _Clearcoat_Enabled==0
       [HideInInspector] m_start_Clearcoat("Clearcoat", Float) = 0
         [ThryToggle(_CLEARCOAT)]_Clearcoat_Enabled("Enable", Float) = 0
-        _Clearcoat_Strength("Strength", Range(0, 1)) = 1
+        [ThryToggle(_CLEARCOAT_GEOMETRIC_NORMALS)]_Clearcoat_Geometric_Normals_Enabled("Use geometric normals", Float) = 1
+        _Clearcoat_Mask("Mask", 2D) = "white" {}
+        _Clearcoat_Strength("Strength", Range(0, 10)) = 1
         _Clearcoat_Roughness("Roughness", Range(0.089, 1)) = 0.089
       [HideInInspector] m_end_Clearcoat("Clearcoat", Float) = 0
       //endex
@@ -1059,9 +1062,9 @@ Shader "yum_food/2ner"
           //ifex _Oklch_Correction_Enabled==0
           [HideInInspector] m_start_Oklch_Correction("Oklch", Float) = 0
             [ThryToggle(_OKLCH_CORRECTION)] _Oklch_Correction_Enabled("Enable", Float) = 0
-            _Oklch_Correction_L("L", Float) = 1
-            _Oklch_Correction_C("C", Float) = 1
-            _Oklch_Correction_H("H", Float) = 1
+            _Oklch_Correction_L("L", Range(0,1)) = 1
+            _Oklch_Correction_C("C", Range(0,1)) = 1
+            _Oklch_Correction_H("H", Range(0,1)) = 1
           [HideInInspector] m_end_Oklch_Correction("Oklch", Float) = 0
           //endex
           //ifex _Oklab_Brightness_Clamp_Enabled==0

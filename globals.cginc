@@ -26,6 +26,7 @@ SamplerState linear_repeat_s;
 SamplerState bilinear_repeat_s;
 SamplerState linear_clamp_s;
 SamplerState trilinear_repeat_s;
+SamplerState trilinear_aniso4_repeat_s;
 
 sampler2D _MainTex;
 float4 _MainTex_ST;
@@ -69,6 +70,7 @@ float _OcclusionStrength;
 #if defined(_DETAIL_MAPS)
 texture2D _DetailMask;
 sampler2D _DetailAlbedoMap;
+float _Detail_Maps_UV_Channel;
 float4 _DetailAlbedoMap_ST;
 sampler2D _DetailNormalMap;
 float4 _DetailNormalMap_ST;
@@ -120,6 +122,7 @@ float4 _MetallicGlossMap_ST;
 #endif
 
 #if defined(_CLEARCOAT)
+texture2D _Clearcoat_Mask;
 float _Clearcoat_Strength;
 float _Clearcoat_Roughness;
 #endif

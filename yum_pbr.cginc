@@ -195,12 +195,13 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
       tex2D(_BumpMap, UV_SCOFF_IMPL(raw_uv, _BumpMap_ST)), _BumpScale);
 
 #if defined(_DETAIL_MAPS)
-  float detail_mask = _DetailMask.SampleLevel(point_repeat_s, i.uv01.xy, 0);
+  float2 detail_uv = get_uv_by_channel(i, _Detail_Maps_UV_Channel);
+  float detail_mask = _DetailMask.SampleLevel(point_repeat_s, detail_uv, 0);
   float4 detail_albedo = tex2D(_DetailAlbedoMap,
-      UV_SCOFF_IMPL(raw_uv, _DetailNormalMap_ST));
+      UV_SCOFF_IMPL(detail_uv, _DetailAlbedoMap_ST));
   float3 detail_normal = UnpackScaleNormal(
       tex2D(_DetailNormalMap,
-          UV_SCOFF_IMPL(raw_uv, _DetailNormalMap_ST)),
+          UV_SCOFF_IMPL(detail_uv, _DetailNormalMap_ST)),
       _DetailNormalMapScale);
   result.albedo = lerp(result.albedo, result.albedo * detail_albedo, detail_mask);
   //result.albedo.a *= detail_albedo.a;

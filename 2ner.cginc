@@ -494,12 +494,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   float4 lit = YumBRDF(i, l, pbr);
 #endif
 
-  [branch]
-  if (_UdonLightVolumeEnabled) {
-    lit.rgb += LightVolumeSpecular(pbr.albedo, pbr.smoothness, pbr.metallic,
-        pbr.normal, l.view_dir, l.L00, l.L01r, l.L01g, l.L01b);
-  }
-
 #if defined(_HARNACK_TRACING)
   pbr.albedo = harnack_output.color;
   pbr.smoothness = 0;

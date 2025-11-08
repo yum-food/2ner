@@ -89,6 +89,19 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   const float NoH = saturate(dot(pbr.normal, h));
   const float VoL = saturate(dot(light.view_dir, light.dir));
 
+#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
+  // Clearcoat uses geometric normal (not perturbed by normal maps)
+#if defined(_CLEARCOAT_GEOMETRIC_NORMALS)
+  const float3 cc_normal = normalize(i.normal);
+#else
+  const float3 cc_normal = pbr.normal;
+#endif
+  const float NoH_cc = saturate(dot(cc_normal, h));
+  const float NoL_cc = saturate(dot(cc_normal, light.dir));
+  const float NoV_cc = max(1E-4, dot(cc_normal, light.view_dir));
+  const float cc_mask = _Clearcoat_Mask.SampleLevel(linear_repeat_s, i.uv01.xy, 0);
+#endif
+
 #if defined(_MATERIAL_TYPE_CLOTH)
   // Cloth specific BRDF
   float3 direct_cloth;
@@ -118,6 +131,24 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
   float3 direct_standard;
   {
+    float remainder = 1.0f;
+
+#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
+    float cc_f0 = 0.04f;
+    float cc_roughness = _Clearcoat_Roughness * _Clearcoat_Roughness; // Convert perceptual to linear
+
+    float Fcc = F_Schlick(cc_f0, LoH).x * cc_mask * _Clearcoat_Strength;
+    float Dcc = D_GGX(cc_roughness, NoH_cc, h);
+    float Vcc = V_SmithGGXCorrelated_Fast(cc_roughness, NoV_cc, NoL_cc);
+
+    float3 direct_specular_cc = Dcc * Vcc * Fcc * light.direct * NoL_cc * PI * light.attenuation;
+    direct_specular_cc = max(0, direct_specular_cc);
+
+    // Energy conservation: reduce base layer contribution by clearcoat Fresnel
+    remainder -= Fcc * _Clearcoat_Strength;
+    remainder = max(0, remainder);
+#endif
+
     const float dielectric_f0 = computeDielectricF0(_reflectance);
     const float3 f0 = lerp(dielectric_f0, pbr.albedo, pbr.metallic);
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
@@ -129,13 +160,16 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     // Fd_Burley already includes 1/PI, so multiply by PI to match Unity intensities
     float3 Fd = diffuseColor * Fd_Burley(pbr.roughness, NoV, NoL_wrapped_d, LoH) * PI;
-    Fd *= light.attenuation * pbr.ao;
+    Fd *= light.attenuation * pbr.ao * remainder;
 
     // Multiply by PI to match Unity intensities (same as Filament's implementation)
-    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation;
+    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation * remainder;
 
     // Apply energy compensation to specular term
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;
+#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
+    color += direct_specular_cc;
+#endif
     direct_standard = color * light.direct;
   }
 
@@ -159,6 +193,49 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
   float3 indirect_standard;
   {
+    float remainder = 1.0f;
+
+#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
+    // Clearcoat indirect specular
+    float cc_f0 = 0.04f;
+    float cc_roughness_perceptual = _Clearcoat_Roughness;
+
+    // Sample environment for clearcoat reflection using geometric normal
+#if defined(_CLEARCOAT_GEOMETRIC_NORMALS)
+    float3 cc_reflect_dir = reflect(-light.view_dir, normalize(i.normal));
+#else
+    float3 cc_reflect_dir = reflect(-light.view_dir, cc_normal);
+#endif
+
+    UnityGIInput cc_data;
+    cc_data.worldPos = i.worldPos;
+    cc_data.worldViewDir = light.view_dir;
+    cc_data.probeHDR[0] = unity_SpecCube0_HDR;
+    cc_data.probeHDR[1] = unity_SpecCube1_HDR;
+#if defined(UNITY_SPECCUBE_BLENDING) || defined(UNITY_SPECCUBE_BOX_PROJECTION)
+    cc_data.boxMin[0] = unity_SpecCube0_BoxMin;
+#endif
+#ifdef UNITY_SPECCUBE_BOX_PROJECTION
+    cc_data.boxMax[0] = unity_SpecCube0_BoxMax;
+    cc_data.probePosition[0] = unity_SpecCube0_ProbePosition;
+    cc_data.boxMax[1] = unity_SpecCube1_BoxMax;
+    cc_data.boxMin[1] = unity_SpecCube1_BoxMin;
+    cc_data.probePosition[1] = unity_SpecCube1_ProbePosition;
+#endif
+
+    float3 cc_env_refl = UnityGI_prefilteredRadiance(cc_data, cc_roughness_perceptual, cc_reflect_dir);
+#if defined(_BRIGHTNESS_CONTROL)
+    cc_env_refl *= _Brightness_Multiplier;
+#endif
+
+    // Clearcoat Fresnel for view angle
+    float Fcc = F_Schlick(cc_f0, NoV_cc).x * cc_mask * _Clearcoat_Strength;
+    float3 indirect_specular_cc = Fcc * cc_env_refl;
+
+    // Energy conservation
+    remainder *= (1.0f - Fcc * _Clearcoat_Strength);
+#endif
+
     const float dielectric_f0 = computeDielectricF0(_reflectance);
     const float3 f0 = lerp(dielectric_f0, pbr.albedo, pbr.metallic);
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
@@ -170,11 +247,14 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     // Use proper diffuse color calculation
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
-    float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao;
+    float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao * remainder;
 
-    float3 Fr = E * light.specular;
+    float3 Fr = E * light.specular * remainder;
 
     indirect_standard = Fr + Fd;
+#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
+    indirect_standard += indirect_specular_cc;
+#endif
   }
 
 #if defined(_MATERIAL_TYPE_CLOTH)
@@ -186,7 +266,22 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   float3 indirect = indirect_standard;
 #endif
 
-  return float4(direct + indirect, pbr.albedo.a);
+  float4 lit = float4(direct + indirect, pbr.albedo.a);
+
+  float3 lv_specular = 0;
+  [branch]
+  if (_UdonLightVolumeEnabled) {
+    float3 lv_specular = LightVolumeSpecular(pbr.albedo, pbr.smoothness, pbr.metallic,
+        pbr.normal, light.view_dir, light.L00, light.L01r, light.L01g, light.L01b);
+    lit.rgb += lv_specular;
+
+#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
+    float Fcc = F_Schlick(0.04f, NoV_cc) * cc_mask * _Clearcoat_Strength;
+    lit.rgb += lv_specular * Fcc;
+#endif
+  }
+
+  return lit;
 }
 
 #endif  // __YUM_BRDF_INC

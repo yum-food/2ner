@@ -82,7 +82,7 @@ float2 applyDomainWarping(DecalParams params, float2 uv) {
     [loop]
     for (uint ii = 0; ii < (uint) params.domain_warping_octaves; ii++) {
         float2 noise_uv = warped_uv * frequency + time_vec * frequency;
-        float2 noise_sample = params.domain_warping_noise.SampleLevel(trilinear_repeat_s, noise_uv, 0);
+        float2 noise_sample = params.domain_warping_noise.SampleLevel(linear_repeat_s, noise_uv, 0);
         float2 noise_offset = (noise_sample.xy * 2.0 - 1.0);
         total_offset += noise_offset * amplitude;
         frequency *= 2.0;
@@ -178,7 +178,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 #define APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float4 decal_albedo;                                                                            \
     {                                                                                               \
-        decal_albedo = params.mainTex.Sample(trilinear_repeat_s, decal_uv);                            \
+        decal_albedo = params.mainTex.Sample(trilinear_aniso4_repeat_s, decal_uv);                  \
         decal_albedo *= params.color;                                                               \
     }
 
