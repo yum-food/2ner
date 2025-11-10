@@ -201,6 +201,30 @@ Shader "yum_food/2ner"
             //endex
           [HideInInspector] m_end_Matcap1("Matcap 1", Float) = 0
           //endex
+          //ifex _Matcap2_Enabled==0
+          [HideInInspector] m_start_Matcap2("Matcap 2", Float) = 0
+          [ThryToggle(_MATCAP2)]_Matcap2_Enabled("Enable", Float) = 0
+          _Matcap2("Matcap", 2D) = "white" {}
+          [Toggle(_)]_Matcap2_Invert("Invert", Float) = 0
+          [ThryWideEnum(Replace, 0, Add, 1, Multiply, 2, Subtract, 3, AddProduct, 4)]
+          _Matcap2_Mode("Mode", Int) = 0
+          [ThryWideEnum(_0000b, 0, _0001b, 1, _0010b, 2, _0011b, 3, _0100b, 4, _0101b, 5, _0110b, 6, _0111b, 7, _1000b, 8, _1001b, 9, _1010b, 10, _1011b, 11, _1100b, 12, _1101b, 13, _1110b, 14, _1111b, 15)]
+          _Matcap2_Target_Mask("Target mask (albedo|diffuse<<1|specular<<2)", Int) = 1
+          _Matcap2_Strength("Strength", Float) = 1
+            //ifex _Matcap2_Mask_Enabled==0
+            [HideInInspector] m_start_Matcap2_Mask("Mask", Float) = 0
+            [ThryToggle(_MATCAP2_MASK)]_Matcap2_Mask_Enabled("Enable", Float) = 0
+            _Matcap2_Mask("Mask", 2D) = "white" {}
+            [HideInInspector] m_end_Matcap2_Mask("Mask", Float) = 0
+            //endex
+            //ifex _Matcap2_Quantization_Enabled==0
+            [HideInInspector] m_start_Matcap2_Quantization("Quantization", Float) = 0
+            [ThryToggle(_MATCAP2_QUANTIZATION)]_Matcap2_Quantization_Enabled("Enable", Float) = 0
+            _Matcap2_Quantization_Steps("Steps", Float) = 1
+            [HideInInspector] m_end_Matcap2_Quantization("Quantization", Float) = 0
+            //endex
+          [HideInInspector] m_end_Matcap2("Matcap 2", Float) = 0
+          //endex
         [HideInInspector] m_end_Matcaps("Matcaps", Float) = 0
 
         [HideInInspector] m_start_Rim_Lighting("Rim lighting", Float) = 0

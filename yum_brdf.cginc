@@ -145,7 +145,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     direct_specular_cc = max(0, direct_specular_cc);
 
     // Energy conservation: reduce base layer contribution by clearcoat Fresnel
-    remainder -= Fcc * _Clearcoat_Strength;
+    remainder -= Fcc;
     remainder = max(0, remainder);
 #endif
 
@@ -191,7 +191,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
   }
 #endif
 
-  float3 indirect_standard;
+  float3 indirect_standard = 0;
   {
     float remainder = 1.0f;
 
@@ -224,6 +224,20 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 #endif
 
     float3 cc_env_refl = UnityGI_prefilteredRadiance(cc_data, cc_roughness_perceptual, cc_reflect_dir);
+#if defined(_FALLBACK_CUBEMAP)
+  if (!SceneHasReflections() || _Fallback_Cubemap_Force) {
+    // Set up data for fallback sampling similar to Unity's system
+
+    #ifdef UNITY_SPECCUBE_BOX_PROJECTION
+      cc_reflect_dir = BoxProjectedCubemapDirection(cc_reflect_dir, i.worldPos, /*probe_position=*/0, /*box_min=*/-1, /*box_max=*/1);
+    #endif
+
+    half mip = cc_roughness_perceptual * UNITY_SPECCUBE_LOD_STEPS;
+    float4 envSample = UNITY_SAMPLE_TEXCUBE_LOD(_Fallback_Cubemap, cc_reflect_dir, mip);
+    cc_env_refl = DecodeHDR(envSample, _Fallback_Cubemap_HDR) * _Fallback_Cubemap_Brightness * light.diffuse_luminance;
+  }
+#endif
+
 #if defined(_BRIGHTNESS_CONTROL)
     cc_env_refl *= _Brightness_Multiplier;
 #endif
@@ -233,7 +247,8 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     float3 indirect_specular_cc = Fcc * cc_env_refl;
 
     // Energy conservation
-    remainder *= (1.0f - Fcc * _Clearcoat_Strength);
+    indirect_standard += indirect_specular_cc;
+    remainder = saturate(remainder - Fcc);
 #endif
 
     const float dielectric_f0 = computeDielectricF0(_reflectance);
@@ -251,10 +266,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 
     float3 Fr = E * light.specular * remainder;
 
-    indirect_standard = Fr + Fd;
-#if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
-    indirect_standard += indirect_specular_cc;
-#endif
+    indirect_standard += Fr + Fd;
   }
 
 #if defined(_MATERIAL_TYPE_CLOTH)

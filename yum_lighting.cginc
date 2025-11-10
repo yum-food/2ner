@@ -117,41 +117,40 @@ struct YumLighting {
 float getShadowAttenuation(v2f i)
 {
 	float attenuation;
+	float shadow;
 	// This whole block is yoinked from AutoLight.cginc. I needed a way to
 	// control shadow strength so I had to duplicate the code.
 #if defined(DIRECTIONAL_COOKIE)
 	DECLARE_LIGHT_COORD(i, i.worldPos);
-	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
 	attenuation = tex2D(_LightTexture0, lightCoord).w;
 #elif defined(POINT_COOKIE)
 	DECLARE_LIGHT_COORD(i, i.worldPos);
-	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
 	attenuation = tex2D(_LightTextureB0, dot(lightCoord, lightCoord).rr).r *
 		texCUBE(_LightTexture0, lightCoord).w;
 #elif defined(DIRECTIONAL)
-	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
 	attenuation = 1;
 #elif defined(SPOT)
 	DECLARE_LIGHT_COORD(i, i.worldPos);
-	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
 	attenuation = (lightCoord.z > 0) * UnitySpotCookie(lightCoord) *
     UnitySpotAttenuate(lightCoord.xyz);
 #elif defined(POINT)
 	unityShadowCoord3 lightCoord =
     mul(unity_WorldToLight, unityShadowCoord4(i.worldPos, 1)).xyz;
-	float shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
 	attenuation = tex2D(_LightTexture0, dot(lightCoord, lightCoord).rr).r;
 #else
-	float shadow = 1;
+	shadow = 1;
 	attenuation = 1;
 #endif
+	float realtimeAttenuation = attenuation * lerp(1, shadow, _Shadow_Strength);
 
-  attenuation *= shadow;
+	GetBakedAttenuation(realtimeAttenuation, i.uv01.zw, i.worldPos);
 
-  GetBakedAttenuation(attenuation, i.uv01.zw, i.worldPos);
-
-	attenuation = lerp(1, attenuation, _Shadow_Strength);
-	return attenuation;
+	return realtimeAttenuation;
 }
 
 float3 getDirectLightDirection(v2f i) {
@@ -160,13 +159,6 @@ float3 getDirectLightDirection(v2f i) {
 #else
 	return _WorldSpaceLightPos0;
 #endif
-}
-
-float4 getDirectLightColorIntensity() {
-	// Properly separate light color from intensity like filamented
-	if (_LightColor0.w <= 0) return float4(0, 0, 0, 0);
-	_LightColor0 += 0.000001; // Avoid division by zero
-	return float4(_LightColor0.xyz / _LightColor0.w, _LightColor0.w);
 }
 
 float GetLodRoughness(float roughness) {
@@ -323,9 +315,8 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.dir = getDirectLightDirection(i);
 
 	// Use proper light color/intensity separation
-	float4 lightColorIntensity = getDirectLightColorIntensity();
-	light.direct = lightColorIntensity.rgb * lightColorIntensity.w;
-	
+	light.direct = _LightColor0.rgb;
+
 	// Calculate attenuation first, before diffuse lighting
   light.attenuation = getShadowAttenuation(i);
 
@@ -401,4 +392,3 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 }
 
 #endif  // __YUM_LIGHTING_INC
-

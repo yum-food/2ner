@@ -7,7 +7,7 @@
 #include "yum_lighting.cginc"
 #include "yum_pbr.cginc"
 
-#if defined(_MATCAP0) || defined(_MATCAP1) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
+#if defined(_MATCAP0) || defined(_MATCAP1) || defined(_MATCAP2) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
 float2 getMatcapUV(v2f i, inout YumPbr pbr) {
   const float3 cam_normal = normalize(mul(UNITY_MATRIX_V, float4(pbr.normal, 0)));
   const float3 cam_view_dir = normalize(mul(UNITY_MATRIX_V, float4(-i.eyeVec.xyz, 0)));
@@ -69,7 +69,7 @@ float getAngleAttenuation(float2 muv, float2 target_vector, float power) {
 }
 
 void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
-#if defined(_MATCAP0) || defined(_MATCAP1) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
+#if defined(_MATCAP0) || defined(_MATCAP1) || defined(_MATCAP2) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
   float2 muv = getMatcapUV(i, pbr);
 #endif
 #if defined(_MATCAP0)
@@ -112,6 +112,26 @@ void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
 #endif
   applyMatcap(pbr, l, m1, _Matcap1_Mode, _Matcap1_Target_Mask, m1_mask);
 #endif  // _MATCAP1
+#if defined(_MATCAP2)
+#if defined(_MATCAP2_QUANTIZATION)
+  float2 m2uv = muv * 2 - 1;
+  float m2uv_r = length(m2uv);
+  float m2uv_r_q = floor(m2uv_r * _Matcap2_Quantization_Steps) / _Matcap2_Quantization_Steps;
+  m2uv = m2uv_r_q * (m2uv / max(1E-4, m2uv_r));
+  m2uv = m2uv * 0.5 + 0.5;
+#else
+  float2 m2uv = muv;
+#endif  // _MATCAP2_QUANTIZATION
+  float3 m2 = _Matcap2.Sample(linear_repeat_s, m2uv);
+  m2 = lerp(m2, 1 - m2, _Matcap2_Invert);
+  m2 *= _Matcap2_Strength;
+#if defined(_MATCAP2_MASK)
+  float m2_mask = _Matcap2_Mask.Sample(linear_repeat_s, UV_SCOFF(i, _Matcap2_Mask_ST, /*which_channel=*/0));
+#else
+  float m2_mask = 1;
+#endif
+  applyMatcap(pbr, l, m2, _Matcap2_Mode, _Matcap2_Target_Mask, m2_mask);
+#endif  // _MATCAP2
 
 #if defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
   float rl_radius = length(muv - 0.5);
