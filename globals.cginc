@@ -286,6 +286,7 @@ float4 _Decal##n##_Color; \
 float _Decal##n##_Opacity; \
 float _Decal##n##_Angle; \
 float _Decal##n##_UV_Channel; \
+float _Decal##n##_Bias; \
 float _Decal##n##_Tiling_Mode; \
 float _Decal##n##_Alpha_Blend_Mode; \
 float _Decal##n##_Normal_Enabled; \

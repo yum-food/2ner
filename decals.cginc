@@ -12,6 +12,7 @@ struct DecalParams {
     float opacity;
     float angle;
     float uv_channel;
+    float mip_bias;
     float4 mainTex_ST;
     int tiling_mode;
     int alpha_blend_mode;
@@ -45,6 +46,7 @@ struct DecalParams {
     params.opacity = prefix##Opacity; \
     params.angle = prefix##Angle; \
     params.uv_channel = prefix##UV_Channel; \
+    params.mip_bias = prefix##Bias; \
     params.mainTex_ST = prefix##MainTex_ST; \
     params.tiling_mode = prefix##Tiling_Mode; \
     params.alpha_blend_mode = prefix##Alpha_Blend_Mode; \
@@ -94,7 +96,7 @@ float2 applyDomainWarping(DecalParams params, float2 uv) {
 }
 
 float4 getDecalColor(DecalParams params, float2 uv) {
-    float4 sdf_sample = params.mainTex.SampleLevel(linear_repeat_s, uv, 0);
+    float4 sdf_sample = params.mainTex.SampleBias(trilinear_aniso4_repeat_s, uv, params.mip_bias);
     float sd = sdf_sample.r;
     sd = params.sdf_invert ? 1 - sd : sd;
     // The fwidth+smoothstep anti-aliases the glyph outline. See
@@ -178,7 +180,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 #define APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float4 decal_albedo;                                                                            \
     {                                                                                               \
-        decal_albedo = params.mainTex.Sample(trilinear_aniso4_repeat_s, decal_uv);                  \
+        decal_albedo = params.mainTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias);                  \
         decal_albedo *= params.color;                                                               \
     }
 
@@ -200,7 +202,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 
 #define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
-    albedo = alphaBlend(albedo, decal_albedo);
+    albedo = alphaBlend(decal_albedo, albedo);
 
 #define APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
     albedo = lerp(albedo, decal_albedo, decal_mask * params.opacity);
@@ -218,7 +220,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 
 #define APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)        \
     float3 decal_normal = UnpackScaleNormal(                                                        \
-            params.normalTex.Sample(trilinear_repeat_s, decal_uv),                                     \
+            params.normalTex.SampleBias(trilinear_repeat_s, decal_uv, params.mip_bias),             \
             params.normal_scale * decal_albedo.a * params.opacity);                                 \
     normal_tangent = blendNormalsHill12(normal_tangent, decal_normal);
     //normal_tangent = lerp(normal_tangent, decal_normal, decal_albedo.a * params.opacity);
