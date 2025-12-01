@@ -235,6 +235,7 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 
 #if defined(_AMBIENT_OCCLUSION)
   result.ao = lerp(1, tex2D(_OcclusionMap, i.uv01), _OcclusionStrength);
+  result.ao = saturate(result.ao);
 #else
   result.ao = 1;
 #endif

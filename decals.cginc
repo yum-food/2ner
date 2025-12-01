@@ -225,7 +225,7 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
 #define APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
 #define APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
-    float decal_mask = params.mask.SampleLevel(linear_repeat_s, raw_decal_uv, 0);                           \
+    float decal_mask = params.mask.SampleLevel(trilinear_aniso4_repeat_s, raw_decal_uv, params.mip_bias);                           \
     decal_albedo.a *= decal_mask;
 
 #define APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \
@@ -253,9 +253,10 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
 
 #define APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
+
 #define APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)        \
     float3 decal_normal = UnpackScaleNormal(                                                        \
-            params.normalTex.SampleBias(trilinear_repeat_s, decal_uv, params.mip_bias),             \
+            params.normalTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias),             \
             params.normal_scale * decal_albedo.a * params.opacity);                                 \
     normal_tangent = blendNormalsHill12(normal_tangent, decal_normal);
     //normal_tangent = lerp(normal_tangent, decal_normal, decal_albedo.a * params.opacity);
