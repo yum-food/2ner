@@ -426,7 +426,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal0_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL0_SDF_SSN)] _Decal0_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal0_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal0_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal0_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal0_CMYK_Warping_Planes_Enabled==0
@@ -512,7 +511,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal1_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL1_SDF_SSN)] _Decal1_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal1_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal1_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal1_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal1_CMYK_Warping_Planes_Enabled==0
@@ -598,7 +596,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal2_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL2_SDF_SSN)] _Decal2_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal2_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal2_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal2_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal2_CMYK_Warping_Planes_Enabled==0
@@ -684,7 +681,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal3_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL3_SDF_SSN)] _Decal3_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal3_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal3_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal3_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal3_CMYK_Warping_Planes_Enabled==0
@@ -770,7 +766,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal4_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL4_SDF_SSN)] _Decal4_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal4_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal4_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal4_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal4_CMYK_Warping_Planes_Enabled==0
@@ -856,7 +851,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal5_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL5_SDF_SSN)] _Decal5_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal5_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal5_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal5_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal5_CMYK_Warping_Planes_Enabled==0
@@ -942,7 +936,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal6_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL6_SDF_SSN)] _Decal6_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal6_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal6_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal6_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal6_CMYK_Warping_Planes_Enabled==0
@@ -1028,7 +1021,6 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal7_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL7_SDF_SSN)] _Decal7_SDF_SSN_Enabled("Enable", Float) = 0
                 _Decal7_SDF_SSN_Strength("Strength", Float) = 0.1
-                [HideInInspector] m_end_Decal7_SDF_SSN("SDF SSN", Float) = 0
               [HideInInspector] m_end_Decal7_SSN("Screen space normals", Float) = 0
               //endex
               //ifex _Decal7_CMYK_Warping_Planes_Enabled==0
