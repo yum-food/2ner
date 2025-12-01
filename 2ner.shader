@@ -371,6 +371,7 @@ Shader "yum_food/2ner"
             _Decal0_Angle("Angle", Range(0, 1)) = 0.0
             _Decal0_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal0_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL0_INVERT_BLEND_ORDER)] _Decal0_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL0_TILING_MODE)] _Decal0_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL0_REPLACE_ALPHA)] _Decal0_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL0_MULTIPLY)] _Decal0_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -449,6 +450,7 @@ Shader "yum_food/2ner"
             _Decal1_Angle("Angle", Range(0, 1)) = 0.0
             _Decal1_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal1_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL1_INVERT_BLEND_ORDER)] _Decal1_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL1_TILING_MODE)] _Decal1_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL1_REPLACE_ALPHA)] _Decal1_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL1_MULTIPLY)] _Decal1_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -527,6 +529,7 @@ Shader "yum_food/2ner"
             _Decal2_Angle("Angle", Range(0, 1)) = 0.0
             _Decal2_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal2_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL2_INVERT_BLEND_ORDER)] _Decal2_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL2_TILING_MODE)] _Decal2_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL2_REPLACE_ALPHA)] _Decal2_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL2_MULTIPLY)] _Decal2_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -605,6 +608,7 @@ Shader "yum_food/2ner"
             _Decal3_Angle("Angle", Range(0, 1)) = 0.0
             _Decal3_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal3_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL3_INVERT_BLEND_ORDER)] _Decal3_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL3_TILING_MODE)] _Decal3_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL3_REPLACE_ALPHA)] _Decal3_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL3_MULTIPLY)] _Decal3_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -683,6 +687,7 @@ Shader "yum_food/2ner"
             _Decal4_Angle("Angle", Range(0, 1)) = 0.0
             _Decal4_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal4_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL4_INVERT_BLEND_ORDER)] _Decal4_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL4_TILING_MODE)] _Decal4_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL4_REPLACE_ALPHA)] _Decal4_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL4_MULTIPLY)] _Decal4_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -761,6 +766,7 @@ Shader "yum_food/2ner"
             _Decal5_Angle("Angle", Range(0, 1)) = 0.0
             _Decal5_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal5_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL5_INVERT_BLEND_ORDER)] _Decal5_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL5_TILING_MODE)] _Decal5_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL5_REPLACE_ALPHA)] _Decal5_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL5_MULTIPLY)] _Decal5_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -839,6 +845,7 @@ Shader "yum_food/2ner"
             _Decal6_Angle("Angle", Range(0, 1)) = 0.0
             _Decal6_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal6_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL6_INVERT_BLEND_ORDER)] _Decal6_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL6_TILING_MODE)] _Decal6_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL6_REPLACE_ALPHA)] _Decal6_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL6_MULTIPLY)] _Decal6_Replace_Multiply_Mode("Multiply", Float) = 0
@@ -917,6 +924,7 @@ Shader "yum_food/2ner"
             _Decal7_Angle("Angle", Range(0, 1)) = 0.0
             _Decal7_UV_Channel("UV channel", Range(0, 3.1)) = 0
             _Decal7_Bias("Mip bias", Range(-4, 4)) = 0
+            [ThryToggle(_DECAL7_INVERT_BLEND_ORDER)] _Decal7_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL7_TILING_MODE)] _Decal7_Tiling_Mode("Tiling mode", Float) = 0
             [ThryToggle(_DECAL7_REPLACE_ALPHA)] _Decal7_Replace_Alpha_Mode("Replace alpha", Float) = 0
             [ThryToggle(_DECAL7_MULTIPLY)] _Decal7_Replace_Multiply_Mode("Multiply", Float) = 0

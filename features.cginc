@@ -133,6 +133,7 @@
 #pragma shader_feature_local _DECAL0_SDF
 #pragma shader_feature_local _DECAL0_MASK
 #pragma shader_feature_local _DECAL0_TILING_MODE
+#pragma shader_feature_local _DECAL0_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL0_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL0_MULTIPLY
 #pragma shader_feature_local _DECAL0_CMYK_WARPING_PLANES
@@ -148,6 +149,7 @@
 #pragma shader_feature_local _DECAL1_SDF
 #pragma shader_feature_local _DECAL1_MASK
 #pragma shader_feature_local _DECAL1_TILING_MODE
+#pragma shader_feature_local _DECAL1_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL1_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL1_MULTIPLY
 #pragma shader_feature_local _DECAL1_CMYK_WARPING_PLANES
@@ -163,6 +165,7 @@
 #pragma shader_feature_local _DECAL2_SDF
 #pragma shader_feature_local _DECAL2_MASK
 #pragma shader_feature_local _DECAL2_TILING_MODE
+#pragma shader_feature_local _DECAL2_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL2_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL2_MULTIPLY
 #pragma shader_feature_local _DECAL2_CMYK_WARPING_PLANES
@@ -178,6 +181,7 @@
 #pragma shader_feature_local _DECAL3_SDF
 #pragma shader_feature_local _DECAL3_MASK
 #pragma shader_feature_local _DECAL3_TILING_MODE
+#pragma shader_feature_local _DECAL3_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL3_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL3_MULTIPLY
 #pragma shader_feature_local _DECAL3_CMYK_WARPING_PLANES
@@ -193,6 +197,7 @@
 #pragma shader_feature_local _DECAL4_SDF
 #pragma shader_feature_local _DECAL4_MASK
 #pragma shader_feature_local _DECAL4_TILING_MODE
+#pragma shader_feature_local _DECAL4_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL4_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL4_MULTIPLY
 #pragma shader_feature_local _DECAL4_CMYK_WARPING_PLANES
@@ -208,6 +213,7 @@
 #pragma shader_feature_local _DECAL5_SDF
 #pragma shader_feature_local _DECAL5_MASK
 #pragma shader_feature_local _DECAL5_TILING_MODE
+#pragma shader_feature_local _DECAL5_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL5_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL5_MULTIPLY
 #pragma shader_feature_local _DECAL5_CMYK_WARPING_PLANES
@@ -223,6 +229,7 @@
 #pragma shader_feature_local _DECAL6_SDF
 #pragma shader_feature_local _DECAL6_MASK
 #pragma shader_feature_local _DECAL6_TILING_MODE
+#pragma shader_feature_local _DECAL6_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL6_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL6_MULTIPLY
 #pragma shader_feature_local _DECAL6_CMYK_WARPING_PLANES
@@ -238,6 +245,7 @@
 #pragma shader_feature_local _DECAL7_SDF
 #pragma shader_feature_local _DECAL7_MASK
 #pragma shader_feature_local _DECAL7_TILING_MODE
+#pragma shader_feature_local _DECAL7_INVERT_BLEND_ORDER
 #pragma shader_feature_local _DECAL7_REPLACE_ALPHA
 #pragma shader_feature_local _DECAL7_MULTIPLY
 #pragma shader_feature_local _DECAL7_CMYK_WARPING_PLANES

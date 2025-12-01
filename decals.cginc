@@ -202,6 +202,10 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 
 #define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
+    albedo = alphaBlend(albedo, decal_albedo);
+
+#define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+    decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
     albedo = alphaBlend(decal_albedo, albedo);
 
 #define APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
@@ -267,7 +271,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL0_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL0_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -329,7 +337,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL1_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL1_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -391,7 +403,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL2_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL2_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -453,7 +469,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL3_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL3_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -515,7 +535,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL4_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL4_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -577,7 +601,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL5_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL5_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -639,7 +667,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL6_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL6_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
@@ -701,7 +733,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #elif defined(_DECAL7_MULTIPLY)
         APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
+        #if defined(_DECAL7_INVERT_BLEND_ORDER)
+        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #endif
         #endif
 
         #if defined(FORWARD_BASE_PASS)
