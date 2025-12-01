@@ -156,6 +156,31 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
     return float4(final_rgb, saturate(decal_color0.a + decal_color1.a + decal_color2.a + decal_color3.a));
 }
 
+// Calculate normal vector from an SDF using screen-space derivatives.
+float3 applyDecalSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo) {
+    float sdf_val = params.mainTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias).r;
+    sdf_val = params.sdf_invert ? 1 - sdf_val : sdf_val;
+
+    float sdf_dx = ddx(sdf_val);
+    float sdf_dy = ddy(sdf_val);
+
+    float2 uv_dx = ddx(decal_uv);
+    float2 uv_dy = ddy(decal_uv);
+
+    float det = uv_dx.x * uv_dy.y - uv_dx.y * uv_dy.x;
+    float2 sdf_grad_uv;
+    if (abs(det) < 1e-6) {
+        sdf_grad_uv = float2(0,0);
+    } else {
+        sdf_grad_uv.x = (sdf_dx * uv_dy.y - sdf_dy * uv_dx.y) / det;
+        sdf_grad_uv.y = (sdf_dy * uv_dx.x - sdf_dx * uv_dy.x) / det;
+    }
+
+    float2 scaled_grad = sdf_grad_uv * params.sdf_ssn_strength * decal_albedo.a * params.opacity;
+
+    return normalize(float3(-scaled_grad.xy, 1.0));
+}
+
 #define APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float2x2 decal_rot = float2x2(                                                                  \
         cos(params.angle * TAU), -sin(params.angle * TAU),                                          \
@@ -242,28 +267,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 
 #define APPLY_DECAL_SDF_SSN_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     { \
-        float sdf_val = params.mainTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias).r; \
-        sdf_val = params.sdf_invert ? 1 - sdf_val : sdf_val; \
-        \
-        float sdf_dx = ddx(sdf_val); \
-        float sdf_dy = ddy(sdf_val); \
-        \
-        float2 uv_dx = ddx(decal_uv); \
-        float2 uv_dy = ddy(decal_uv); \
-        \
-        float det = uv_dx.x * uv_dy.y - uv_dx.y * uv_dy.x; \
-        float2 sdf_grad_uv; \
-        if (abs(det) < 1e-6) { \
-            sdf_grad_uv = float2(0,0); \
-        } else { \
-            sdf_grad_uv.x = (sdf_dx * uv_dy.y - sdf_dy * uv_dx.y) / det; \
-            sdf_grad_uv.y = (sdf_dy * uv_dx.x - sdf_dx * uv_dy.x) / det; \
-        } \
-        \
-        float2 scaled_grad = sdf_grad_uv * params.sdf_ssn_strength * decal_albedo.a * params.opacity; \
-        \
-        float3 sdf_normal_ts = normalize(float3(-scaled_grad.xy, 1.0)); \
-        \
+        float3 sdf_normal_ts = applyDecalSdfSsn(params, decal_uv, decal_albedo); \
         normal_tangent = blendNormalsHill12(normal_tangent, sdf_normal_ts); \
     }
 
