@@ -157,7 +157,7 @@ float4 getCmykWarpingPlanesColor(DecalParams params, float2 uv) {
 }
 
 // Calculate normal vector from an SDF using screen-space derivatives.
-float3 applyDecalSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo) {
+float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo) {
     float sdf_val = params.mainTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias).r;
     sdf_val = params.sdf_invert ? 1 - sdf_val : sdf_val;
 
@@ -169,12 +169,8 @@ float3 applyDecalSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo
 
     float det = uv_dx.x * uv_dy.y - uv_dx.y * uv_dy.x;
     float2 sdf_grad_uv;
-    if (abs(det) < 1e-6) {
-        sdf_grad_uv = float2(0,0);
-    } else {
-        sdf_grad_uv.x = (sdf_dx * uv_dy.y - sdf_dy * uv_dx.y) / det;
-        sdf_grad_uv.y = (sdf_dy * uv_dx.x - sdf_dx * uv_dy.x) / det;
-    }
+    sdf_grad_uv.x = (sdf_dx * uv_dy.y - sdf_dy * uv_dx.y) / det;
+    sdf_grad_uv.y = (sdf_dy * uv_dx.x - sdf_dx * uv_dy.x) / det;
 
     float2 scaled_grad = sdf_grad_uv * params.sdf_ssn_strength * decal_albedo.a * params.opacity;
 
@@ -267,7 +263,7 @@ float3 applyDecalSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo
 
 #define APPLY_DECAL_SDF_SSN_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     { \
-        float3 sdf_normal_ts = applyDecalSdfSsn(params, decal_uv, decal_albedo); \
+        float3 sdf_normal_ts = calculateSdfSsn(params, decal_uv, decal_albedo); \
         normal_tangent = blendNormalsHill12(normal_tangent, sdf_normal_ts); \
     }
 
