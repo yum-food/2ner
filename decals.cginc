@@ -207,6 +207,14 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
         decal_albedo *= params.color;                                                               \
     }
 
+#define APPLY_DECAL_SDF_SSN_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+    { \
+        float3 sdf_normal_ts = calculateSdfSsn(params, decal_uv, decal_albedo); \
+        sdf_normal_ts.xy *= 1.0f - albedo.a; \
+        sdf_normal_ts = normalize(sdf_normal_ts); \
+        normal_tangent = blendNormalsHill12(normal_tangent, sdf_normal_ts); \
+    }
+
 #define APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \
     {                                                                                               \
         float eps = 1e-4;                                                                           \
@@ -260,12 +268,6 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
     smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, decal_albedo.a);
 
 #define APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
-
-#define APPLY_DECAL_SDF_SSN_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
-    { \
-        float3 sdf_normal_ts = calculateSdfSsn(params, decal_uv, decal_albedo); \
-        normal_tangent = blendNormalsHill12(normal_tangent, sdf_normal_ts); \
-    }
 
 #define APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
