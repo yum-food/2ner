@@ -422,6 +422,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal0_SDF_Invert("SDF invert", Float) = 0
               _Decal0_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal0_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal0_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal0_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL0_SDF_SSN)] _Decal0_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal0_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal0_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal0_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal0_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal0_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL0_CMYK_WARPING_PLANES)] _Decal0_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -501,6 +508,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal1_SDF_Invert("SDF invert", Float) = 0
               _Decal1_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal1_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal1_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal1_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL1_SDF_SSN)] _Decal1_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal1_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal1_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal1_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal1_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal1_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL1_CMYK_WARPING_PLANES)] _Decal1_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -580,6 +594,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal2_SDF_Invert("SDF invert", Float) = 0
               _Decal2_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal2_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal2_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal2_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL2_SDF_SSN)] _Decal2_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal2_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal2_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal2_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal2_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal2_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL2_CMYK_WARPING_PLANES)] _Decal2_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -659,6 +680,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal3_SDF_Invert("SDF invert", Float) = 0
               _Decal3_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal3_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal3_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal3_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL3_SDF_SSN)] _Decal3_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal3_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal3_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal3_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal3_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal3_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL3_CMYK_WARPING_PLANES)] _Decal3_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -738,6 +766,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal4_SDF_Invert("SDF invert", Float) = 0
               _Decal4_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal4_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal4_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal4_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL4_SDF_SSN)] _Decal4_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal4_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal4_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal4_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal4_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal4_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL4_CMYK_WARPING_PLANES)] _Decal4_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -817,6 +852,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal5_SDF_Invert("SDF invert", Float) = 0
               _Decal5_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal5_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal5_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal5_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL5_SDF_SSN)] _Decal5_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal5_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal5_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal5_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal5_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal5_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL5_CMYK_WARPING_PLANES)] _Decal5_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -896,6 +938,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal6_SDF_Invert("SDF invert", Float) = 0
               _Decal6_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal6_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal6_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal6_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL6_SDF_SSN)] _Decal6_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal6_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal6_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal6_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal6_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal6_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL6_CMYK_WARPING_PLANES)] _Decal6_CMYK_Warping_Planes_Enabled("Enable", Float) = 0
@@ -975,6 +1024,13 @@ Shader "yum_food/2ner"
               [MaterialToggle] _Decal7_SDF_Invert("SDF invert", Float) = 0
               _Decal7_SDF_Softness("SDF softness", Range(0, 1)) = 0.01
               _Decal7_SDF_Px_Range("SDF px range", Float) = 2
+              //ifex _Decal7_SDF_SSN_Enabled==0
+              [HideInInspector] m_start_Decal7_SSN("Screen space normals", Float) = 0
+                [ThryToggle(_DECAL7_SDF_SSN)] _Decal7_SDF_SSN_Enabled("Enable", Float) = 0
+                _Decal7_SDF_SSN_Strength("Strength", Float) = 0.1
+                [HideInInspector] m_end_Decal7_SDF_SSN("SDF SSN", Float) = 0
+              [HideInInspector] m_end_Decal7_SSN("Screen space normals", Float) = 0
+              //endex
               //ifex _Decal7_CMYK_Warping_Planes_Enabled==0
               [HideInInspector] m_start_Decal7_CMYK_Warping_Planes("CMYK warping planes", Float) = 0
                 [ThryToggle(_DECAL7_CMYK_WARPING_PLANES)] _Decal7_CMYK_Warping_Planes_Enabled("Enable", Float) = 0

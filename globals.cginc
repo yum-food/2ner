@@ -306,6 +306,9 @@ float _Decal##n##_SDF_Invert; \
 float _Decal##n##_SDF_Softness; \
 float _Decal##n##_SDF_Px_Range; \
 \
+float _Decal##n##_SDF_SSN_Enabled; \
+float _Decal##n##_SDF_SSN_Strength; \
+\
 float _Decal##n##_Mask_Enabled; \
 texture2D _Decal##n##_Mask; \
 float4 _Decal##n##_Mask_ST; \

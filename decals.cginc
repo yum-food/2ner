@@ -19,6 +19,7 @@ struct DecalParams {
     Texture2D mainTex;
     bool sdf_invert;
     float sdf_threshold;
+    float sdf_ssn_strength;
     Texture2D mask;
     Texture2D normalTex;
     float normal_scale;
@@ -53,6 +54,7 @@ struct DecalParams {
     params.mainTex = prefix##MainTex; \
     params.sdf_invert = prefix##SDF_Invert; \
     params.sdf_threshold = prefix##SDF_Threshold; \
+    params.sdf_ssn_strength = prefix##SDF_SSN_Strength; \
     params.mask = prefix##Mask; \
     params.normalTex = prefix##Normal; \
     params.normal_scale = prefix##Normal_Scale; \
