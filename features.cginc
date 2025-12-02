@@ -130,6 +130,7 @@
 #pragma shader_feature_local _DECAL0
 #pragma shader_feature_local _DECAL0_NORMAL
 #pragma shader_feature_local _DECAL0_REFLECTIONS
+#pragma shader_feature_local _DECAL0_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL0_SDF
 #pragma shader_feature_local _DECAL0_SDF_SSN
 #pragma shader_feature_local _DECAL0_MASK
@@ -147,6 +148,7 @@
 #pragma shader_feature_local _DECAL1
 #pragma shader_feature_local _DECAL1_NORMAL
 #pragma shader_feature_local _DECAL1_REFLECTIONS
+#pragma shader_feature_local _DECAL1_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL1_SDF
 #pragma shader_feature_local _DECAL1_SDF_SSN
 #pragma shader_feature_local _DECAL1_MASK
@@ -164,6 +166,7 @@
 #pragma shader_feature_local _DECAL2
 #pragma shader_feature_local _DECAL2_NORMAL
 #pragma shader_feature_local _DECAL2_REFLECTIONS
+#pragma shader_feature_local _DECAL2_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL2_SDF
 #pragma shader_feature_local _DECAL2_SDF_SSN
 #pragma shader_feature_local _DECAL2_MASK
@@ -181,6 +184,7 @@
 #pragma shader_feature_local _DECAL3
 #pragma shader_feature_local _DECAL3_NORMAL
 #pragma shader_feature_local _DECAL3_REFLECTIONS
+#pragma shader_feature_local _DECAL3_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL3_SDF
 #pragma shader_feature_local _DECAL3_SDF_SSN
 #pragma shader_feature_local _DECAL3_MASK
@@ -198,6 +202,7 @@
 #pragma shader_feature_local _DECAL4
 #pragma shader_feature_local _DECAL4_NORMAL
 #pragma shader_feature_local _DECAL4_REFLECTIONS
+#pragma shader_feature_local _DECAL4_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL4_SDF
 #pragma shader_feature_local _DECAL4_SDF_SSN
 #pragma shader_feature_local _DECAL4_MASK
@@ -215,6 +220,7 @@
 #pragma shader_feature_local _DECAL5
 #pragma shader_feature_local _DECAL5_NORMAL
 #pragma shader_feature_local _DECAL5_REFLECTIONS
+#pragma shader_feature_local _DECAL5_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL5_SDF
 #pragma shader_feature_local _DECAL5_SDF_SSN
 #pragma shader_feature_local _DECAL5_MASK
@@ -232,6 +238,7 @@
 #pragma shader_feature_local _DECAL6
 #pragma shader_feature_local _DECAL6_NORMAL
 #pragma shader_feature_local _DECAL6_REFLECTIONS
+#pragma shader_feature_local _DECAL6_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL6_SDF
 #pragma shader_feature_local _DECAL6_SDF_SSN
 #pragma shader_feature_local _DECAL6_MASK
@@ -249,6 +256,7 @@
 #pragma shader_feature_local _DECAL7
 #pragma shader_feature_local _DECAL7_NORMAL
 #pragma shader_feature_local _DECAL7_REFLECTIONS
+#pragma shader_feature_local _DECAL7_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL7_SDF
 #pragma shader_feature_local _DECAL7_SDF_SSN
 #pragma shader_feature_local _DECAL7_MASK

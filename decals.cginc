@@ -233,10 +233,12 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
 
 #define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
+    float alpha_blend_amount = (1.0f - albedo.a) * decal_albedo.a; \
     albedo = alphaBlend(albedo, decal_albedo);
 
 #define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
+    float alpha_blend_amount = (1.0f - albedo.a) * decal_albedo.a; \
     albedo = alphaBlend(decal_albedo, albedo);
 
 #define APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
@@ -263,10 +265,15 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
 
 #define APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
-#define APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+#define APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     float4 metallic_gloss = params.metallicGlossMap.Sample(trilinear_repeat_s, decal_uv);              \
     metallic = lerp(metallic, metallic_gloss.r * params.metallic_value, decal_albedo.a);            \
     smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, decal_albedo.a);
+
+#define APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+    float4 metallic_gloss = params.metallicGlossMap.Sample(trilinear_repeat_s, decal_uv);              \
+    metallic = lerp(metallic, metallic_gloss.r * params.metallic_value, decal_albedo.a * alpha_blend_amount);            \
+    smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, decal_albedo.a * alpha_blend_amount);
 
 #define APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
@@ -344,8 +351,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL0_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL0_REFLECTIONS) && !defined(_DECAL0_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL0_REFLECTIONS) && defined(_DECAL0_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
@@ -421,8 +430,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL1_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL1_REFLECTIONS) && !defined(_DECAL1_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL1_REFLECTIONS) && defined(_DECAL1_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
@@ -498,7 +509,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL2_REFLECTIONS)
+        #if defined(_DECAL2_REFLECTIONS) && !defined(_DECAL2_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL2_REFLECTIONS) && defined(_DECAL2_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #else
         APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
@@ -575,8 +590,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL3_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL3_REFLECTIONS) && !defined(_DECAL3_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL3_REFLECTIONS) && defined(_DECAL3_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
@@ -652,8 +669,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL4_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL4_REFLECTIONS) && !defined(_DECAL4_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL4_REFLECTIONS) && defined(_DECAL4_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
@@ -729,8 +748,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL5_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL5_REFLECTIONS) && !defined(_DECAL5_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL5_REFLECTIONS) && defined(_DECAL5_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
@@ -806,8 +827,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL6_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL6_REFLECTIONS) && !defined(_DECAL6_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL6_REFLECTIONS) && defined(_DECAL6_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
@@ -883,8 +906,10 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         emission += tmp_emission;
         #endif
 
-        #if defined(_DECAL7_REFLECTIONS)
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL7_REFLECTIONS) && !defined(_DECAL7_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL7_REFLECTIONS) && defined(_DECAL7_REFLECTIONS_ALPHA_BLEND)
+        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
         APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif

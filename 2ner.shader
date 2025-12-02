@@ -385,6 +385,7 @@ Shader "yum_food/2ner"
             //ifex _Decal0_Reflections_Enabled==0
             [HideInInspector] m_start_Decal0_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL0_REFLECTIONS)] _Decal0_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL0_REFLECTIONS_ALPHA_BLEND)] _Decal0_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal0_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal0_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal0_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -470,6 +471,7 @@ Shader "yum_food/2ner"
             //ifex _Decal1_Reflections_Enabled==0
             [HideInInspector] m_start_Decal1_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL1_REFLECTIONS)] _Decal1_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL1_REFLECTIONS_ALPHA_BLEND)] _Decal1_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal1_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal1_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal1_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -555,6 +557,7 @@ Shader "yum_food/2ner"
             //ifex _Decal2_Reflections_Enabled==0
             [HideInInspector] m_start_Decal2_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL2_REFLECTIONS)] _Decal2_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL2_REFLECTIONS_ALPHA_BLEND)] _Decal2_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal2_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal2_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal2_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -640,6 +643,7 @@ Shader "yum_food/2ner"
             //ifex _Decal3_Reflections_Enabled==0
             [HideInInspector] m_start_Decal3_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL3_REFLECTIONS)] _Decal3_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL3_REFLECTIONS_ALPHA_BLEND)] _Decal3_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal3_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal3_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal3_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -725,6 +729,7 @@ Shader "yum_food/2ner"
             //ifex _Decal4_Reflections_Enabled==0
             [HideInInspector] m_start_Decal4_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL4_REFLECTIONS)] _Decal4_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL4_REFLECTIONS_ALPHA_BLEND)] _Decal4_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal4_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal4_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal4_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -810,6 +815,7 @@ Shader "yum_food/2ner"
             //ifex _Decal5_Reflections_Enabled==0
             [HideInInspector] m_start_Decal5_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL5_REFLECTIONS)] _Decal5_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL5_REFLECTIONS_ALPHA_BLEND)] _Decal5_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal5_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal5_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal5_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -895,6 +901,7 @@ Shader "yum_food/2ner"
             //ifex _Decal6_Reflections_Enabled==0
             [HideInInspector] m_start_Decal6_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL6_REFLECTIONS)] _Decal6_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL6_REFLECTIONS_ALPHA_BLEND)] _Decal6_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal6_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal6_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal6_Metallic("Metallic", Range(0, 1)) = 0.0
@@ -980,6 +987,7 @@ Shader "yum_food/2ner"
             //ifex _Decal7_Reflections_Enabled==0
             [HideInInspector] m_start_Decal7_Reflections("Reflections", Float) = 0
               [ThryToggle(_DECAL7_REFLECTIONS)] _Decal7_Reflections_Enabled("Enable", Float) = 0
+              [ThryToggle(_DECAL7_REFLECTIONS_ALPHA_BLEND)] _Decal7_Reflections_Alpha_Blend("Alpha blend", Float) = 0
               _Decal7_MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
               _Decal7_Smoothness("Smoothness", Range(0, 1)) = 0.5
               _Decal7_Metallic("Metallic", Range(0, 1)) = 0.0
