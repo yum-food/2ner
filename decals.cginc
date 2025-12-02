@@ -218,7 +218,6 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
 #define APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     { \
         float3 sdf_normal_ts = calculateSdfSsn(params, decal_uv, decal_albedo); \
-        sdf_normal_ts.xy *= 1.0f - albedo.a; \
         normal_tangent = normalize(lerp(normal_tangent, normalize(sdf_normal_ts), decal_albedo.a)); \
     }
 
