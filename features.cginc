@@ -133,6 +133,7 @@
 #pragma shader_feature_local _DECAL0_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL0_SDF
 #pragma shader_feature_local _DECAL0_SDF_SSN
+#pragma shader_feature_local _DECAL0_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL0_MASK
 #pragma shader_feature_local _DECAL0_TILING_MODE
 #pragma shader_feature_local _DECAL0_INVERT_BLEND_ORDER
@@ -151,6 +152,7 @@
 #pragma shader_feature_local _DECAL1_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL1_SDF
 #pragma shader_feature_local _DECAL1_SDF_SSN
+#pragma shader_feature_local _DECAL1_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL1_MASK
 #pragma shader_feature_local _DECAL1_TILING_MODE
 #pragma shader_feature_local _DECAL1_INVERT_BLEND_ORDER
@@ -169,6 +171,7 @@
 #pragma shader_feature_local _DECAL2_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL2_SDF
 #pragma shader_feature_local _DECAL2_SDF_SSN
+#pragma shader_feature_local _DECAL2_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL2_MASK
 #pragma shader_feature_local _DECAL2_TILING_MODE
 #pragma shader_feature_local _DECAL2_INVERT_BLEND_ORDER
@@ -187,6 +190,7 @@
 #pragma shader_feature_local _DECAL3_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL3_SDF
 #pragma shader_feature_local _DECAL3_SDF_SSN
+#pragma shader_feature_local _DECAL3_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL3_MASK
 #pragma shader_feature_local _DECAL3_TILING_MODE
 #pragma shader_feature_local _DECAL3_INVERT_BLEND_ORDER
@@ -205,6 +209,7 @@
 #pragma shader_feature_local _DECAL4_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL4_SDF
 #pragma shader_feature_local _DECAL4_SDF_SSN
+#pragma shader_feature_local _DECAL4_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL4_MASK
 #pragma shader_feature_local _DECAL4_TILING_MODE
 #pragma shader_feature_local _DECAL4_INVERT_BLEND_ORDER
@@ -223,6 +228,7 @@
 #pragma shader_feature_local _DECAL5_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL5_SDF
 #pragma shader_feature_local _DECAL5_SDF_SSN
+#pragma shader_feature_local _DECAL5_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL5_MASK
 #pragma shader_feature_local _DECAL5_TILING_MODE
 #pragma shader_feature_local _DECAL5_INVERT_BLEND_ORDER
@@ -241,6 +247,7 @@
 #pragma shader_feature_local _DECAL6_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL6_SDF
 #pragma shader_feature_local _DECAL6_SDF_SSN
+#pragma shader_feature_local _DECAL6_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL6_MASK
 #pragma shader_feature_local _DECAL6_TILING_MODE
 #pragma shader_feature_local _DECAL6_INVERT_BLEND_ORDER
@@ -259,6 +266,7 @@
 #pragma shader_feature_local _DECAL7_REFLECTIONS_ALPHA_BLEND
 #pragma shader_feature_local _DECAL7_SDF
 #pragma shader_feature_local _DECAL7_SDF_SSN
+#pragma shader_feature_local _DECAL7_SDF_SSN_REPLACE
 #pragma shader_feature_local _DECAL7_MASK
 #pragma shader_feature_local _DECAL7_TILING_MODE
 #pragma shader_feature_local _DECAL7_INVERT_BLEND_ORDER
