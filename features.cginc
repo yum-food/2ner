@@ -491,5 +491,9 @@
 #pragma shader_feature_local _TROCHOID
 //endex
 
+//ifex _Quasi_Shadows_Enabled==0
+#pragma shader_feature_local _QUASI_SHADOWS
+//endex
+
 #endif  // __FEATURES_INC
 

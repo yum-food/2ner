@@ -759,4 +759,10 @@ float _Trochoid_r_Power;
 texture2D _Trochoid_Color_Ramp;
 #endif  // _TROCHOID
 
+#if defined(_QUASI_SHADOWS)
+float4 _Quasi_Shadows_0_Color;
+float _Quasi_Shadows_0_Threshold;
+float _Quasi_Shadows_0_Width;
+#endif  // _QUASI_SHADOWS
+
 #endif  // __GLOBALS_INC

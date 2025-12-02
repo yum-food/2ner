@@ -266,7 +266,7 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
   L2 *= l2_wrap;
 #else
   float l1_wrap = 1.0f;
-#endif
+#endif  // _WRAPPED_LIGHTING
 
   light.L00 = L00;
   light.L01r = unity_SHAr.xyz * l1_wrap;
@@ -274,8 +274,15 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
   light.L01b = unity_SHAb.xyz * l1_wrap;
 
   return L0 + L1 + L2;
-#else
+#else  // !YUM_SH9_STANDARD
   LightVolumeSH(worldPos, light.L00, light.L01r, light.L01g, light.L01b);
+
+  // Hack to get directional information from SH.
+  float3 light_dir = normalize(float3(luminance(light.L01r), luminance(light.L01g), luminance(light.L01b)));
+  light.derivedLight.l = light_dir;
+  light.derivedLight.colorIntensity = float4(light.L00, 1);
+  light.derivedLight.attenuation = 1;
+  light.derivedLight.NoL = saturate(dot(n.xyz, light_dir));
 
 #if defined(_WRAPPED_LIGHTING)
   float wrap_term = _Wrap_NoL_Diffuse_Strength;
@@ -284,7 +291,7 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
   light.L01r *= l1_wrap;
   light.L01g *= l1_wrap;
   light.L01b *= l1_wrap;
-#endif
+#endif  // _WRAPPED_LIGHTING
 
   return light.L00 + float3(
     dot(light.L01r, n.xyz),
@@ -297,13 +304,22 @@ float4 getIndirectDiffuse(v2f i, float4 vertexLightColor,
     inout YumLighting light) {
   float4 diffuse = vertexLightColor;
 #if defined(FORWARD_BASE_PASS)
-#if defined(LIGHTMAP_ON)
-  diffuse.xyz = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv01.zw));
-#else
   diffuse.xyz += max(0, yumSH9(float4(i.normal, 0), i.worldPos, light));
 #endif
-#endif
   return diffuse;
+}
+
+float3 applyQuasiShadows(float3 color, YumLighting light) {
+  float3 result = color;
+#if defined(_QUASI_SHADOWS)
+  float NoL = light.derivedLight.NoL;
+  float threshold = _Quasi_Shadows_0_Threshold;
+  float width = _Quasi_Shadows_0_Width;
+  float3 shadow_color = _Quasi_Shadows_0_Color.rgb;
+  float interp = smoothstep(threshold - width, threshold + width, NoL);
+  result = lerp(color * shadow_color, color, interp);
+#endif
+  return result;
 }
 
 YumLighting GetYumLighting(v2f i, YumPbr pbr) {
