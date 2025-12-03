@@ -63,7 +63,7 @@ Shader "yum_food/2ner"
         //ifex _Detail_Maps_Enabled==0
         [HideInInspector] m_start_Detail_Maps("Detail maps", Float) = 0
           [ThryToggle(_DETAIL_MAPS)]_Detail_Maps_Enabled("Enable", Float) = 0
-          _Detail_Maps_UV_Channel("UV channel", Range(0, 3.1)) = 0
+          [IntRange] _Detail_Maps_UV_Channel("UV channel", Range(0, 3)) = 0
           _DetailMask("Mask", 2D) = "white" {}
           _DetailAlbedoMap("Base color", 2D) = "white" {}
           [Normal]_DetailNormalMap("Normals", 2D) = "bump" {}
@@ -369,7 +369,7 @@ Shader "yum_food/2ner"
             _Decal0_MainTex("Base color", 2D) = "white" {}
             _Decal0_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal0_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal0_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal0_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal0_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL0_INVERT_BLEND_ORDER)] _Decal0_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL0_TILING_MODE)] _Decal0_Tiling_Mode("Tiling mode", Float) = 0
@@ -427,6 +427,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal0_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL0_SDF_SSN)] _Decal0_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL0_SDF_SSN_REPLACE)] _Decal0_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL0_SDF_SSN_ONLY)] _Decal0_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal0_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal0_SSN("Screen space normals", Float) = 0
               //endex
@@ -456,7 +457,7 @@ Shader "yum_food/2ner"
             _Decal1_MainTex("Base color", 2D) = "white" {}
             _Decal1_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal1_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal1_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal1_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal1_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL1_INVERT_BLEND_ORDER)] _Decal1_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL1_TILING_MODE)] _Decal1_Tiling_Mode("Tiling mode", Float) = 0
@@ -514,6 +515,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal1_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL1_SDF_SSN)] _Decal1_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL1_SDF_SSN_REPLACE)] _Decal1_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL1_SDF_SSN_ONLY)] _Decal1_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal1_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal1_SSN("Screen space normals", Float) = 0
               //endex
@@ -543,7 +545,7 @@ Shader "yum_food/2ner"
             _Decal2_MainTex("Base color", 2D) = "white" {}
             _Decal2_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal2_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal2_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal2_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal2_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL2_INVERT_BLEND_ORDER)] _Decal2_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL2_TILING_MODE)] _Decal2_Tiling_Mode("Tiling mode", Float) = 0
@@ -601,6 +603,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal2_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL2_SDF_SSN)] _Decal2_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL2_SDF_SSN_REPLACE)] _Decal2_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL2_SDF_SSN_ONLY)] _Decal2_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal2_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal2_SSN("Screen space normals", Float) = 0
               //endex
@@ -630,7 +633,7 @@ Shader "yum_food/2ner"
             _Decal3_MainTex("Base color", 2D) = "white" {}
             _Decal3_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal3_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal3_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal3_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal3_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL3_INVERT_BLEND_ORDER)] _Decal3_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL3_TILING_MODE)] _Decal3_Tiling_Mode("Tiling mode", Float) = 0
@@ -688,6 +691,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal3_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL3_SDF_SSN)] _Decal3_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL3_SDF_SSN_REPLACE)] _Decal3_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL3_SDF_SSN_ONLY)] _Decal3_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal3_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal3_SSN("Screen space normals", Float) = 0
               //endex
@@ -717,7 +721,7 @@ Shader "yum_food/2ner"
             _Decal4_MainTex("Base color", 2D) = "white" {}
             _Decal4_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal4_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal4_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal4_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal4_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL4_INVERT_BLEND_ORDER)] _Decal4_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL4_TILING_MODE)] _Decal4_Tiling_Mode("Tiling mode", Float) = 0
@@ -775,6 +779,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal4_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL4_SDF_SSN)] _Decal4_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL4_SDF_SSN_REPLACE)] _Decal4_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL4_SDF_SSN_ONLY)] _Decal4_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal4_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal4_SSN("Screen space normals", Float) = 0
               //endex
@@ -804,7 +809,7 @@ Shader "yum_food/2ner"
             _Decal5_MainTex("Base color", 2D) = "white" {}
             _Decal5_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal5_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal5_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal5_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal5_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL5_INVERT_BLEND_ORDER)] _Decal5_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL5_TILING_MODE)] _Decal5_Tiling_Mode("Tiling mode", Float) = 0
@@ -862,6 +867,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal5_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL5_SDF_SSN)] _Decal5_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL5_SDF_SSN_REPLACE)] _Decal5_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL5_SDF_SSN_ONLY)] _Decal5_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal5_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal5_SSN("Screen space normals", Float) = 0
               //endex
@@ -891,7 +897,7 @@ Shader "yum_food/2ner"
             _Decal6_MainTex("Base color", 2D) = "white" {}
             _Decal6_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal6_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal6_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal6_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal6_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL6_INVERT_BLEND_ORDER)] _Decal6_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL6_TILING_MODE)] _Decal6_Tiling_Mode("Tiling mode", Float) = 0
@@ -949,6 +955,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal6_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL6_SDF_SSN)] _Decal6_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL6_SDF_SSN_REPLACE)] _Decal6_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL6_SDF_SSN_ONLY)] _Decal6_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal6_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal6_SSN("Screen space normals", Float) = 0
               //endex
@@ -978,7 +985,7 @@ Shader "yum_food/2ner"
             _Decal7_MainTex("Base color", 2D) = "white" {}
             _Decal7_Opacity("Opacity", Range(0, 1)) = 1.0
             _Decal7_Angle("Angle", Range(0, 1)) = 0.0
-            _Decal7_UV_Channel("UV channel", Range(0, 3.1)) = 0
+            [IntRange] _Decal7_UV_Channel("UV channel", Range(0, 3)) = 0
             _Decal7_Bias("Mip bias", Range(-4, 4)) = 0
             [ThryToggle(_DECAL7_INVERT_BLEND_ORDER)] _Decal7_Invert_Blend_Order("Invert blend order", Float) = 0
             [ThryToggle(_DECAL7_TILING_MODE)] _Decal7_Tiling_Mode("Tiling mode", Float) = 0
@@ -1036,6 +1043,7 @@ Shader "yum_food/2ner"
               [HideInInspector] m_start_Decal7_SSN("Screen space normals", Float) = 0
                 [ThryToggle(_DECAL7_SDF_SSN)] _Decal7_SDF_SSN_Enabled("Enable", Float) = 0
                 [ThryToggle(_DECAL7_SDF_SSN_REPLACE)] _Decal7_SDF_SSN_Replace("Replace normals", Float) = 0
+                [ThryToggle(_DECAL7_SDF_SSN_ONLY)] _Decal7_SDF_SSN_Only("Only normals", Float) = 0
                 _Decal7_SDF_SSN_Strength("Strength", Range(0, 10)) = 1
               [HideInInspector] m_end_Decal7_SSN("Screen space normals", Float) = 0
               //endex
@@ -1239,7 +1247,7 @@ Shader "yum_food/2ner"
           [ThryToggle(_3D_SDF)] _3D_SDF_Enabled("Enable", Float) = 0
           _3D_SDF_Texture("Texture", 3D) = "white" {}
           _3D_SDF_ST("Scale and offset", Vector) = (1, 1, 0, 0)
-          _3D_SDF_UV_Channel("UV channel", Range(0, 3.1)) = 0
+          [IntRange] _3D_SDF_UV_Channel("UV channel", Range(0, 3)) = 0
           _3D_SDF_Thresholds("Thresholds", Vector) = (0.2, 0.4, 0.6, 0.8)
           _3D_SDF_Color_0("Color 0", Color) = (1, 0, 0, 1)
           _3D_SDF_Color_1("Color 1", Color) = (0, 1, 0, 1)
@@ -2278,7 +2286,7 @@ Shader "yum_food/2ner"
         //ifex _Quasi_Shadows_Enabled==0
         [HideInInspector] m_start_Quasi_Shadows("Quasi Shadows", Float) = 0
           [ThryToggle(_QUASI_SHADOWS)] _Quasi_Shadows_Enabled("Enable", Float) = 0
-          _Quasi_Shadows_0_Color("Color 0", Color) = (1, 1, 1, 1)
+          [HDR] _Quasi_Shadows_0_Color("Color 0", Color) = (1, 1, 1, 1)
           _Quasi_Shadows_0_Threshold("Threshold 0", Range(0, 1)) = 0.5
           _Quasi_Shadows_0_Width("Width 0", Range(0, 1)) = 0.1
         [HideInInspector] m_end_Quasi_Shadows("Quasi Shadows", Float) = 0

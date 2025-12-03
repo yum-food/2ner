@@ -173,11 +173,15 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
     sdf_grad_uv.y = (sdf_dy * uv_dx.x - sdf_dx * uv_dy.x) / det;
 
     float2 scaled_grad = sdf_grad_uv * params.sdf_ssn_strength * decal_albedo.a * params.opacity;
+    if (det == 0) {
+      scaled_grad.xy = 0;
+    }
 
     return normalize(float3(-scaled_grad.xy, 1.0));
 }
 
-#define APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
+// DS = decal stage
+#define DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float2x2 decal_rot = float2x2(                                                                  \
         cos(params.angle * TAU), -sin(params.angle * TAU),                                          \
         sin(params.angle * TAU), cos(params.angle * TAU)                                            \
@@ -189,25 +193,25 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
     decal_uv = mul(decal_rot, decal_uv - 0.5) + 0.5;                                                \
     decal_uv = (params.tiling_mode == DECAL_TILING_MODE_CLAMP ? saturate(decal_uv) : decal_uv);
 
-#define APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+#define DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     decal_uv = applyDomainWarping(params, decal_uv);
 
-#define APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
+#define DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
-#define APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)  \
+#define DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)  \
     float4 decal_albedo = getCmykWarpingPlanesColor(params, decal_uv);
 
-#define APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+#define DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     float4 decal_albedo = getDecalColor(params, decal_uv);
 
-#define APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
+#define DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float4 decal_albedo;                                                                            \
     {                                                                                               \
         decal_albedo = params.mainTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias);                  \
         decal_albedo *= params.color;                                                               \
     }
 
-#define APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+#define DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     { \
         float3 sdf_normal_ts = calculateSdfSsn(params, decal_uv, decal_albedo); \
         sdf_normal_ts.xy *= 1.0f - albedo.a; \
@@ -215,103 +219,107 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
         normal_tangent = blendNormalsHill12(normal_tangent, sdf_normal_ts); \
     }
 
-#define APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+#define DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     { \
         float3 sdf_normal_ts = calculateSdfSsn(params, decal_uv, decal_albedo); \
         normal_tangent = normalize(lerp(normal_tangent, normalize(sdf_normal_ts), decal_albedo.a)); \
     }
 
-#define APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \
+#define DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \
     {                                                                                               \
         float eps = 1e-4;                                                                           \
         float2 uv_clamped = step(eps, decal_uv) * step(decal_uv, 1 - eps);                          \
         decal_albedo.a *= uv_clamped.x * uv_clamped.y;                                              \
     }
 
-#define APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
+#define DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
-#define APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
+#define DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
     float decal_mask = params.mask.SampleLevel(trilinear_aniso4_repeat_s, raw_decal_uv, params.mip_bias);                           \
     decal_albedo.a *= decal_mask;
 
-#define APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \
+#define DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \
     float decal_mask = 1;
 
-#define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+#define DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+    float alpha_blend_amount = (1.0f - albedo.a) * decal_albedo.a;
+
+#define DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
     float alpha_blend_amount = (1.0f - albedo.a) * decal_albedo.a; \
     albedo = alphaBlend(albedo, decal_albedo);
 
-#define APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+#define DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     decal_albedo.a = lerp(0, decal_albedo.a, params.opacity);                                       \
     float alpha_blend_amount = (1.0f - albedo.a) * decal_albedo.a; \
-    albedo = alphaBlend(decal_albedo, albedo);
+    albedo = alphaBlend(decal_albedo, albedo); \
+    decal_albedo.a = alpha_blend_amount;
 
-#define APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
+#define DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
     albedo = lerp(albedo, decal_albedo, decal_mask * params.opacity);
 
-#define APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
+#define DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, params)       \
     albedo = lerp(albedo, decal_albedo * albedo, decal_mask * params.opacity);
 
-#define APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+#define DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     emission += params.emission_color * params.emission_strength;
 
-#define APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
+#define DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, emission, params) \
     emission += albedo.rgb * params.emission_color * params.emission_strength;
 
-#define APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
+#define DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
 
-#define APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)        \
+#define DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)        \
     float3 decal_normal = UnpackScaleNormal(                                                        \
             params.normalTex.SampleBias(trilinear_aniso4_repeat_s, decal_uv, params.mip_bias),             \
             params.normal_scale * decal_albedo.a * params.opacity);                                 \
     normal_tangent = blendNormalsHill12(normal_tangent, decal_normal);
     //normal_tangent = lerp(normal_tangent, decal_normal, decal_albedo.a * params.opacity);
 
-#define APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
+#define DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
-#define APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+#define DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     float4 metallic_gloss = params.metallicGlossMap.Sample(trilinear_repeat_s, decal_uv);              \
     metallic = lerp(metallic, metallic_gloss.r * params.metallic_value, decal_albedo.a);            \
     smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, decal_albedo.a);
 
-#define APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
+#define DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, params)   \
     float4 metallic_gloss = params.metallicGlossMap.Sample(trilinear_repeat_s, decal_uv);              \
-    metallic = lerp(metallic, metallic_gloss.r * params.metallic_value, decal_albedo.a * alpha_blend_amount);            \
-    smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, decal_albedo.a * alpha_blend_amount);
+    metallic = lerp(metallic, metallic_gloss.r * params.metallic_value, alpha_blend_amount);            \
+    smoothness = lerp(smoothness, metallic_gloss.a * params.smoothness_value, alpha_blend_amount);
 
-#define APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
+#define DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
-#define APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
+#define DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
 void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, inout float metallic, inout float smoothness, inout float3 emission) {
     DecalParams decal;
     #if defined(_DECAL0)
     {
         INIT_DECAL_PARAMS(decal, _Decal0_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL0_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL0_SDF) && defined(_DECAL0_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL0_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL0_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL0_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL0_REPLACE_ALPHA)
@@ -319,38 +327,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL0_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL0_SDF_SSN) && !defined(_DECAL0_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL0_SDF_SSN) && defined(_DECAL0_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL0_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL0_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL0_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL0_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL0_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL0_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL0_EMISSIONS) && defined(_DECAL0_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL0_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL0_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -360,39 +368,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL0_REFLECTIONS) && !defined(_DECAL0_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL0_REFLECTIONS) && defined(_DECAL0_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL0
     #if defined(_DECAL1)
     {
         INIT_DECAL_PARAMS(decal, _Decal1_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL1_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL1_SDF) && defined(_DECAL1_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL1_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL1_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL1_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL1_REPLACE_ALPHA)
@@ -400,38 +408,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL1_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL1_SDF_SSN) && !defined(_DECAL1_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL1_SDF_SSN) && defined(_DECAL1_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL1_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL1_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL1_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL1_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL1_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL1_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL1_EMISSIONS) && defined(_DECAL1_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL1_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL1_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -441,39 +449,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL1_REFLECTIONS) && !defined(_DECAL1_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL1_REFLECTIONS) && defined(_DECAL1_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL1
     #if defined(_DECAL2)
     {
         INIT_DECAL_PARAMS(decal, _Decal2_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL2_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL2_SDF) && defined(_DECAL2_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL2_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL2_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL2_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL2_REPLACE_ALPHA)
@@ -481,38 +489,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL2_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL2_SDF_SSN) && !defined(_DECAL2_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL2_SDF_SSN) && defined(_DECAL2_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL2_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL2_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL2_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL2_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL2_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL2_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL2_EMISSIONS) && defined(_DECAL2_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL2_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL2_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -522,41 +530,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL2_REFLECTIONS) && !defined(_DECAL2_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL2_REFLECTIONS) && defined(_DECAL2_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL2
     #if defined(_DECAL3)
     {
         INIT_DECAL_PARAMS(decal, _Decal3_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL3_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL3_SDF) && defined(_DECAL3_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL3_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL3_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL3_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL3_REPLACE_ALPHA)
@@ -564,38 +570,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL3_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL3_SDF_SSN) && !defined(_DECAL3_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL3_SDF_SSN) && defined(_DECAL3_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL3_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL3_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL3_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL3_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL3_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL3_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL3_EMISSIONS) && defined(_DECAL3_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL3_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL3_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -605,39 +611,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL3_REFLECTIONS) && !defined(_DECAL3_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL3_REFLECTIONS) && defined(_DECAL3_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL3
     #if defined(_DECAL4)
     {
         INIT_DECAL_PARAMS(decal, _Decal4_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL4_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL4_SDF) && defined(_DECAL4_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL4_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL4_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL4_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL4_REPLACE_ALPHA)
@@ -645,38 +651,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL4_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL4_SDF_SSN) && !defined(_DECAL4_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL4_SDF_SSN) && defined(_DECAL4_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL4_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL4_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL4_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL4_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL4_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL4_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL4_EMISSIONS) && defined(_DECAL4_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL4_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL4_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -686,39 +692,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL4_REFLECTIONS) && !defined(_DECAL4_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL4_REFLECTIONS) && defined(_DECAL4_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL4
     #if defined(_DECAL5)
     {
         INIT_DECAL_PARAMS(decal, _Decal5_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL5_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL5_SDF) && defined(_DECAL5_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL5_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL5_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL5_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL5_REPLACE_ALPHA)
@@ -726,38 +732,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL5_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL5_SDF_SSN) && !defined(_DECAL5_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL5_SDF_SSN) && defined(_DECAL5_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL5_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL5_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL5_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL5_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL5_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL5_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL5_EMISSIONS) && defined(_DECAL5_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL5_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL5_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -767,39 +773,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL5_REFLECTIONS) && !defined(_DECAL5_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL5_REFLECTIONS) && defined(_DECAL5_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL5
     #if defined(_DECAL6)
     {
         INIT_DECAL_PARAMS(decal, _Decal6_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL6_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL6_SDF) && defined(_DECAL6_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL6_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL6_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL6_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL6_REPLACE_ALPHA)
@@ -807,38 +813,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL6_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL6_SDF_SSN) && !defined(_DECAL6_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL6_SDF_SSN) && defined(_DECAL6_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL6_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL6_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL6_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL6_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL6_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL6_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL6_EMISSIONS) && defined(_DECAL6_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL6_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL6_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -848,39 +854,39 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL6_REFLECTIONS) && !defined(_DECAL6_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL6_REFLECTIONS) && defined(_DECAL6_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL6
     #if defined(_DECAL7)
     {
         INIT_DECAL_PARAMS(decal, _Decal7_);
-        APPLY_DECAL_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_GENERIC(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #if defined(_DECAL7_DOMAIN_WARPING)
-        APPLY_DECAL_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_DOMAIN_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL7_SDF) && defined(_DECAL7_CMYK_WARPING_PLANES)
-        APPLY_DECAL_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL7_SDF)
-        APPLY_DECAL_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_ON_WARPING_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL7_TILING_MODE)
-        APPLY_DECAL_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_CLAMP_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL7_MASK)
-        APPLY_DECAL_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(_DECAL7_REPLACE_ALPHA)
@@ -888,38 +894,38 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL7_NORMAL)
-        APPLY_DECAL_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_ON(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_NORMAL_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
         #if defined(_DECAL7_SDF_SSN) && !defined(_DECAL7_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL7_SDF_SSN) && defined(_DECAL7_SDF_SSN_REPLACE)
-        APPLY_DECAL_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_ON_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_SDF_SSN_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
-        #if defined(_DECAL7_REPLACE_ALPHA)
-        APPLY_DECAL_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #if defined(_DECAL7_SDF_SSN_ONLY)
+        DS_BLEND_MODE_SSN_ONLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL7_REPLACE_ALPHA)
+        DS_BLEND_MODE_REPLACE(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL7_MULTIPLY)
-        APPLY_DECAL_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_BLEND_MODE_MULTIPLY(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        #elif defined(_DECAL7_INVERT_BLEND_ORDER)
+        DS_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        #if defined(_DECAL7_INVERT_BLEND_ORDER)
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND_INVERTED(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #else
-        APPLY_DECAL_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
-        #endif
+        DS_BLEND_MODE_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
 
         #if defined(FORWARD_BASE_PASS)
         float3 tmp_emission = 0;
         #if defined(_DECAL7_EMISSIONS) && defined(_DECAL7_EMISSION_MODE_ADD_PRODUCT)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD_PRODUCT(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #elif defined(_DECAL7_EMISSIONS)
-        APPLY_DECAL_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_ON_MODE_ADD(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #else
-        APPLY_DECAL_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
+        DS_EMISSION_OFF(i, albedo, normal_tangent, metallic, smoothness, tmp_emission, decal);
         #endif
         #if defined(_DECAL7_EMISSIONS_PROXIMITY)
         float tmp_d = distance(i.worldPos, _WorldSpaceCameraPos);
@@ -929,11 +935,11 @@ void applyDecals(in v2f i, inout float4 albedo, inout float3 normal_tangent, ino
         #endif
 
         #if defined(_DECAL7_REFLECTIONS) && !defined(_DECAL7_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_REGULAR(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #elif defined(_DECAL7_REFLECTIONS) && defined(_DECAL7_REFLECTIONS_ALPHA_BLEND)
-        APPLY_DECAL_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_ON_ALPHA_BLEND(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #else
-        APPLY_DECAL_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
+        DS_REFLECTIONS_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, decal);
         #endif
     }
     #endif  // _DECAL7
