@@ -640,9 +640,9 @@ float _Tessellation_Heightmap_7_Scale;
 float _Tessellation_Heightmap_7_Offset;
 #endif  // _TESSELLATION_HEIGHTMAP_7
 
-#if defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+// #if defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
 float3 _Tessellation_Heightmap_Direction_Control_Vector;
-#endif  // _TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL
+// #endif  // _TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL
 
 #if defined(_TESSELLATION_RANGE_FACTOR)
 float _Tessellation_Range_Factor_Distance_Near;

@@ -75,12 +75,12 @@ float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent, f
 #if defined(_TESSELLATION_HEIGHTMAP_WORLD_SPACE)
   objPos.xyz += mul(unity_WorldToObject, height).xyz;
 #else
-#if defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
-  float3 heightmap_direction = mul(transpose(-float3x3(normal, tangent, binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
-#elif defined(OUTLINE_PASS) && !defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
-  float3 heightmap_direction = -normal;
-#elif !defined(OUTLINE_PASS) && defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
-  float3 heightmap_direction = mul(transpose(float3x3(normal, tangent, binormal)), _Tessellation_Heightmap_Direction_Control_Vector);
+#if defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 heightmap_direction = normalize(
+    normalize(normal) * _Tessellation_Heightmap_Direction_Control_Vector.x +
+    normalize(tangent) * _Tessellation_Heightmap_Direction_Control_Vector.y +
+    normalize(binormal) * _Tessellation_Heightmap_Direction_Control_Vector.z
+  );
 #else
   float3 heightmap_direction = normal;
 #endif
