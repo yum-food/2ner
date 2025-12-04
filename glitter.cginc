@@ -7,6 +7,7 @@
 
 struct GlitterParams {
     float4 color;
+    float2 uv_channel;
     uint layers;
     float cell_size;
     float size;
@@ -38,7 +39,8 @@ float4 getGlitter(v2f i, GlitterParams params, float3 normal) {
   float c_acc = 0;
   [loop]
   for (uint layer_i = 0; layer_i < params.layers; layer_i++) {
-    float2 p = i.uv01.xy + glitter_offset_vectors[layer_i] * params.cell_size * 0.5;
+    float2 uv = get_uv_by_channel(i, params.uv_channel);
+    float2 p = uv + glitter_offset_vectors[layer_i] * params.cell_size * 0.5;
 
     float3 cell_id = float3(floor(p / params.cell_size), layer_i);
     float cell_rand = rand3(cell_id*.0001);

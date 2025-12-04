@@ -491,6 +491,7 @@ float _Focal_Length_Multiplier;
 
 #if defined(_GLITTER)
 float4 _Glitter_Color;
+float _Glitter_UV_Channel;
 float3 _Glitter_Emission;
 float _Glitter_Layers;
 float _Glitter_Grid_Size;

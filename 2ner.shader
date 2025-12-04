@@ -2227,6 +2227,7 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Glitter("Glitter", Float) = 0
           [ThryToggle(_GLITTER)] _Glitter_Enabled("Enable", Float) = 0
           [HDR] _Glitter_Color("Color", Color) = (1, 1, 1, 1)
+          [IntRange] _Glitter_UV_Channel("UV channel", Range(0, 3)) = 0
           _Glitter_Emission("Emission", Color) = (1, 1, 1, 1)
           _Glitter_Layers("Layers", Range(1, 5)) = 1
           _Glitter_Grid_Size("Grid size", Float) = 1

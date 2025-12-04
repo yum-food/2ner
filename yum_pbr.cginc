@@ -271,6 +271,7 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 #if (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)) && defined(_GLITTER)
   GlitterParams glitter_p;
   glitter_p.color = _Glitter_Color;
+  glitter_p.uv_channel = _Glitter_UV_Channel;
   glitter_p.layers = _Glitter_Layers;
   glitter_p.cell_size = _Glitter_Grid_Size;
   glitter_p.size = _Glitter_Size;
