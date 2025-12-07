@@ -92,6 +92,11 @@ float _Brightness_Multiplier;
 float _Min_Brightness;
 #endif
 
+#if defined(_LIGHT_VOLUMES_BRIGHTNESS)
+float _Light_Volumes_Brightness_Enabled_Dynamic;
+float _Light_Volumes_Brightness;
+#endif
+
 #if defined(_QUANTIZE_NOL)
 float _Quantize_NoL_Steps;
 #endif

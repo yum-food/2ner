@@ -277,6 +277,18 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 #else  // !YUM_SH9_STANDARD
   LightVolumeSH(worldPos, light.L00, light.L01r, light.L01g, light.L01b);
 
+#if defined(_LIGHT_VOLUMES_BRIGHTNESS)
+  [branch]
+  if (_Light_Volumes_Brightness_Enabled_Dynamic) {
+    float3 probe_L00  = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
+    float t = _Light_Volumes_Brightness;
+    light.L00 = lerp(probe_L00, light.L00, t);
+    light.L01r = lerp(unity_SHAr.xyz, light.L01r, t);
+    light.L01g = lerp(unity_SHAg.xyz, light.L01g, t);
+    light.L01b = lerp(unity_SHAb.xyz, light.L01b, t);
+  }
+#endif
+
   // Hack to get directional information from SH.
   float3 light_dir = normalize(float3(luminance(light.L01r), luminance(light.L01g), luminance(light.L01b)));
   light.derivedLight.l = light_dir;
@@ -293,10 +305,7 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
   light.L01b *= l1_wrap;
 #endif  // _WRAPPED_LIGHTING
 
-  return light.L00 + float3(
-    dot(light.L01r, n.xyz),
-    dot(light.L01g, n.xyz),
-    dot(light.L01b, n.xyz));
+  return LightVolumeEvaluate(n.xyz, light.L00, light.L01r, light.L01g, light.L01b);
 #endif
 }
 

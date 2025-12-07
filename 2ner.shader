@@ -2284,6 +2284,13 @@ Shader "yum_food/2ner"
         _Min_Brightness("Value", Range(0, 1)) = 0
         [HideInInspector] m_end_Min_Brightness("Minimum brightness", Float) = 0
         //endex
+        //ifex _Light_Volumes_Brightness_Enabled==0
+        [HideInInspector] m_start_Light_Volumes_Brightness("Light Volumes Brightness", Float) = 0
+          [ThryToggle(_LIGHT_VOLUMES_BRIGHTNESS)] _Light_Volumes_Brightness_Enabled("Enable", Float) = 0
+          _Light_Volumes_Brightness_Enabled_Dynamic("Enable (dynamic)", Float) = 1
+          _Light_Volumes_Brightness("Brightness", Range(0, 1)) = 1
+        [HideInInspector] m_end_Light_Volumes_Brightness("Light Volumes Brightness", Float) = 0
+        //endex
         //ifex _Quasi_Shadows_Enabled==0
         [HideInInspector] m_start_Quasi_Shadows("Quasi Shadows", Float) = 0
           [ThryToggle(_QUASI_SHADOWS)] _Quasi_Shadows_Enabled("Enable", Float) = 0

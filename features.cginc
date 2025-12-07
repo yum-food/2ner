@@ -519,5 +519,9 @@
 #pragma shader_feature_local _QUASI_SHADOWS
 //endex
 
+//ifex _Light_Volumes_Brightness_Enabled==0
+#pragma shader_feature_local _LIGHT_VOLUMES_BRIGHTNESS
+//endex
+
 #endif  // __FEATURES_INC
 

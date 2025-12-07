@@ -257,10 +257,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     const float3 E = specularDFG(dfg, f0);
 
     const float3 energy_compensation = energyCompensation(dfg, f0);
-    // Compute specular ambient occlusion
     float diffuseAO = pbr.ao;
-
-    // Use proper diffuse color calculation
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
     float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao * remainder;
 
