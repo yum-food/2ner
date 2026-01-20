@@ -239,15 +239,15 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   return 0;
 #endif
 
+  i.normal *= facing ? 1 : -1;
+  i.normal = UnityObjectToWorldNormal(i.normal);
+  i.tangent = mul(unity_ObjectToWorld, i.tangent);
+  i.binormal = mul(unity_ObjectToWorld, i.binormal);
+
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
   i.tangent = normalize(i.tangent);
   i.binormal = normalize(i.binormal);
-
-  i.normal *= facing ? 1 : -1;
-  i.normal = UnityObjectToWorldNormal(i.normal);
-  i.tangent = UnityObjectToWorldNormal(i.tangent);
-  i.binormal = UnityObjectToWorldNormal(i.binormal);
 
 #if defined(_RAYMARCHED_FOG)
   {

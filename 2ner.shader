@@ -1174,9 +1174,9 @@ Shader "yum_food/2ner"
           //ifex _Oklch_Correction_Enabled==0
           [HideInInspector] m_start_Oklch_Correction("Oklch", Float) = 0
             [ThryToggle(_OKLCH_CORRECTION)] _Oklch_Correction_Enabled("Enable", Float) = 0
-            _Oklch_Correction_L("L", Range(0,1)) = 1
-            _Oklch_Correction_C("C", Range(0,1)) = 1
-            _Oklch_Correction_H("H", Range(0,1)) = 1
+            _Oklch_Correction_L("L", Range(0,2)) = 1
+            _Oklch_Correction_C("C", Range(0,2)) = 1
+            _Oklch_Correction_H("H", Range(0,2)) = 1
           [HideInInspector] m_end_Oklch_Correction("Oklch", Float) = 0
           //endex
           //ifex _Oklab_Brightness_Clamp_Enabled==0
@@ -1876,6 +1876,7 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Tessellation("Tessellation", Float) = 0
           [ThryToggle(_TESSELLATION)] _Tessellation_Enabled("Enable", Float) = 0
           _Tessellation_Factor("Factor", Range(1, 256)) = 1
+          _Tessellation_Falloff_Factor("Falloff factor", Range(0, 256)) = 1
           _Tessellation_Frustum_Culling_Bias("Frustum culling bias", Float) = 35
           [HideInInspector] m_start_Tessellation_Heightmap("Heightmap", Float) = 0
             [ThryToggle(_TESSELLATION_HEIGHTMAP_WORLD_SPACE)] _Tessellation_Heightmap_World_Space_Enabled("World space mode (RGB)", Float) = 0
@@ -2287,7 +2288,7 @@ Shader "yum_food/2ner"
         //ifex _Light_Volumes_Brightness_Enabled==0
         [HideInInspector] m_start_Light_Volumes_Brightness("Light Volumes Brightness", Float) = 0
           [ThryToggle(_LIGHT_VOLUMES_BRIGHTNESS)] _Light_Volumes_Brightness_Enabled("Enable", Float) = 0
-          _Light_Volumes_Brightness_Enabled_Dynamic("Enable (dynamic)", Float) = 1
+          [MaterialToggle] _Light_Volumes_Brightness_Enabled_Dynamic("Enable (dynamic)", Float) = 1
           _Light_Volumes_Brightness("Brightness", Range(0, 1)) = 1
         [HideInInspector] m_end_Light_Volumes_Brightness("Light Volumes Brightness", Float) = 0
         //endex
@@ -2426,7 +2427,7 @@ Shader "yum_food/2ner"
   }
 
   SubShader {
-		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "VRCFallback" = "Standard" "DisableBatching" = "True" }
+		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "VRCFallback" = "Standard" }
 
     //ifex _Depth_Prepass_Enabled==0
     Pass {

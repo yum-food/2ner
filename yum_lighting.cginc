@@ -309,11 +309,13 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 #endif
 }
 
-float4 getIndirectDiffuse(v2f i, float4 vertexLightColor,
+float4 getIndirectDiffuse(v2f i,
+    float3 normal,
+    float4 vertexLightColor,
     inout YumLighting light) {
   float4 diffuse = vertexLightColor;
 #if defined(FORWARD_BASE_PASS)
-  diffuse.xyz += max(0, yumSH9(float4(i.normal, 0), i.worldPos, light));
+  diffuse.xyz += max(0, yumSH9(float4(normal, 0), i.worldPos, light));
 #endif
   return diffuse;
 }
@@ -365,7 +367,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.diffuse.gb = light.diffuse.r;
 #endif
 #else
-  light.diffuse = getIndirectDiffuse(i, float4(i.vertexLight, 0), light);
+  light.diffuse = getIndirectDiffuse(i, pbr.normal, float4(i.vertexLight, 0), light);
   light.occlusion = 1;
 #endif
 

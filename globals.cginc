@@ -587,6 +587,7 @@ float4 _Shatter_Wave_Rotation_Strength;
 
 #if defined(_TESSELLATION)
 float _Tessellation_Factor;
+float _Tessellation_Falloff_Factor;
 float _Tessellation_Frustum_Culling_Bias;
 #endif  // _TESSELLATION
 

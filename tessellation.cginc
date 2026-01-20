@@ -118,9 +118,14 @@ tess_factors patch_constant(InputPatch<v2f, 3> patch) {
 
   float edgeLength = _Tessellation_Factor;
 
-  f.edge[2] = l01 * edgeLength;
-  f.edge[0] = l12 * edgeLength;
-  f.edge[1] = l20 * edgeLength;
+  float edge01 = l01 * edgeLength;
+  float edge12 = l12 * edgeLength;
+  float edge20 = l20 * edgeLength;
+
+  float k = _Tessellation_Falloff_Factor;
+  f.edge[0] = min(_Tessellation_Factor, k * edge12);
+  f.edge[1] = min(_Tessellation_Factor, k * edge20);
+  f.edge[2] = min(_Tessellation_Factor, k * edge01);
 
   f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) * 0.333333f;
 #else

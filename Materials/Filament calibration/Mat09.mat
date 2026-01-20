@@ -13,11 +13,13 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _CAST_SHADOWS
+  - _CLEARCOAT_GEOMETRIC_NORMALS
   - _METALLICS
   - _RECEIVE_SHADOWS
-  - _SPHERICAL_HARMONICS_L1
   m_InvalidKeywords:
   - _BUMP_SHADOWS
+  - _LIGHT_VOLUMES_BRIGHTNESS_ENABLED_DYNAMIC_ON
+  - _SPHERICAL_HARMONICS_L1
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -34,6 +36,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 2dc42dfedb2bc704d984f7990c6b816a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Clearcoat_Mask:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cloth_Mask:
@@ -268,6 +274,38 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_0_Horizontal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_0_Vertical:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_1_Horizontal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_1_Vertical:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_2_Horizontal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_2_Vertical:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_3_Horizontal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradient_Normals_3_Vertical:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Letter_Grid_Mask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -309,6 +347,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Matcap1_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Matcap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Matcap2_Mask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -368,11 +414,63 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Sea_Foam_0_Slope:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sea_Foam_1_Slope:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sea_Foam_2_Slope:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sea_Foam_3_Slope:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SmoothnessMask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Tessellation_Heightmap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_4:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_5:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_6:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tessellation_Heightmap_7:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Trochoid_Color_Ramp:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -426,6 +524,7 @@ Material:
     - _Bump_Shadows_Enabled: 1
     - _Cast_Shadows_Enabled: 1
     - _Clearcoat_Enabled: 0
+    - _Clearcoat_Geometric_Normals_Enabled: 1
     - _Clearcoat_Roughness: 0.089
     - _Clearcoat_Strength: 1
     - _Clip: 0.5
@@ -450,6 +549,7 @@ Material:
     - _Custom30_ro_Offset: 0
     - _Cutoff: 0.5
     - _Decal0_Angle: 0
+    - _Decal0_Bias: 0
     - _Decal0_CMYK_Warping_Planes_Enabled: 0
     - _Decal0_CMYK_Warping_Planes_Scale: 0.1
     - _Decal0_CMYK_Warping_Planes_Speed: 1
@@ -466,23 +566,30 @@ Material:
     - _Decal0_Emissions_Proximity_Max_Distance: 1
     - _Decal0_Emissions_Proximity_Min_Distance: 0
     - _Decal0_Enabled: 0
+    - _Decal0_Invert_Blend_Order: 0
     - _Decal0_Mask_Enabled: 0
     - _Decal0_Metallic: 0
     - _Decal0_Normal_Enabled: 0
     - _Decal0_Normal_Scale: 1
     - _Decal0_Opacity: 1
+    - _Decal0_Reflections_Alpha_Blend: 0
     - _Decal0_Reflections_Enabled: 0
     - _Decal0_Replace_Alpha_Mode: 0
     - _Decal0_Replace_Multiply_Mode: 0
     - _Decal0_SDF_Enabled: 0
     - _Decal0_SDF_Invert: 0
     - _Decal0_SDF_Px_Range: 2
+    - _Decal0_SDF_SSN_Enabled: 0
+    - _Decal0_SDF_SSN_Only: 0
+    - _Decal0_SDF_SSN_Replace: 0
+    - _Decal0_SDF_SSN_Strength: 1
     - _Decal0_SDF_Softness: 0.01
     - _Decal0_SDF_Threshold: 0.5
     - _Decal0_Smoothness: 0.5
     - _Decal0_Tiling_Mode: 0
     - _Decal0_UV_Channel: 0
     - _Decal1_Angle: 0
+    - _Decal1_Bias: 0
     - _Decal1_CMYK_Warping_Planes_Enabled: 0
     - _Decal1_CMYK_Warping_Planes_Scale: 0.1
     - _Decal1_CMYK_Warping_Planes_Speed: 1
@@ -499,23 +606,30 @@ Material:
     - _Decal1_Emissions_Proximity_Max_Distance: 1
     - _Decal1_Emissions_Proximity_Min_Distance: 0
     - _Decal1_Enabled: 0
+    - _Decal1_Invert_Blend_Order: 0
     - _Decal1_Mask_Enabled: 0
     - _Decal1_Metallic: 0
     - _Decal1_Normal_Enabled: 0
     - _Decal1_Normal_Scale: 1
     - _Decal1_Opacity: 1
+    - _Decal1_Reflections_Alpha_Blend: 0
     - _Decal1_Reflections_Enabled: 0
     - _Decal1_Replace_Alpha_Mode: 0
     - _Decal1_Replace_Multiply_Mode: 0
     - _Decal1_SDF_Enabled: 0
     - _Decal1_SDF_Invert: 0
     - _Decal1_SDF_Px_Range: 2
+    - _Decal1_SDF_SSN_Enabled: 0
+    - _Decal1_SDF_SSN_Only: 0
+    - _Decal1_SDF_SSN_Replace: 0
+    - _Decal1_SDF_SSN_Strength: 1
     - _Decal1_SDF_Softness: 0.01
     - _Decal1_SDF_Threshold: 0.5
     - _Decal1_Smoothness: 0.5
     - _Decal1_Tiling_Mode: 0
     - _Decal1_UV_Channel: 0
     - _Decal2_Angle: 0
+    - _Decal2_Bias: 0
     - _Decal2_CMYK_Warping_Planes_Enabled: 0
     - _Decal2_CMYK_Warping_Planes_Scale: 0.1
     - _Decal2_CMYK_Warping_Planes_Speed: 1
@@ -532,23 +646,30 @@ Material:
     - _Decal2_Emissions_Proximity_Max_Distance: 1
     - _Decal2_Emissions_Proximity_Min_Distance: 0
     - _Decal2_Enabled: 0
+    - _Decal2_Invert_Blend_Order: 0
     - _Decal2_Mask_Enabled: 0
     - _Decal2_Metallic: 0
     - _Decal2_Normal_Enabled: 0
     - _Decal2_Normal_Scale: 1
     - _Decal2_Opacity: 1
+    - _Decal2_Reflections_Alpha_Blend: 0
     - _Decal2_Reflections_Enabled: 0
     - _Decal2_Replace_Alpha_Mode: 0
     - _Decal2_Replace_Multiply_Mode: 0
     - _Decal2_SDF_Enabled: 0
     - _Decal2_SDF_Invert: 0
     - _Decal2_SDF_Px_Range: 2
+    - _Decal2_SDF_SSN_Enabled: 0
+    - _Decal2_SDF_SSN_Only: 0
+    - _Decal2_SDF_SSN_Replace: 0
+    - _Decal2_SDF_SSN_Strength: 1
     - _Decal2_SDF_Softness: 0.01
     - _Decal2_SDF_Threshold: 0.5
     - _Decal2_Smoothness: 0.5
     - _Decal2_Tiling_Mode: 0
     - _Decal2_UV_Channel: 0
     - _Decal3_Angle: 0
+    - _Decal3_Bias: 0
     - _Decal3_CMYK_Warping_Planes_Enabled: 0
     - _Decal3_CMYK_Warping_Planes_Scale: 0.1
     - _Decal3_CMYK_Warping_Planes_Speed: 1
@@ -565,23 +686,30 @@ Material:
     - _Decal3_Emissions_Proximity_Max_Distance: 1
     - _Decal3_Emissions_Proximity_Min_Distance: 0
     - _Decal3_Enabled: 0
+    - _Decal3_Invert_Blend_Order: 0
     - _Decal3_Mask_Enabled: 0
     - _Decal3_Metallic: 0
     - _Decal3_Normal_Enabled: 0
     - _Decal3_Normal_Scale: 1
     - _Decal3_Opacity: 1
+    - _Decal3_Reflections_Alpha_Blend: 0
     - _Decal3_Reflections_Enabled: 0
     - _Decal3_Replace_Alpha_Mode: 0
     - _Decal3_Replace_Multiply_Mode: 0
     - _Decal3_SDF_Enabled: 0
     - _Decal3_SDF_Invert: 0
     - _Decal3_SDF_Px_Range: 2
+    - _Decal3_SDF_SSN_Enabled: 0
+    - _Decal3_SDF_SSN_Only: 0
+    - _Decal3_SDF_SSN_Replace: 0
+    - _Decal3_SDF_SSN_Strength: 1
     - _Decal3_SDF_Softness: 0.01
     - _Decal3_SDF_Threshold: 0.5
     - _Decal3_Smoothness: 0.5
     - _Decal3_Tiling_Mode: 0
     - _Decal3_UV_Channel: 0
     - _Decal4_Angle: 0
+    - _Decal4_Bias: 0
     - _Decal4_CMYK_Warping_Planes_Enabled: 0
     - _Decal4_CMYK_Warping_Planes_Scale: 0.1
     - _Decal4_CMYK_Warping_Planes_Speed: 1
@@ -598,23 +726,30 @@ Material:
     - _Decal4_Emissions_Proximity_Max_Distance: 1
     - _Decal4_Emissions_Proximity_Min_Distance: 0
     - _Decal4_Enabled: 0
+    - _Decal4_Invert_Blend_Order: 0
     - _Decal4_Mask_Enabled: 0
     - _Decal4_Metallic: 0
     - _Decal4_Normal_Enabled: 0
     - _Decal4_Normal_Scale: 1
     - _Decal4_Opacity: 1
+    - _Decal4_Reflections_Alpha_Blend: 0
     - _Decal4_Reflections_Enabled: 0
     - _Decal4_Replace_Alpha_Mode: 0
     - _Decal4_Replace_Multiply_Mode: 0
     - _Decal4_SDF_Enabled: 0
     - _Decal4_SDF_Invert: 0
     - _Decal4_SDF_Px_Range: 2
+    - _Decal4_SDF_SSN_Enabled: 0
+    - _Decal4_SDF_SSN_Only: 0
+    - _Decal4_SDF_SSN_Replace: 0
+    - _Decal4_SDF_SSN_Strength: 1
     - _Decal4_SDF_Softness: 0.01
     - _Decal4_SDF_Threshold: 0.5
     - _Decal4_Smoothness: 0.5
     - _Decal4_Tiling_Mode: 0
     - _Decal4_UV_Channel: 0
     - _Decal5_Angle: 0
+    - _Decal5_Bias: 0
     - _Decal5_CMYK_Warping_Planes_Enabled: 0
     - _Decal5_CMYK_Warping_Planes_Scale: 0.1
     - _Decal5_CMYK_Warping_Planes_Speed: 1
@@ -631,23 +766,30 @@ Material:
     - _Decal5_Emissions_Proximity_Max_Distance: 1
     - _Decal5_Emissions_Proximity_Min_Distance: 0
     - _Decal5_Enabled: 0
+    - _Decal5_Invert_Blend_Order: 0
     - _Decal5_Mask_Enabled: 0
     - _Decal5_Metallic: 0
     - _Decal5_Normal_Enabled: 0
     - _Decal5_Normal_Scale: 1
     - _Decal5_Opacity: 1
+    - _Decal5_Reflections_Alpha_Blend: 0
     - _Decal5_Reflections_Enabled: 0
     - _Decal5_Replace_Alpha_Mode: 0
     - _Decal5_Replace_Multiply_Mode: 0
     - _Decal5_SDF_Enabled: 0
     - _Decal5_SDF_Invert: 0
     - _Decal5_SDF_Px_Range: 2
+    - _Decal5_SDF_SSN_Enabled: 0
+    - _Decal5_SDF_SSN_Only: 0
+    - _Decal5_SDF_SSN_Replace: 0
+    - _Decal5_SDF_SSN_Strength: 1
     - _Decal5_SDF_Softness: 0.01
     - _Decal5_SDF_Threshold: 0.5
     - _Decal5_Smoothness: 0.5
     - _Decal5_Tiling_Mode: 0
     - _Decal5_UV_Channel: 0
     - _Decal6_Angle: 0
+    - _Decal6_Bias: 0
     - _Decal6_CMYK_Warping_Planes_Enabled: 0
     - _Decal6_CMYK_Warping_Planes_Scale: 0.1
     - _Decal6_CMYK_Warping_Planes_Speed: 1
@@ -664,23 +806,30 @@ Material:
     - _Decal6_Emissions_Proximity_Max_Distance: 1
     - _Decal6_Emissions_Proximity_Min_Distance: 0
     - _Decal6_Enabled: 0
+    - _Decal6_Invert_Blend_Order: 0
     - _Decal6_Mask_Enabled: 0
     - _Decal6_Metallic: 0
     - _Decal6_Normal_Enabled: 0
     - _Decal6_Normal_Scale: 1
     - _Decal6_Opacity: 1
+    - _Decal6_Reflections_Alpha_Blend: 0
     - _Decal6_Reflections_Enabled: 0
     - _Decal6_Replace_Alpha_Mode: 0
     - _Decal6_Replace_Multiply_Mode: 0
     - _Decal6_SDF_Enabled: 0
     - _Decal6_SDF_Invert: 0
     - _Decal6_SDF_Px_Range: 2
+    - _Decal6_SDF_SSN_Enabled: 0
+    - _Decal6_SDF_SSN_Only: 0
+    - _Decal6_SDF_SSN_Replace: 0
+    - _Decal6_SDF_SSN_Strength: 1
     - _Decal6_SDF_Softness: 0.01
     - _Decal6_SDF_Threshold: 0.5
     - _Decal6_Smoothness: 0.5
     - _Decal6_Tiling_Mode: 0
     - _Decal6_UV_Channel: 0
     - _Decal7_Angle: 0
+    - _Decal7_Bias: 0
     - _Decal7_CMYK_Warping_Planes_Enabled: 0
     - _Decal7_CMYK_Warping_Planes_Scale: 0.1
     - _Decal7_CMYK_Warping_Planes_Speed: 1
@@ -697,17 +846,23 @@ Material:
     - _Decal7_Emissions_Proximity_Max_Distance: 1
     - _Decal7_Emissions_Proximity_Min_Distance: 0
     - _Decal7_Enabled: 0
+    - _Decal7_Invert_Blend_Order: 0
     - _Decal7_Mask_Enabled: 0
     - _Decal7_Metallic: 0
     - _Decal7_Normal_Enabled: 0
     - _Decal7_Normal_Scale: 1
     - _Decal7_Opacity: 1
+    - _Decal7_Reflections_Alpha_Blend: 0
     - _Decal7_Reflections_Enabled: 0
     - _Decal7_Replace_Alpha_Mode: 0
     - _Decal7_Replace_Multiply_Mode: 0
     - _Decal7_SDF_Enabled: 0
     - _Decal7_SDF_Invert: 0
     - _Decal7_SDF_Px_Range: 2
+    - _Decal7_SDF_SSN_Enabled: 0
+    - _Decal7_SDF_SSN_Only: 0
+    - _Decal7_SDF_SSN_Replace: 0
+    - _Decal7_SDF_SSN_Strength: 1
     - _Decal7_SDF_Softness: 0.01
     - _Decal7_SDF_Threshold: 0.5
     - _Decal7_Smoothness: 0.5
@@ -716,6 +871,7 @@ Material:
     - _Depth_Prepass_Enabled: 0
     - _DetailNormalMapScale: 1
     - _Detail_Maps_Enabled: 0
+    - _Detail_Maps_UV_Channel: 0
     - _DstBlend: 0
     - _DstBlendAlpha: 10
     - _Emission_Enabled: 0
@@ -772,9 +928,19 @@ Material:
     - _Glitter_Mask_Enabled: 0
     - _Glitter_Size: 1
     - _Glitter_Size_Randomization_Range: 0.4
+    - _Glitter_UV_Channel: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _Gradient_Normals_0_Horizontal_Enabled: 0
+    - _Gradient_Normals_0_Vertical_Enabled: 0
+    - _Gradient_Normals_1_Horizontal_Enabled: 0
+    - _Gradient_Normals_1_Vertical_Enabled: 0
+    - _Gradient_Normals_2_Horizontal_Enabled: 0
+    - _Gradient_Normals_2_Vertical_Enabled: 0
+    - _Gradient_Normals_3_Horizontal_Enabled: 0
+    - _Gradient_Normals_3_Vertical_Enabled: 0
+    - _Gradient_Normals_Enabled: 0
     - _Grayscale_Lightmaps_Enabled: 0
     - _Harnack_Tracing_Enabled: 0
     - _Harnack_Tracing_Gyroid_Enabled: 0
@@ -797,6 +963,9 @@ Material:
     - _Letter_Grid_Screen_Px_Range: 10
     - _Letter_Grid_Tex_Res_X: 16
     - _Letter_Grid_Tex_Res_Y: 8
+    - _Light_Volumes_Brightness: 1
+    - _Light_Volumes_Brightness_Enabled: 0
+    - _Light_Volumes_Brightness_Enabled_Dynamic: 1
     - _MaskedStencil1BackCompareFunction: 8
     - _MaskedStencil1BackFailOp: 0
     - _MaskedStencil1BackPassOp: 0
@@ -877,6 +1046,14 @@ Material:
     - _Matcap1_Quantization_Steps: 1
     - _Matcap1_Strength: 1
     - _Matcap1_Target_Mask: 1
+    - _Matcap2_Enabled: 0
+    - _Matcap2_Invert: 0
+    - _Matcap2_Mask_Enabled: 0
+    - _Matcap2_Mode: 0
+    - _Matcap2_Quantization_Enabled: 0
+    - _Matcap2_Quantization_Steps: 1
+    - _Matcap2_Strength: 1
+    - _Matcap2_Target_Mask: 1
     - _Material_Type_Cloth_Enabled: 0
     - _Material_Type_Cloth_Subsurface: 0
     - _Metallic: 0
@@ -928,6 +1105,9 @@ Material:
     - _Quantize_NoL_Steps: 1
     - _Quantize_Specular_Enabled: 0
     - _Quantize_Specular_Steps: 1
+    - _Quasi_Shadows_0_Threshold: 0.5
+    - _Quasi_Shadows_0_Width: 0.1
+    - _Quasi_Shadows_Enabled: 0
     - _Raymarched_Fog_Albedo: 1
     - _Raymarched_Fog_Density_Exponent: 1
     - _Raymarched_Fog_Density_Exponent_Enabled: 0
@@ -1009,6 +1189,17 @@ Material:
     - _SSFD_Threshold: 0.5
     - _SampleWorld: 0
     - _Saturation: 0
+    - _Screen_Space_Normals_Enabled: 0
+    - _Sea_Foam_0_Enabled: 0
+    - _Sea_Foam_1_Enabled: 0
+    - _Sea_Foam_2_Enabled: 0
+    - _Sea_Foam_3_Enabled: 0
+    - _Sea_Foam_Bias: 0
+    - _Sea_Foam_Enabled: 0
+    - _Sea_Foam_Factor: 1
+    - _Sea_Foam_Lambda: 1
+    - _Sea_Foam_Power: 1
+    - _Sea_Foam_Roughness: 0.85
     - _ShaderOptimizerEnabled: 0
     - _Shadow_Strength: 0.25
     - _Shatter_Wave_Audiolink_Enabled: 0
@@ -1047,16 +1238,53 @@ Material:
     - _Stencil_Enabled: 0
     - _Tessellation_Enabled: 0
     - _Tessellation_Factor: 1
+    - _Tessellation_Falloff_Factor: 1
+    - _Tessellation_Frustum_Culling_Bias: 35
+    - _Tessellation_Heightmap_0_Enabled: 0
+    - _Tessellation_Heightmap_0_Offset: 0
+    - _Tessellation_Heightmap_0_Scale: 1
+    - _Tessellation_Heightmap_1_Enabled: 0
+    - _Tessellation_Heightmap_1_Offset: 0
+    - _Tessellation_Heightmap_1_Scale: 1
+    - _Tessellation_Heightmap_2_Enabled: 0
+    - _Tessellation_Heightmap_2_Offset: 0
+    - _Tessellation_Heightmap_2_Scale: 1
+    - _Tessellation_Heightmap_3_Enabled: 0
+    - _Tessellation_Heightmap_3_Offset: 0
+    - _Tessellation_Heightmap_3_Scale: 1
+    - _Tessellation_Heightmap_4_Enabled: 0
+    - _Tessellation_Heightmap_4_Offset: 0
+    - _Tessellation_Heightmap_4_Scale: 1
+    - _Tessellation_Heightmap_5_Enabled: 0
+    - _Tessellation_Heightmap_5_Offset: 0
+    - _Tessellation_Heightmap_5_Scale: 1
+    - _Tessellation_Heightmap_6_Enabled: 0
+    - _Tessellation_Heightmap_6_Offset: 0
+    - _Tessellation_Heightmap_6_Scale: 1
+    - _Tessellation_Heightmap_7_Enabled: 0
+    - _Tessellation_Heightmap_7_Offset: 0
+    - _Tessellation_Heightmap_7_Scale: 1
     - _Tessellation_Heightmap_Direction_Control_Enabled: 0
     - _Tessellation_Heightmap_Enabled: 0
     - _Tessellation_Heightmap_Offset: 0
     - _Tessellation_Heightmap_Scale: 1
+    - _Tessellation_Heightmap_World_Space_Enabled: 0
     - _Tessellation_Range_Factor_Distance_Far: 1
     - _Tessellation_Range_Factor_Distance_Near: 1
     - _Tessellation_Range_Factor_Enabled: 0
     - _Tessellation_Range_Factor_Factor_Far: 1
     - _Tessellation_Range_Factor_Factor_Near: 1
     - _Tessellation_Range_Factor_Help: 0
+    - _Trochoid_Enabled: 0
+    - _Trochoid_R: 1
+    - _Trochoid_X_Scale: 1
+    - _Trochoid_Y_Scale: 1
+    - _Trochoid_Z_Scale: 1
+    - _Trochoid_d: 1
+    - _Trochoid_r: 1
+    - _Trochoid_r_Power: 1
+    - _Trochoid_t_k: 1
+    - _Trochoid_theta_k: 1
     - _UVSec: 0
     - _UV_Domain_Warping_Enabled: 0
     - _UV_Domain_Warping_Spatial_Octaves: 1
@@ -1558,6 +1786,7 @@ Material:
     - m_end_Decal0_Normal: 0
     - m_end_Decal0_Reflections: 0
     - m_end_Decal0_SDF: 0
+    - m_end_Decal0_SSN: 0
     - m_end_Decal1: 0
     - m_end_Decal1_CMYK_Warping_Planes: 0
     - m_end_Decal1_Domain_Warping: 0
@@ -1567,6 +1796,7 @@ Material:
     - m_end_Decal1_Normal: 0
     - m_end_Decal1_Reflections: 0
     - m_end_Decal1_SDF: 0
+    - m_end_Decal1_SSN: 0
     - m_end_Decal2: 0
     - m_end_Decal2_CMYK_Warping_Planes: 0
     - m_end_Decal2_Domain_Warping: 0
@@ -1576,6 +1806,7 @@ Material:
     - m_end_Decal2_Normal: 0
     - m_end_Decal2_Reflections: 0
     - m_end_Decal2_SDF: 0
+    - m_end_Decal2_SSN: 0
     - m_end_Decal3: 0
     - m_end_Decal3_CMYK_Warping_Planes: 0
     - m_end_Decal3_Domain_Warping: 0
@@ -1585,6 +1816,7 @@ Material:
     - m_end_Decal3_Normal: 0
     - m_end_Decal3_Reflections: 0
     - m_end_Decal3_SDF: 0
+    - m_end_Decal3_SSN: 0
     - m_end_Decal4: 0
     - m_end_Decal4_CMYK_Warping_Planes: 0
     - m_end_Decal4_Domain_Warping: 0
@@ -1594,6 +1826,7 @@ Material:
     - m_end_Decal4_Normal: 0
     - m_end_Decal4_Reflections: 0
     - m_end_Decal4_SDF: 0
+    - m_end_Decal4_SSN: 0
     - m_end_Decal5: 0
     - m_end_Decal5_CMYK_Warping_Planes: 0
     - m_end_Decal5_Domain_Warping: 0
@@ -1603,6 +1836,7 @@ Material:
     - m_end_Decal5_Normal: 0
     - m_end_Decal5_Reflections: 0
     - m_end_Decal5_SDF: 0
+    - m_end_Decal5_SSN: 0
     - m_end_Decal6: 0
     - m_end_Decal6_CMYK_Warping_Planes: 0
     - m_end_Decal6_Domain_Warping: 0
@@ -1612,6 +1846,7 @@ Material:
     - m_end_Decal6_Normal: 0
     - m_end_Decal6_Reflections: 0
     - m_end_Decal6_SDF: 0
+    - m_end_Decal6_SSN: 0
     - m_end_Decal7: 0
     - m_end_Decal7_CMYK_Warping_Planes: 0
     - m_end_Decal7_Domain_Warping: 0
@@ -1621,6 +1856,7 @@ Material:
     - m_end_Decal7_Normal: 0
     - m_end_Decal7_Reflections: 0
     - m_end_Decal7_SDF: 0
+    - m_end_Decal7_SSN: 0
     - m_end_Decals: 0
     - m_end_Depth_Prepass: 0
     - m_end_Detail_Maps: 0
@@ -1637,11 +1873,21 @@ Material:
     - m_end_Glitter: 0
     - m_end_Glitter_Angle_Limit: 0
     - m_end_Glitter_Mask: 0
+    - m_end_Gradient_Normals: 0
+    - m_end_Gradient_Normals_0: 0
+    - m_end_Gradient_Normals_0_Horizontal: 0
+    - m_end_Gradient_Normals_1: 0
+    - m_end_Gradient_Normals_1_Horizontal: 0
+    - m_end_Gradient_Normals_2: 0
+    - m_end_Gradient_Normals_2_Horizontal: 0
+    - m_end_Gradient_Normals_3: 0
+    - m_end_Gradient_Normals_3_Horizontal: 0
     - m_end_Grayscale_Lightmaps: 0
     - m_end_Harnack_Tracing: 0
     - m_end_Harnack_Tracing_Gyroid: 0
     - m_end_LTCGI: 0
     - m_end_Letter_Grid: 0
+    - m_end_Light_Volumes_Brightness: 0
     - m_end_MaskedStencil1PassBackOptions: 0
     - m_end_MaskedStencil1PassFrontOptions: 0
     - m_end_MaskedStencil2PassBackOptions: 0
@@ -1660,6 +1906,9 @@ Material:
     - m_end_Matcap1: 0
     - m_end_Matcap1_Mask: 0
     - m_end_Matcap1_Quantization: 0
+    - m_end_Matcap2: 0
+    - m_end_Matcap2_Mask: 0
+    - m_end_Matcap2_Quantization: 0
     - m_end_Matcaps: 0
     - m_end_Material_Type_Cloth: 0
     - m_end_Material_Type_Cloth_Subsurface: 0
@@ -1675,6 +1924,7 @@ Material:
     - m_end_OutlinesMask: 0
     - m_end_Quantize_NoL: 0
     - m_end_Quantize_Specular: 0
+    - m_end_Quasi_Shadows: 0
     - m_end_Raymarched_Fog: 0
     - m_end_Raymarched_Fog_Density_Exponent: 0
     - m_end_Raymarched_Fog_Emitter_Texture: 0
@@ -1698,6 +1948,12 @@ Material:
     - m_end_Rim_Lighting3_Quantization: 0
     - m_end_SSAO: 0
     - m_end_SSFD: 0
+    - m_end_Screen_Space_Normals: 0
+    - m_end_Sea_Foam: 0
+    - m_end_Sea_Foam_0: 0
+    - m_end_Sea_Foam_1: 0
+    - m_end_Sea_Foam_2: 0
+    - m_end_Sea_Foam_3: 0
     - m_end_Shadow_Casting: 0
     - m_end_Shadow_Receiving: 0
     - m_end_Shatter_Wave: 0
@@ -1710,8 +1966,17 @@ Material:
     - m_end_StencilPassFrontOptions: 0
     - m_end_Tessellation: 0
     - m_end_Tessellation_Heightmap: 0
+    - m_end_Tessellation_Heightmap_0: 0
+    - m_end_Tessellation_Heightmap_1: 0
+    - m_end_Tessellation_Heightmap_2: 0
+    - m_end_Tessellation_Heightmap_3: 0
+    - m_end_Tessellation_Heightmap_4: 0
+    - m_end_Tessellation_Heightmap_5: 0
+    - m_end_Tessellation_Heightmap_6: 0
+    - m_end_Tessellation_Heightmap_7: 0
     - m_end_Tessellation_Heightmap_Direction_Control: 0
     - m_end_Tessellation_Range_Factor: 0
+    - m_end_Trochoid: 0
     - m_end_UV_Domain_Warping: 0
     - m_end_Unigram_Letter_Grid: 0
     - m_end_Unlit: 0
@@ -1749,6 +2014,7 @@ Material:
     - m_start_Decal0_Normal: 0
     - m_start_Decal0_Reflections: 0
     - m_start_Decal0_SDF: 0
+    - m_start_Decal0_SSN: 0
     - m_start_Decal1: 0
     - m_start_Decal1_CMYK_Warping_Planes: 0
     - m_start_Decal1_Domain_Warping: 0
@@ -1758,6 +2024,7 @@ Material:
     - m_start_Decal1_Normal: 0
     - m_start_Decal1_Reflections: 0
     - m_start_Decal1_SDF: 0
+    - m_start_Decal1_SSN: 0
     - m_start_Decal2: 0
     - m_start_Decal2_CMYK_Warping_Planes: 0
     - m_start_Decal2_Domain_Warping: 0
@@ -1767,6 +2034,7 @@ Material:
     - m_start_Decal2_Normal: 0
     - m_start_Decal2_Reflections: 0
     - m_start_Decal2_SDF: 0
+    - m_start_Decal2_SSN: 0
     - m_start_Decal3: 0
     - m_start_Decal3_CMYK_Warping_Planes: 0
     - m_start_Decal3_Domain_Warping: 0
@@ -1776,6 +2044,7 @@ Material:
     - m_start_Decal3_Normal: 0
     - m_start_Decal3_Reflections: 0
     - m_start_Decal3_SDF: 0
+    - m_start_Decal3_SSN: 0
     - m_start_Decal4: 0
     - m_start_Decal4_CMYK_Warping_Planes: 0
     - m_start_Decal4_Domain_Warping: 0
@@ -1785,6 +2054,7 @@ Material:
     - m_start_Decal4_Normal: 0
     - m_start_Decal4_Reflections: 0
     - m_start_Decal4_SDF: 0
+    - m_start_Decal4_SSN: 0
     - m_start_Decal5: 0
     - m_start_Decal5_CMYK_Warping_Planes: 0
     - m_start_Decal5_Domain_Warping: 0
@@ -1794,6 +2064,7 @@ Material:
     - m_start_Decal5_Normal: 0
     - m_start_Decal5_Reflections: 0
     - m_start_Decal5_SDF: 0
+    - m_start_Decal5_SSN: 0
     - m_start_Decal6: 0
     - m_start_Decal6_CMYK_Warping_Planes: 0
     - m_start_Decal6_Domain_Warping: 0
@@ -1803,6 +2074,7 @@ Material:
     - m_start_Decal6_Normal: 0
     - m_start_Decal6_Reflections: 0
     - m_start_Decal6_SDF: 0
+    - m_start_Decal6_SSN: 0
     - m_start_Decal7: 0
     - m_start_Decal7_CMYK_Warping_Planes: 0
     - m_start_Decal7_Domain_Warping: 0
@@ -1812,6 +2084,7 @@ Material:
     - m_start_Decal7_Normal: 0
     - m_start_Decal7_Reflections: 0
     - m_start_Decal7_SDF: 0
+    - m_start_Decal7_SSN: 0
     - m_start_Decals: 0
     - m_start_Depth_Prepass: 0
     - m_start_Detail_Maps: 0
@@ -1828,11 +2101,21 @@ Material:
     - m_start_Glitter: 0
     - m_start_Glitter_Angle_Limit: 0
     - m_start_Glitter_Mask: 0
+    - m_start_Gradient_Normals: 0
+    - m_start_Gradient_Normals_0: 0
+    - m_start_Gradient_Normals_0_Horizontal: 0
+    - m_start_Gradient_Normals_1: 0
+    - m_start_Gradient_Normals_1_Horizontal: 0
+    - m_start_Gradient_Normals_2: 0
+    - m_start_Gradient_Normals_2_Horizontal: 0
+    - m_start_Gradient_Normals_3: 0
+    - m_start_Gradient_Normals_3_Horizontal: 0
     - m_start_Grayscale_Lightmaps: 0
     - m_start_Harnack_Tracing: 0
     - m_start_Harnack_Tracing_Gyroid: 0
     - m_start_LTCGI: 0
     - m_start_Letter_Grid: 0
+    - m_start_Light_Volumes_Brightness: 0
     - m_start_MaskedStencil1PassBackOptions: 0
     - m_start_MaskedStencil1PassFrontOptions: 0
     - m_start_MaskedStencil2PassBackOptions: 0
@@ -1851,6 +2134,9 @@ Material:
     - m_start_Matcap1: 0
     - m_start_Matcap1_Mask: 0
     - m_start_Matcap1_Quantization: 0
+    - m_start_Matcap2: 0
+    - m_start_Matcap2_Mask: 0
+    - m_start_Matcap2_Quantization: 0
     - m_start_Matcaps: 0
     - m_start_Material_Type_Cloth: 0
     - m_start_Material_Type_Cloth_Subsurface: 0
@@ -1866,6 +2152,7 @@ Material:
     - m_start_OutlinesMask: 0
     - m_start_Quantize_NoL: 0
     - m_start_Quantize_Specular: 0
+    - m_start_Quasi_Shadows: 0
     - m_start_Raymarched_Fog: 0
     - m_start_Raymarched_Fog_Density_Exponent: 0
     - m_start_Raymarched_Fog_Emitter_Texture: 0
@@ -1889,6 +2176,12 @@ Material:
     - m_start_Rim_Lighting3_Quantization: 0
     - m_start_SSAO: 0
     - m_start_SSFD: 0
+    - m_start_Screen_Space_Normals: 0
+    - m_start_Sea_Foam: 0
+    - m_start_Sea_Foam_0: 0
+    - m_start_Sea_Foam_1: 0
+    - m_start_Sea_Foam_2: 0
+    - m_start_Sea_Foam_3: 0
     - m_start_Shadow_Casting: 0
     - m_start_Shadow_Receiving: 0
     - m_start_Shatter_Wave: 0
@@ -1901,8 +2194,17 @@ Material:
     - m_start_StencilPassFrontOptions: 0
     - m_start_Tessellation: 0
     - m_start_Tessellation_Heightmap: 0
+    - m_start_Tessellation_Heightmap_0: 0
+    - m_start_Tessellation_Heightmap_1: 0
+    - m_start_Tessellation_Heightmap_2: 0
+    - m_start_Tessellation_Heightmap_3: 0
+    - m_start_Tessellation_Heightmap_4: 0
+    - m_start_Tessellation_Heightmap_5: 0
+    - m_start_Tessellation_Heightmap_6: 0
+    - m_start_Tessellation_Heightmap_7: 0
     - m_start_Tessellation_Heightmap_Direction_Control: 0
     - m_start_Tessellation_Range_Factor: 0
+    - m_start_Trochoid: 0
     - m_start_UV_Domain_Warping: 0
     - m_start_Unigram_Letter_Grid: 0
     - m_start_Unlit: 0
@@ -1961,6 +2263,7 @@ Material:
     - _Letter_Grid_UV_Scale_Offset: {r: 1, g: 1, b: 0, a: 0}
     - _MetalReflectionTint: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Quasi_Shadows_0_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Raymarched_Fog_Color: {r: 0.29999998, g: 0.29999998, b: 0.29999998, a: 1}
     - _Raymarched_Fog_Density_Noise_Scale: {r: 1, g: 1, b: 1, a: 0}
     - _Raymarched_Fog_Emitter_Texture_World_Normal: {r: 0, g: 0, b: 0, a: 0}
@@ -1977,6 +2280,7 @@ Material:
     - _Rim_Lighting2_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Rim_Lighting3_Angle_Limit_Target_Vector: {r: 0, g: -1, b: 0, a: 0}
     - _Rim_Lighting3_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Sea_Foam_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Shatter_Wave_Amplitude: {r: 0.4, g: 0.4, b: 0.4, a: 0.4}
     - _Shatter_Wave_Chronotensity_Time_Factor: {r: 1, g: 1, b: 1, a: 1}
     - _Shatter_Wave_Chronotensity_Weights0: {r: 0, g: 0, b: 0, a: 0}
