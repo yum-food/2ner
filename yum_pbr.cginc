@@ -137,7 +137,7 @@ void applySeaFoam(v2f i, inout YumPbr pbr) {
 }
 #endif
 
-YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
+YumPbr GetYumPbr(v2f i, f2f f, float3x3 tangentToWorld) {
   YumPbr result = (YumPbr)0;
 
 #if defined(_FUR)
@@ -293,7 +293,7 @@ YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
 #if defined(_GLITTER_MASK)
   glitter_p.mask = _Glitter_Mask.SampleLevel(linear_repeat_s, i.uv01.xy, 0);
 #endif
-  float4 glitter_albedo = getGlitter(i, glitter_p, result.normal);
+  float4 glitter_albedo = getGlitter(i, f, glitter_p, result.normal);
   result.albedo = alphaBlend(result.albedo, glitter_albedo);
 
   result.emission += glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;

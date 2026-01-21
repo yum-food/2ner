@@ -110,10 +110,10 @@ float3 aces_filmic(float3 x) {
   return saturate((x*(a*x+b))/(x*(c*x+d)+e));
 }
 
-FogResult raymarched_fog(v2f i, FogParams p)
+FogResult raymarched_fog(v2f i, f2f f, FogParams p)
 {
   float3 ro = _WorldSpaceCameraPos;
-  float3 rd = normalize(i.eyeVec.xyz);
+  float3 rd = f.viewDir;
 
   const float ro_epsilon = 1E-3;
   ro += rd * ro_epsilon;

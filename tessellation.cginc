@@ -195,8 +195,6 @@ v2f domain(
 
   o.pos      = UnityObjectToClipPos(o.objPos);
   o.worldPos = mul(unity_ObjectToWorld, o.objPos).xyz;
-  o.eyeVec.xyz = o.worldPos - _WorldSpaceCameraPos;
-  o.eyeVec.w = 1;
 
   //UNITY_TRANSFER_LIGHTING(o, v);
   UNITY_TRANSFER_INSTANCE_ID(patch[0], o);

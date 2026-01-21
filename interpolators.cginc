@@ -27,16 +27,15 @@ struct v2f {
 	float3 worldPos    : TEXCOORD3;
 	float3 normal      : TEXCOORD4;
 	float3 tangent     : TEXCOORD5;
-  float4 eyeVec      : TEXCOORD6; // eyeVec.xyz | fogCoord
-  float4 vertexLight : TEXCOORD7; // vertexLight.xyz | furLayer
-  UNITY_LIGHTING_COORDS(8,9)
+  float4 vertexLight : TEXCOORD6; // vertexLight.xyz | furLayer
+  UNITY_LIGHTING_COORDS(7,8)
 
 #if defined(V2F_ORIG_POS)
-  float3 orig_pos : TEXCOORD10;
+  float3 orig_pos : TEXCOORD9;
 #endif
 
 #if defined(V2F_COLOR)
-  float4 color       : TEXCOORD11;
+  float4 color       : TEXCOORD10;
 #endif
 
   UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -46,6 +45,8 @@ struct v2f {
 // Fragment shader common data (fragment 2 fragment)
 struct f2f {
   float3 binormal;
+  float3 eyeVec;
+  float3 viewDir;
 };
 
 #endif  // __INTERPOLATORS_INC

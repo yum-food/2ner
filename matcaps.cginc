@@ -8,9 +8,9 @@
 #include "yum_pbr.cginc"
 
 #if defined(_MATCAP0) || defined(_MATCAP1) || defined(_MATCAP2) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
-float2 getMatcapUV(v2f i, inout YumPbr pbr) {
+float2 getMatcapUV(v2f i, f2f f, inout YumPbr pbr) {
   const float3 cam_normal = normalize(mul(UNITY_MATRIX_V, float4(pbr.normal, 0)));
-  const float3 cam_view_dir = normalize(mul(UNITY_MATRIX_V, float4(-i.eyeVec.xyz, 0)));
+  const float3 cam_view_dir = normalize(mul(UNITY_MATRIX_V, float4(-f.eyeVec, 0)));
   const float3 cam_refl = -reflect(cam_view_dir, cam_normal);
   float m = 2.0 * sqrt(
       cam_refl.x * cam_refl.x +
@@ -68,9 +68,9 @@ float getAngleAttenuation(float2 muv, float2 target_vector, float power) {
   return pow(NoL, power);
 }
 
-void applyMatcapsAndRimLighting(v2f i, inout YumPbr pbr, inout YumLighting l) {
+void applyMatcapsAndRimLighting(v2f i, f2f f, inout YumPbr pbr, inout YumLighting l) {
 #if defined(_MATCAP0) || defined(_MATCAP1) || defined(_MATCAP2) || defined(_RIM_LIGHTING0) || defined(_RIM_LIGHTING1) || defined(_RIM_LIGHTING2) || defined(_RIM_LIGHTING3)
-  float2 muv = getMatcapUV(i, pbr);
+  float2 muv = getMatcapUV(i, f, pbr);
 #endif
 #if defined(_MATCAP0)
 #if defined(_MATCAP0_QUANTIZATION)

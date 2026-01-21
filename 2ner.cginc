@@ -187,8 +187,6 @@ v2f vert(appdata v) {
 #endif
   o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;
-  o.eyeVec.xyz = o.worldPos - _WorldSpaceCameraPos;
-  o.eyeVec.w = 1;
 
   // These are used to convert normals from tangent space to world space.
   o.normal = v.normal;
@@ -294,6 +292,8 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
   f2f f = (f2f) 0;
   f.binormal = cross(i.tangent, i.normal);
+  f.eyeVec = i.worldPos - _WorldSpaceCameraPos;
+  f.viewDir = normalize(f.eyeVec);
 
 #if defined(_RAYMARCHED_FOG)
   {
@@ -343,7 +343,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
       _Raymarched_Fog_Density_Exponent,
       #endif
     };
-    FogResult fog_result = raymarched_fog(i, fog_params);
+    FogResult fog_result = raymarched_fog(i, f, fog_params);
     depth = fog_result.depth;
     return fog_result.color;
   }
@@ -441,7 +441,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 	float2 debug;
 	ssao = get_ssao(i, tangentToWorld, debug);
 #endif
-  YumPbr pbr = GetYumPbr(i, tangentToWorld);
+  YumPbr pbr = GetYumPbr(i, f, tangentToWorld);
 	pbr.albedo.rgb *= ssao;
 
 #if defined(META_PASS)
@@ -526,7 +526,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   YumLighting l = GetYumLighting(i, f, pbr);
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)
-  applyMatcapsAndRimLighting(i, pbr, l);
+  applyMatcapsAndRimLighting(i, f, pbr, l);
   l.diffuse = max(0, l.diffuse);
   l.specular = max(0, l.specular);
 #endif

@@ -35,7 +35,7 @@ static const float2 glitter_offset_vectors[6] = {
 };
 
 
-float4 getGlitter(v2f i, GlitterParams params, float3 normal) {
+float4 getGlitter(v2f i, f2f f, GlitterParams params, float3 normal) {
   float c_acc = 0;
   [loop]
   for (uint layer_i = 0; layer_i < params.layers; layer_i++) {
@@ -71,7 +71,7 @@ float4 getGlitter(v2f i, GlitterParams params, float3 normal) {
     c_acc = c + (1 - c) * c_acc;
   }
 #if defined(_GLITTER_ANGLE_LIMIT)
-  float VdotN = dot(-normalize(i.eyeVec.xyz), normal);
+  float VdotN = dot(-f.viewDir, normal);
   float angle_mask = smoothstep(
     cos(params.angle_limit * PI), 
     cos(params.angle_limit * (1 - params.angle_limit_transition_width) * PI), 
