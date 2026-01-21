@@ -105,8 +105,9 @@ float4 frag_meta (v2f_meta i) : SV_Target
     pbr_input.objPos = float4(i.objPos, 1.0);
     pbr_input.normal = i.normal;
     pbr_input.tangent = i.tangent;
-    pbr_input.binormal = i.binormal;
+#if defined(V2F_COLOR)
     pbr_input.color = i.color;
+#endif
     
     YumPbr pbr = GetYumPbr(pbr_input, tangentToWorld);
 

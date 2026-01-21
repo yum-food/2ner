@@ -193,7 +193,6 @@ v2f vert(appdata v) {
   // These are used to convert normals from tangent space to world space.
   o.normal = v.normal;
   o.tangent = v.tangent.xyz;
-  o.binormal = cross(o.normal, o.tangent) * v.tangent.w;
 
   UNITY_TRANSFER_LIGHTING(o, v.uv1);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
@@ -202,8 +201,10 @@ v2f vert(appdata v) {
 	TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
 #endif
 
+#if defined(V2F_COLOR)
   // Vertex color
   o.color = v.color;
+#endif
 
   // Calculate vertex lights
   #ifdef VERTEXLIGHT_ON
@@ -225,6 +226,50 @@ v2f vert(appdata v) {
   return o;
 }
 
+//ifex _Fur_Enabled==0
+[maxvertexcount(3 * 9)]
+void geom(triangle v2f input[3], inout TriangleStream<v2f> stream) {
+#if defined(_FUR)
+#if defined(_FUR_MASK)
+  float fur_mask = _Fur_Mask.SampleLevel(bilinear_repeat_s, input[0].uv01.xy * _Fur_Mask_ST.xy, 0);
+#else
+  float fur_mask = 1;
+#endif
+  [branch]
+  if (fur_mask < 0.5) {
+    stream.Append(input[0]);
+    stream.Append(input[1]);
+    stream.Append(input[2]);
+    stream.RestartStrip();
+    return;
+  }
+
+  [loop]
+  for (int layer = 0; layer < _Fur_Layers; layer++) {
+    float t = (float) layer / (float) max(_Fur_Layers - 1, 1);
+    float offset = t * _Fur_Thickness;
+
+    [unroll]
+    for (int i = 0; i < 3; i++) {
+      v2f o = input[i];
+      float3 normal_ws = UnityObjectToWorldNormal(o.normal);
+      o.worldPos.xyz += normal_ws * offset;
+      o.objPos.xyz += o.normal * offset;
+      o.pos = UnityWorldToClipPos(o.worldPos);
+      o.vertexLight.w = layer;
+      stream.Append(o);
+    }
+    stream.RestartStrip();
+  }
+#else
+  stream.Append(input[0]);
+  stream.Append(input[1]);
+  stream.Append(input[2]);
+  stream.RestartStrip();
+#endif  // _FUR
+}
+//endex
+
 float4 frag(v2f i, uint facing : SV_IsFrontFace
 #if defined(_HARNACK_TRACING) || defined(_SHATTER_WAVE) || defined(_VERTEX_DOMAIN_WARPING) || (defined(_CUSTOM30) && !defined(_DEPTH_PREPASS)) || defined(_RAYMARCHED_FOG) || defined(_TESSELLATION_HEIGHTMAP)
   , out float depth : SV_DepthLessEqual
@@ -242,12 +287,10 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.normal *= facing ? 1 : -1;
   i.normal = UnityObjectToWorldNormal(i.normal);
   i.tangent = mul(unity_ObjectToWorld, i.tangent);
-  i.binormal = mul(unity_ObjectToWorld, i.binormal);
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
   i.tangent = normalize(i.tangent);
-  i.binormal = normalize(i.binormal);
 
 #if defined(_RAYMARCHED_FOG)
   {
@@ -385,7 +428,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
   float4x4 tangentToWorld = float4x4(
     float4(i.tangent, 0),
-    float4(i.binormal, 0),
+    float4(cross(i.tangent, i.normal), 0),
     float4(i.normal, 0),
     float4(0, 0, 0, 1)
   );

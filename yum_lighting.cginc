@@ -347,8 +347,9 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	// Calculate attenuation first, before diffuse lighting
   light.attenuation = getShadowAttenuation(i);
 
-	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, i.binormal, i.normal)));
-	float3x3 tangentToWorld = float3x3(i.tangent, i.binormal, i.normal);
+  float3 binormal = cross(i.tangent, i.normal);
+	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, binormal, i.normal)));
+	float3x3 tangentToWorld = float3x3(i.tangent, binormal, i.normal);
 
 	// Use Bakery-aware irradiance function
 #if defined(LIGHTMAP_ON)
@@ -367,7 +368,7 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
   light.diffuse.gb = light.diffuse.r;
 #endif
 #else
-  light.diffuse = getIndirectDiffuse(i, pbr.normal, float4(i.vertexLight, 0), light);
+  light.diffuse = getIndirectDiffuse(i, pbr.normal, float4(i.vertexLight.xyz, 0), light);
   light.occlusion = 1;
 #endif
 

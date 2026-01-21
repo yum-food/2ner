@@ -74,6 +74,11 @@
 #pragma shader_feature_local _OUTLINE_MASK
 //endex
 
+//ifex _Fur_Enabled==0
+#pragma shader_feature_local _FUR
+#pragma shader_feature_local _FUR_MASK
+//endex
+
 //ifex _Matcap0_Enabled==0
 #pragma shader_feature_local _MATCAP0
 #pragma shader_feature_local _MATCAP0_MASK
@@ -522,6 +527,14 @@
 //ifex _Light_Volumes_Brightness_Enabled==0
 #pragma shader_feature_local _LIGHT_VOLUMES_BRIGHTNESS
 //endex
+
+#if defined(_CUSTOM30)
+#define V2F_COLOR
+#endif
+
+#if defined(_TROCHOID)
+#define V2F_ORIG_POS
+#endif
 
 #endif  // __FEATURES_INC
 

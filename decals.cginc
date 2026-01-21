@@ -235,7 +235,7 @@ float3 calculateSdfSsn(DecalParams params, float2 decal_uv, float4 decal_albedo)
 #define DS_CLAMP_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params) {}
 
 #define DS_MASK_ON(i, albedo, normal_tangent, metallic, smoothness, emission, params)          \
-    float decal_mask = params.mask.SampleLevel(trilinear_aniso4_repeat_s, raw_decal_uv, params.mip_bias);                           \
+    float decal_mask = params.mask.SampleBias(trilinear_aniso4_repeat_s, raw_decal_uv, params.mip_bias);                           \
     decal_albedo.a *= decal_mask;
 
 #define DS_MASK_OFF(i, albedo, normal_tangent, metallic, smoothness, emission, params)         \

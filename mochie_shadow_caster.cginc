@@ -22,7 +22,9 @@ v2f vert(appdata v)
   o.uv23.xy = v.uv2;
   o.uv23.zw = v.uv3;
   o.objPos = v.vertex;
+#if defined(V2F_COLOR)
   o.color = v.color;
+#endif
   return o;
 }
 

@@ -28,8 +28,9 @@ bool cullPatch(float4 p0, float4 p1, float4 p2, float bias) {
 #define _TESSELLATION_HEIGHTMAP
 #endif
 
-float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent, float3 binormal) {
+float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent) {
 #if defined(_TESSELLATION) && defined(_TESSELLATION_HEIGHTMAP)
+  float3 binormal = cross(tangent, normal);
   float3 height = 0;
 #if defined(_TESSELLATION_HEIGHTMAP_0)
   float3 heightmap_0_sample = _Tessellation_Heightmap_0.SampleLevel(bilinear_repeat_s,
@@ -168,12 +169,13 @@ v2f domain(
 #endif
   o.normal   = DOMAIN_INTERP(normal);
   o.tangent  = DOMAIN_INTERP(tangent);
-  o.binormal = DOMAIN_INTERP(binormal);
   o.uv01     = DOMAIN_INTERP(uv01);
   o.uv23     = DOMAIN_INTERP(uv23);
-  o.color     = DOMAIN_INTERP(color);
   o.vertexLight     = DOMAIN_INTERP(vertexLight);
-#if defined(_TROCHOID)
+#if defined(V2F_COLOR)
+  o.color     = DOMAIN_INTERP(color);
+#endif
+#if defined(V2F_ORIG_POS)
   o.orig_pos = DOMAIN_INTERP(orig_pos);
 #endif
 
@@ -189,7 +191,7 @@ v2f domain(
 #endif
 #endif
 
-  o.objPos = applyHeightmap(o.objPos, o.uv01.xy, o.normal, o.tangent, o.binormal);
+  o.objPos = applyHeightmap(o.objPos, o.uv01.xy, o.normal, o.tangent);
 
   o.pos      = UnityObjectToClipPos(o.objPos);
   o.worldPos = mul(unity_ObjectToWorld, o.objPos).xyz;

@@ -107,6 +107,27 @@ Shader "yum_food/2ner"
         [HideInInspector] m_end_Outlines("Outlines", Float) = 0
         //endex
 
+        //ifex _Fur_Enabled==0
+        [HideInInspector] m_start_Fur("Fur", Float) = 0
+        [ThryToggle(_FUR)]_Fur_Enabled("Enable", Float) = 0
+        _Fur_Thickness("Thickness", Float) = 1
+        [IntRange] _Fur_Layers("Layers", Range(1, 12)) = 1
+        _Fur_Heightmap("Heightmap", 2D) = "black" {}
+        _Fur_Heightmap_Mip_Bias("Heightmap mip bias", Range(-4, 4)) = 0
+
+        [HideInInspector] m_start_Fur_Mask("Mask", Float) = 0
+        [ThryToggle(_FUR_MASK)]_Fur_Mask_Enabled("Enable", Float) = 0
+        _Fur_Mask("Mask", 2D) = "white" {}
+        [HideInInspector] m_end_Fur_Mask("Mask", Float) = 0
+
+        // Shit for thry
+        [HideInInspector] GeometryShader_Enabled("Enabled", Float) = 1
+        [HideInInspector] GeometryShader_EnabledForwardBase("Enabled (ForwardBase)", Float) = 1
+        [HideInInspector] GeometryShader_EnabledForwardAdd("Enabled (ForwardAdd)", Float) = 1
+        [HideInInspector] GeometryShader_EnabledShadowCaster("Enabled (ShadowCaster)", Float) = 1
+        [HideInInspector] m_end_Fur("Fur", Float) = 0
+        //endex
+
         //ifex _Custom30_Enabled==0
         [HideInInspector] m_start_Custom30("Custom 30", Float) = 0
         [ThryToggle(_CUSTOM30)]_Custom30_Enabled("Enable", Float) = 0
@@ -2450,6 +2471,10 @@ Shader "yum_food/2ner"
       #pragma domain domain
       //endex
 
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
+
       #define DEPTH_PREPASS
 
       #include "2ner.cginc"
@@ -2496,6 +2521,10 @@ Shader "yum_food/2ner"
       #pragma multi_compile_instancing
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
 
       #define MASKED_STENCIL1_PASS
 
@@ -2544,6 +2573,10 @@ Shader "yum_food/2ner"
       #pragma vertex vert
       #pragma fragment frag
 
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
+
       #define MASKED_STENCIL2_PASS
 
       #include "2ner.cginc"
@@ -2591,6 +2624,10 @@ Shader "yum_food/2ner"
       #pragma vertex vert
       #pragma fragment frag
 
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
+
       #define MASKED_STENCIL3_PASS
 
       #include "2ner.cginc"
@@ -2637,6 +2674,10 @@ Shader "yum_food/2ner"
       #pragma multi_compile_instancing
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
 
       #define MASKED_STENCIL4_PASS
 
@@ -2699,6 +2740,10 @@ Shader "yum_food/2ner"
       #pragma domain domain
       //endex
 
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
+
       #define FORWARD_BASE_PASS
 
       #include "2ner.cginc"
@@ -2754,6 +2799,10 @@ Shader "yum_food/2ner"
       #pragma domain domain
       //endex
 
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
+
       #define FORWARD_ADD_PASS
 
       #include "2ner.cginc"
@@ -2799,6 +2848,10 @@ Shader "yum_food/2ner"
       #pragma multi_compile_instancing
       #pragma vertex vert
       #pragma fragment frag
+
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
+      //endex
 
       #define EXTRA_STENCIL_COLOR_PASS
 
@@ -2855,6 +2908,10 @@ Shader "yum_food/2ner"
       //ifex _Tessellation_Enabled==0
       #pragma hull hull
       #pragma domain domain
+      //endex
+
+      //ifex _Fur_Enabled==0
+      #pragma geometry geom
       //endex
 
       #define OUTLINE_PASS

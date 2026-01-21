@@ -140,6 +140,12 @@ void applySeaFoam(v2f i, inout YumPbr pbr) {
 YumPbr GetYumPbr(v2f i, float3x3 tangentToWorld) {
   YumPbr result = (YumPbr)0;
 
+#if defined(_FUR)
+  float fur_layer = i.vertexLight.w;
+  float fur_thickness = _Fur_Heightmap.SampleBias(trilinear_aniso4_repeat_s, i.uv01.xy * _Fur_Heightmap_ST.xy, _Fur_Heightmap_Mip_Bias).r;
+  clip(fur_thickness - fur_layer / _Fur_Layers);
+#endif
+
   float2 raw_uv = i.uv01.xy;
 #if defined(_UV_DOMAIN_WARPING)
   {

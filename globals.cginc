@@ -143,6 +143,19 @@ float _Outline_Mask_Invert;
 #endif
 #endif
 
+#if defined(_FUR)
+float _Fur_Thickness;
+int _Fur_Layers;
+texture2D _Fur_Heightmap;
+float4 _Fur_Heightmap_ST;
+float _Fur_Heightmap_Mip_Bias;
+#endif
+
+#if defined(_FUR_MASK)
+texture2D _Fur_Mask;
+float4 _Fur_Mask_ST;
+#endif
+
 #define MATCAP_MODE_REPLACE     0
 #define MATCAP_MODE_ADD         1
 #define MATCAP_MODE_MULTIPLY    2

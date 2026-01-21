@@ -27,14 +27,16 @@ struct v2f {
 	float3 worldPos    : TEXCOORD3;
 	float3 normal      : TEXCOORD4;
 	float3 tangent     : TEXCOORD5;
-	float3 binormal    : TEXCOORD6;
-  float4 eyeVec      : TEXCOORD7; // eyeVec.xyz | fogCoord
-  float4 color       : TEXCOORD8;
-  float3 vertexLight : TEXCOORD9;
-  UNITY_LIGHTING_COORDS(10,11)
+  float4 eyeVec      : TEXCOORD6; // eyeVec.xyz | fogCoord
+  float4 vertexLight : TEXCOORD7; // vertexLight.xyz | furLayer
+  UNITY_LIGHTING_COORDS(8,9)
 
-#if defined(_TROCHOID)
-  float3 orig_pos : TEXCOORD12;
+#if defined(V2F_ORIG_POS)
+  float3 orig_pos : TEXCOORD10;
+#endif
+
+#if defined(V2F_COLOR)
+  float4 color       : TEXCOORD11;
 #endif
 
   UNITY_VERTEX_INPUT_INSTANCE_ID
