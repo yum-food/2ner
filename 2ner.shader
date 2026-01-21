@@ -114,6 +114,7 @@ Shader "yum_food/2ner"
         [IntRange] _Fur_Layers("Layers", Range(1, 12)) = 1
         _Fur_Heightmap("Heightmap", 2D) = "black" {}
         _Fur_Heightmap_Mip_Bias("Heightmap mip bias", Range(-4, 4)) = 0
+        _Fur_AO_Strength("Ambient occlusion strength", Range(0, 1)) = 1
 
         [HideInInspector] m_start_Fur_Mask("Mask", Float) = 0
         [ThryToggle(_FUR_MASK)]_Fur_Mask_Enabled("Enable", Float) = 0

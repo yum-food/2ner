@@ -137,14 +137,25 @@ void applySeaFoam(v2f i, inout YumPbr pbr) {
 }
 #endif
 
+// Returns fur thickness on [0, 1], 0 = no fur, 1 = max fur.
+float FurClip(v2f i, f2f f, inout YumPbr result) {
+#if defined(_FUR)
+  float fur_layer = i.vertexLight.w;
+  float2 fur_uv = i.uv01.xy * _Fur_Heightmap_ST.xy;
+  float fur_thickness = _Fur_Heightmap.SampleBias(
+      trilinear_aniso4_repeat_s, fur_uv,
+      _Fur_Heightmap_Mip_Bias).r;
+  clip(fur_thickness - fur_layer / _Fur_Layers);
+  return fur_thickness;
+#else
+  return 0;
+#endif
+}
+
 YumPbr GetYumPbr(v2f i, f2f f, float3x3 tangentToWorld) {
   YumPbr result = (YumPbr)0;
 
-#if defined(_FUR)
-  float fur_layer = i.vertexLight.w;
-  float fur_thickness = _Fur_Heightmap.SampleBias(trilinear_aniso4_repeat_s, i.uv01.xy * _Fur_Heightmap_ST.xy, _Fur_Heightmap_Mip_Bias).r;
-  clip(fur_thickness - fur_layer / _Fur_Layers);
-#endif
+  float fur_thickness = FurClip(i, f, result);
 
   float2 raw_uv = i.uv01.xy;
 #if defined(_UV_DOMAIN_WARPING)
@@ -244,6 +255,10 @@ YumPbr GetYumPbr(v2f i, f2f f, float3x3 tangentToWorld) {
   result.ao = saturate(result.ao);
 #else
   result.ao = 1;
+#endif
+
+#if defined(_FUR)
+  result.ao = lerp(result.ao, 0, fur_thickness * _Fur_AO_Strength);
 #endif
 
   applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness, result.emission);

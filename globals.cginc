@@ -149,6 +149,7 @@ int _Fur_Layers;
 texture2D _Fur_Heightmap;
 float4 _Fur_Heightmap_ST;
 float _Fur_Heightmap_Mip_Bias;
+float _Fur_AO_Strength;
 #endif
 
 #if defined(_FUR_MASK)

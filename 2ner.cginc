@@ -225,7 +225,7 @@ v2f vert(appdata v) {
 }
 
 //ifex _Fur_Enabled==0
-[maxvertexcount(3 * 9)]
+[maxvertexcount(3 * 10)]
 void geom(triangle v2f input[3], inout TriangleStream<v2f> stream) {
 #if defined(_FUR)
 #if defined(_FUR_MASK)
@@ -431,7 +431,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
   float4x4 tangentToWorld = float4x4(
     float4(i.tangent, 0),
-    float4(cross(i.tangent, i.normal), 0),
+    float4(f.binormal, 0),
     float4(i.normal, 0),
     float4(0, 0, 0, 1)
   );
