@@ -145,7 +145,7 @@ float FurClip(v2f i, f2f f, inout YumPbr result) {
   float fur_thickness = _Fur_Heightmap.SampleBias(
       trilinear_aniso4_repeat_s, fur_uv,
       _Fur_Heightmap_Mip_Bias).r;
-  clip(fur_thickness - fur_layer / _Fur_Layers);
+  clip(fur_thickness - fur_layer);
   return fur_thickness;
 #else
   return 0;
@@ -258,7 +258,7 @@ YumPbr GetYumPbr(v2f i, f2f f, float3x3 tangentToWorld) {
 #endif
 
 #if defined(_FUR)
-  result.ao = lerp(result.ao, 0, fur_thickness * _Fur_AO_Strength);
+  result.ao = lerp(result.ao, result.ao * fur_thickness, _Fur_AO_Strength);
 #endif
 
   applyDecals(i, result.albedo, normal_tangent, result.metallic, result.smoothness, result.emission);

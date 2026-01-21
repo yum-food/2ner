@@ -108,8 +108,13 @@ float4 frag_meta (v2f_meta i) : SV_Target
 #if defined(V2F_COLOR)
     pbr_input.color = i.color;
 #endif
+
+    f2f f = (f2f) 0;
+    f.binormal = cross(i.tangent, i.normal);
+    f.eyeVec = i.worldPos - _WorldSpaceCameraPos;
+    f.viewDir = normalize(f.eyeVec);
     
-    YumPbr pbr = GetYumPbr(pbr_input, tangentToWorld);
+    YumPbr pbr = GetYumPbr(pbr_input, f, tangentToWorld);
 
 #if defined(_CUSTOM30)
 #if defined(_CUSTOM30_BASICCUBE)

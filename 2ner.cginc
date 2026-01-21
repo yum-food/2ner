@@ -254,7 +254,7 @@ void geom(triangle v2f input[3], inout TriangleStream<v2f> stream) {
       o.worldPos.xyz += normal_ws * offset;
       o.objPos.xyz += o.normal * offset;
       o.pos = UnityWorldToClipPos(o.worldPos);
-      o.vertexLight.w = layer;
+      o.vertexLight.w = t;
       stream.Append(o);
     }
     stream.RestartStrip();
