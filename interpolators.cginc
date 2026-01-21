@@ -43,4 +43,9 @@ struct v2f {
   UNITY_VERTEX_OUTPUT_STEREO
 };
 
+// Fragment shader common data (fragment 2 fragment)
+struct f2f {
+  float3 binormal;
+};
+
 #endif  // __INTERPOLATORS_INC

@@ -333,7 +333,7 @@ float3 applyQuasiShadows(float3 color, YumLighting light) {
   return result;
 }
 
-YumLighting GetYumLighting(v2f i, YumPbr pbr) {
+YumLighting GetYumLighting(v2f i, f2f f, YumPbr pbr) {
 	YumLighting light = (YumLighting) 0;
 
   // normalize has no visibile impact in test scene
@@ -347,9 +347,8 @@ YumLighting GetYumLighting(v2f i, YumPbr pbr) {
 	// Calculate attenuation first, before diffuse lighting
   light.attenuation = getShadowAttenuation(i);
 
-  float3 binormal = cross(i.tangent, i.normal);
-	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, binormal, i.normal)));
-	float3x3 tangentToWorld = float3x3(i.tangent, binormal, i.normal);
+	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, f.binormal, i.normal)));
+	float3x3 tangentToWorld = float3x3(i.tangent, f.binormal, i.normal);
 
 	// Use Bakery-aware irradiance function
 #if defined(LIGHTMAP_ON)

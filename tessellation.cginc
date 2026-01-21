@@ -30,7 +30,6 @@ bool cullPatch(float4 p0, float4 p1, float4 p2, float bias) {
 
 float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent) {
 #if defined(_TESSELLATION) && defined(_TESSELLATION_HEIGHTMAP)
-  float3 binormal = cross(tangent, normal);
   float3 height = 0;
 #if defined(_TESSELLATION_HEIGHTMAP_0)
   float3 heightmap_0_sample = _Tessellation_Heightmap_0.SampleLevel(bilinear_repeat_s,
@@ -77,6 +76,7 @@ float4 applyHeightmap(float4 objPos, float2 uv, float3 normal, float3 tangent) {
   objPos.xyz += mul(unity_WorldToObject, height).xyz;
 #else
 #if defined(_TESSELLATION_HEIGHTMAP_DIRECTION_CONTROL)
+  float3 binormal = cross(tangent, normal);
   float3 heightmap_direction = normalize(
     normalize(normal) * _Tessellation_Heightmap_Direction_Control_Vector.x +
     normalize(tangent) * _Tessellation_Heightmap_Direction_Control_Vector.y +

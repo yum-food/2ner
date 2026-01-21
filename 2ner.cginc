@@ -286,11 +286,14 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
   i.normal *= facing ? 1 : -1;
   i.normal = UnityObjectToWorldNormal(i.normal);
-  i.tangent = mul(unity_ObjectToWorld, i.tangent);
+  i.tangent = UnityObjectToWorldNormal(i.tangent);
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
   i.tangent = normalize(i.tangent);
+
+  f2f f = (f2f) 0;
+  f.binormal = cross(i.tangent, i.normal);
 
 #if defined(_RAYMARCHED_FOG)
   {
@@ -520,7 +523,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS) || defined(OUTLINE_PASS) || defined(EXTRA_STENCIL_COLOR_PASS)
-  YumLighting l = GetYumLighting(i, pbr);
+  YumLighting l = GetYumLighting(i, f, pbr);
 
 #if defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS)
   applyMatcapsAndRimLighting(i, pbr, l);
