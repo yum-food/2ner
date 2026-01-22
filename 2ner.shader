@@ -121,6 +121,12 @@ Shader "yum_food/2ner"
         _Fur_Mask("Mask", 2D) = "white" {}
         [HideInInspector] m_end_Fur_Mask("Mask", Float) = 0
 
+        [HideInInspector] m_start_Fur_Warping("Warping", Float) = 0
+        [ThryToggle(_FUR_WARPING)]_Fur_Warping_Enabled("Enable", Float) = 0
+        _Fur_Warping_Strength("Strength", Range(0, 10)) = 1
+        _Fur_Warping_Frequency("Frequency", Float) = 1
+        [HideInInspector] m_end_Fur_Warping("Warping", Float) = 0
+
         // Shit for thry
         [HideInInspector] GeometryShader_Enabled("Enabled", Float) = 1
         [HideInInspector] GeometryShader_EnabledForwardBase("Enabled (ForwardBase)", Float) = 1

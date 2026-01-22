@@ -310,4 +310,54 @@ float2 hex_to_cart(float3 cart) {
 // Rotate 45 degrees.
 float2 rot45(float2 v) { return float2(v.x - v.y, v.x + v.y) * RCP_SQRT_2; }
 
+// p = point to get noise for
+float valueNoise2D(
+    float2 p) {
+  // quantized part
+  float2 q = floor(p);
+  // fractional part
+  float2 f = frac(p);
+
+  float l00 = rand2(q);
+  float l01 = rand2(q + float2(0, 1));
+  float l10 = rand2(q + float2(1, 0));
+  float l11 = rand2(q + float2(1, 1));
+
+  // Cubic interpolation.
+  f = f * f * (3.0f - 2.0f * f);
+
+  float l0 = lerp(l00, l01, f.y);
+  float l1 = lerp(l10, l11, f.y);
+  return lerp(l0, l1, f.x);
+}
+
+// p = point to get noise for
+float valueNoise3D(
+    float3 p) {
+  // quantized part
+  float3 q = floor(p);
+  // fractional part
+  float3 f = frac(p);
+
+  float l000 = rand3(q);
+  float l001 = rand3(q + float3(0, 0, 1));
+  float l010 = rand3(q + float3(0, 1, 0));
+  float l011 = rand3(q + float3(0, 1, 1));
+  float l100 = rand3(q + float3(1, 0, 0));
+  float l101 = rand3(q + float3(1, 0, 1));
+  float l110 = rand3(q + float3(1, 1, 0));
+  float l111 = rand3(q + float3(1, 1, 1));
+
+  // Cubic interpolation.
+  f = f * f * (3.0f - 2.0f * f);
+
+  float l00 = lerp(l000, l001, f.z);
+  float l01 = lerp(l010, l011, f.z);
+  float l10 = lerp(l100, l101, f.z);
+  float l11 = lerp(l110, l111, f.z);
+  float l0 = lerp(l00, l01, f.y);
+  float l1 = lerp(l10, l11, f.y);
+  return lerp(l0, l1, f.x);
+}
+
 #endif  // __MATH_INC

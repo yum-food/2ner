@@ -257,7 +257,7 @@ void geom(triangle v2f input[3], inout TriangleStream<v2f> stream) {
       o.vertexLight.w = t;
       stream.Append(o);
     }
-    stream.RestartStrip();
+    // We do not restart strips. Looks a little nicer.
   }
 #else
   stream.Append(input[0]);
@@ -294,6 +294,11 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   f.binormal = cross(i.tangent, i.normal);
   f.eyeVec = i.worldPos - _WorldSpaceCameraPos;
   f.viewDir = normalize(f.eyeVec);
+  f.tbn = float3x3(
+    i.tangent,
+    f.binormal,
+    i.normal
+  );
 
 #if defined(_RAYMARCHED_FOG)
   {
@@ -429,19 +434,12 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #endif
 #endif
 
-  float4x4 tangentToWorld = float4x4(
-    float4(i.tangent, 0),
-    float4(f.binormal, 0),
-    float4(i.normal, 0),
-    float4(0, 0, 0, 1)
-  );
-
   float ssao = 1;
 #if defined(_SSAO)
 	float2 debug;
-	ssao = get_ssao(i, tangentToWorld, debug);
+	ssao = get_ssao(i, f, debug);
 #endif
-  YumPbr pbr = GetYumPbr(i, f, tangentToWorld);
+  YumPbr pbr = GetYumPbr(i, f);
 	pbr.albedo.rgb *= ssao;
 
 #if defined(META_PASS)

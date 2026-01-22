@@ -142,6 +142,13 @@ float FurClip(v2f i, f2f f, inout YumPbr result) {
 #if defined(_FUR)
   float fur_layer = i.vertexLight.w;
   float2 fur_uv = i.uv01.xy * _Fur_Heightmap_ST.xy;
+
+#if defined(_FUR_WARPING)
+  float2 vnoise = valueNoise3D(i.objPos * _Fur_Warping_Frequency);
+  float3 vnoise_tbn = mul(vnoise, f.tbn);
+  fur_uv += vnoise_tbn.xy * (_Fur_Warping_Strength / _Fur_Warping_Frequency);
+#endif
+
   float fur_thickness = _Fur_Heightmap.SampleBias(
       trilinear_aniso4_repeat_s, fur_uv,
       _Fur_Heightmap_Mip_Bias).r;
@@ -152,7 +159,7 @@ float FurClip(v2f i, f2f f, inout YumPbr result) {
 #endif
 }
 
-YumPbr GetYumPbr(v2f i, f2f f, float3x3 tangentToWorld) {
+YumPbr GetYumPbr(v2f i, f2f f) {
   YumPbr result = (YumPbr)0;
 
   float fur_thickness = FurClip(i, f, result);
@@ -280,7 +287,7 @@ YumPbr GetYumPbr(v2f i, f2f f, float3x3 tangentToWorld) {
   result.albedo.rgb = OKLABtoLRGB(lab);
 #endif
 
-  result.normal = normalize(mul(normal_tangent, tangentToWorld));
+  result.normal = normalize(mul(normal_tangent, f.tbn));
 
 #if defined(_GRADIENT_NORMALS)
   applyGradientNormals(i, result);

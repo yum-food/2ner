@@ -47,6 +47,7 @@ struct f2f {
   float3 binormal;
   float3 eyeVec;
   float3 viewDir;
+  float3x3 tbn;
 };
 
 #endif  // __INTERPOLATORS_INC

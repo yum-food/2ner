@@ -157,6 +157,11 @@ texture2D _Fur_Mask;
 float4 _Fur_Mask_ST;
 #endif
 
+#if defined(_FUR_WARPING)
+float _Fur_Warping_Strength;
+float _Fur_Warping_Frequency;
+#endif
+
 #define MATCAP_MODE_REPLACE     0
 #define MATCAP_MODE_ADD         1
 #define MATCAP_MODE_MULTIPLY    2

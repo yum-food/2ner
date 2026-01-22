@@ -77,6 +77,7 @@
 //ifex _Fur_Enabled==0
 #pragma shader_feature_local _FUR
 #pragma shader_feature_local _FUR_MASK
+#pragma shader_feature_local _FUR_WARPING
 //endex
 
 //ifex _Matcap0_Enabled==0

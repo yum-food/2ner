@@ -6,7 +6,7 @@
 #include "interpolators.cginc"
 
 #if defined(_SSAO)
-float get_ssao(v2f i, float3x3 tangentToWorld, out float2 debug) {
+float get_ssao(v2f i, f2f f, out float2 debug) {
   float3 objPos = mul(unity_WorldToObject, float4(i.worldPos, 1));
   float4 clipPos = UnityObjectToClipPos(objPos);
   float4 screenPos = ComputeScreenPos(clipPos);
@@ -47,7 +47,7 @@ float get_ssao(v2f i, float3x3 tangentToWorld, out float2 debug) {
     sample_point.xy = mul(ssao_rot, sample_point.xy);
 
     // Remap to world space.
-    sample_point = mul(sample_point, tangentToWorld);
+    sample_point = mul(sample_point, f.tbn);
     float scale = (ii * 1.0f) / _SSAO_Samples;
     sample_point *= lerp(0.1f, 1.0f, scale * scale) * _SSAO_Radius;
 
