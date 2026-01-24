@@ -111,10 +111,14 @@ Shader "yum_food/2ner"
         [HideInInspector] m_start_Fur("Fur", Float) = 0
         [ThryToggle(_FUR)]_Fur_Enabled("Enable", Float) = 0
         _Fur_Thickness("Thickness", Float) = 1
-        [IntRange] _Fur_Layers("Layers", Range(1, 12)) = 1
+        [IntRange] _Fur_Layers("Layers", Range(1, 30)) = 1
         _Fur_Heightmap("Heightmap", 2D) = "black" {}
         _Fur_Heightmap_Mip_Bias("Heightmap mip bias", Range(-4, 4)) = 0
         _Fur_AO_Strength("Ambient occlusion strength", Range(0, 1)) = 1
+        _Fur_Gravity_Strength("Gravity strength", Range(0, 1)) = 1
+        _Fur_Thickness_Power("Thickness power", Range(-1, 5)) = 0
+        _Fur_Min_Dist("Min distance", Float) = 3
+        _Fur_Max_Dist("Max distance", Float) = 10
 
         [HideInInspector] m_start_Fur_Mask("Mask", Float) = 0
         [ThryToggle(_FUR_MASK)]_Fur_Mask_Enabled("Enable", Float) = 0

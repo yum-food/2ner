@@ -194,7 +194,6 @@ v2f domain(
   o.objPos = applyHeightmap(o.objPos, o.uv01.xy, o.normal, o.tangent);
 
   o.pos      = UnityObjectToClipPos(o.objPos);
-  o.worldPos = mul(unity_ObjectToWorld, o.objPos).xyz;
 
   //UNITY_TRANSFER_LIGHTING(o, v);
   UNITY_TRANSFER_INSTANCE_ID(patch[0], o);

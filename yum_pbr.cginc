@@ -144,7 +144,7 @@ float FurClip(v2f i, f2f f, inout YumPbr result) {
   float2 fur_uv = i.uv01.xy * _Fur_Heightmap_ST.xy;
 
 #if defined(_FUR_WARPING)
-  float2 vnoise = valueNoise3D(i.objPos * _Fur_Warping_Frequency);
+  float2 vnoise = valueNoise3D(i.objPos * _Fur_Warping_Frequency) * 2 - 1;
   float3 vnoise_tbn = mul(vnoise, f.tbn);
   fur_uv += vnoise_tbn.xy * (_Fur_Warping_Strength / _Fur_Warping_Frequency);
 #endif
@@ -152,6 +152,7 @@ float FurClip(v2f i, f2f f, inout YumPbr result) {
   float fur_thickness = _Fur_Heightmap.SampleBias(
       trilinear_aniso4_repeat_s, fur_uv,
       _Fur_Heightmap_Mip_Bias).r;
+  fur_thickness = tone(fur_thickness, _Fur_Thickness_Power);
   clip(fur_thickness - fur_layer);
   return fur_thickness;
 #else
@@ -308,6 +309,11 @@ YumPbr GetYumPbr(v2f i, f2f f) {
   glitter_p.center_randomization_range = _Glitter_Center_Randomization_Range;
   glitter_p.size_randomization_range = _Glitter_Size_Randomization_Range;
   glitter_p.existence_chance = _Glitter_Existence_Chance;
+#if defined(_FUR)
+  glitter_p.seed = floor(i.vertexLight.w * _Fur_Layers);
+#else
+  glitter_p.seed = 0;
+#endif
 #if defined(_GLITTER_ANGLE_LIMIT)
   glitter_p.angle_limit = _Glitter_Angle_Limit;
   glitter_p.angle_limit_transition_width = _Glitter_Angle_Limit_Transition_Width;

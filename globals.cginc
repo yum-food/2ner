@@ -150,6 +150,10 @@ texture2D _Fur_Heightmap;
 float4 _Fur_Heightmap_ST;
 float _Fur_Heightmap_Mip_Bias;
 float _Fur_AO_Strength;
+float _Fur_Gravity_Strength;
+float _Fur_Thickness_Power;
+float _Fur_Min_Dist;
+float _Fur_Max_Dist;
 #endif
 
 #if defined(_FUR_MASK)

@@ -360,4 +360,10 @@ float valueNoise3D(
   return lerp(l0, l1, f.x);
 }
 
+// Fixed version of quilez's `tone` here:
+// https://iquilezles.org/articles/functions/
+float tone(float x, float k) {
+  return (x * (k + 1)) / (k * x + 1);
+}
+
 #endif  // __MATH_INC

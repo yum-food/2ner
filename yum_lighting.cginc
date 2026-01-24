@@ -114,33 +114,33 @@ struct YumLighting {
   Light derivedLight;
 };
 
-float getShadowAttenuation(v2f i)
+float getShadowAttenuation(v2f i, f2f f)
 {
 	float attenuation;
 	float shadow;
 	// This whole block is yoinked from AutoLight.cginc. I needed a way to
 	// control shadow strength so I had to duplicate the code.
 #if defined(DIRECTIONAL_COOKIE)
-	DECLARE_LIGHT_COORD(i, i.worldPos);
-	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	DECLARE_LIGHT_COORD(i, f.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, f.worldPos);
 	attenuation = tex2D(_LightTexture0, lightCoord).w;
 #elif defined(POINT_COOKIE)
-	DECLARE_LIGHT_COORD(i, i.worldPos);
-	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	DECLARE_LIGHT_COORD(i, f.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, f.worldPos);
 	attenuation = tex2D(_LightTextureB0, dot(lightCoord, lightCoord).rr).r *
 		texCUBE(_LightTexture0, lightCoord).w;
 #elif defined(DIRECTIONAL)
-	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, f.worldPos);
 	attenuation = 1;
 #elif defined(SPOT)
-	DECLARE_LIGHT_COORD(i, i.worldPos);
-	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+	DECLARE_LIGHT_COORD(i, f.worldPos);
+	shadow = UNITY_SHADOW_ATTENUATION(i, f.worldPos);
 	attenuation = (lightCoord.z > 0) * UnitySpotCookie(lightCoord) *
     UnitySpotAttenuate(lightCoord.xyz);
 #elif defined(POINT)
 	unityShadowCoord3 lightCoord =
-    mul(unity_WorldToLight, unityShadowCoord4(i.worldPos, 1)).xyz;
-	shadow = UNITY_SHADOW_ATTENUATION(i, i.worldPos);
+    mul(unity_WorldToLight, unityShadowCoord4(f.worldPos, 1)).xyz;
+	shadow = UNITY_SHADOW_ATTENUATION(i, f.worldPos);
 	attenuation = tex2D(_LightTexture0, dot(lightCoord, lightCoord).rr).r;
 #else
 	shadow = 1;
@@ -148,14 +148,14 @@ float getShadowAttenuation(v2f i)
 #endif
 	float realtimeAttenuation = attenuation * lerp(1, shadow, _Shadow_Strength);
 
-	GetBakedAttenuation(realtimeAttenuation, i.uv01.zw, i.worldPos);
+	GetBakedAttenuation(realtimeAttenuation, i.uv01.zw, f.worldPos);
 
 	return realtimeAttenuation;
 }
 
-float3 getDirectLightDirection(v2f i) {
+float3 getDirectLightDirection(v2f i, f2f f) {
 #if defined(POINT) || defined(POINT_COOKIE) || defined(SPOT)
-	return normalize((_WorldSpaceLightPos0 - i.worldPos).xyz);
+	return normalize((_WorldSpaceLightPos0 - f.worldPos).xyz);
 #else
 	return _WorldSpaceLightPos0;
 #endif
@@ -165,11 +165,11 @@ float GetLodRoughness(float roughness) {
 	return roughness * (1.7 - 0.7 * roughness);
 }
 
-float3 getIndirectSpecular(v2f i, YumPbr pbr, float3 view_dir, float diffuse_luminance) {
+float3 getIndirectSpecular(v2f i, f2f f, YumPbr pbr, float3 view_dir, float diffuse_luminance) {
   float3 reflect_dir = reflect(-view_dir, pbr.normal);
 
   UnityGIInput data;
-  data.worldPos = i.worldPos;
+  data.worldPos = f.worldPos;
   data.worldViewDir = view_dir;
   data.probeHDR[0] = unity_SpecCube0_HDR;
   data.probeHDR[1] = unity_SpecCube1_HDR;
@@ -310,12 +310,13 @@ float3 yumSH9(float4 n, float3 worldPos, inout YumLighting light) {
 }
 
 float4 getIndirectDiffuse(v2f i,
+    f2f f,
     float3 normal,
     float4 vertexLightColor,
     inout YumLighting light) {
   float4 diffuse = vertexLightColor;
 #if defined(FORWARD_BASE_PASS)
-  diffuse.xyz += max(0, yumSH9(float4(normal, 0), i.worldPos, light));
+  diffuse.xyz += max(0, yumSH9(float4(normal, 0), f.worldPos, light));
 #endif
   return diffuse;
 }
@@ -339,22 +340,22 @@ YumLighting GetYumLighting(v2f i, f2f f, YumPbr pbr) {
   // normalize has no visibile impact in test scene
   light.view_dir = -f.viewDir;
 
-  light.dir = getDirectLightDirection(i);
+  light.dir = getDirectLightDirection(i, f);
 
 	// Use proper light color/intensity separation
 	light.direct = _LightColor0.rgb;
 
 	// Calculate attenuation first, before diffuse lighting
-  light.attenuation = getShadowAttenuation(i);
+  light.attenuation = getShadowAttenuation(i, f);
 
-	float3 tangentNormal = mul(pbr.normal, transpose(float3x3(i.tangent, f.binormal, i.normal)));
+	float3 tangentNormal = mul(f.tbn, pbr.normal);
 	float3x3 tangentToWorld = float3x3(i.tangent, f.binormal, i.normal);
 
 	// Use Bakery-aware irradiance function
 #if defined(LIGHTMAP_ON)
 	light.diffuse = BakeryGI_Irradiance(
 			pbr.normal,           // worldNormal
-			i.worldPos,           // worldPos
+			f.worldPos,           // worldPos
 			float4(i.uv01.zw, 0, 0),               // lightmapUV (xy = uv0, zw = uv1)
 			float3(0,0,0),        // ambient (will be calculated internally)
 			light.attenuation,    // attenuation
@@ -367,7 +368,7 @@ YumLighting GetYumLighting(v2f i, f2f f, YumPbr pbr) {
   light.diffuse.gb = light.diffuse.r;
 #endif
 #else
-  light.diffuse = getIndirectDiffuse(i, pbr.normal, float4(i.vertexLight.xyz, 0), light);
+  light.diffuse = getIndirectDiffuse(i, f, pbr.normal, float4(i.vertexLight.xyz, 0), light);
   light.occlusion = 1;
 #endif
 
@@ -376,13 +377,13 @@ YumLighting GetYumLighting(v2f i, f2f f, YumPbr pbr) {
 #endif
 
   light.diffuse_luminance = luminance(light.diffuse);
-  light.specular = getIndirectSpecular(i, pbr, light.view_dir, light.diffuse_luminance);
+  light.specular = getIndirectSpecular(i, f, pbr, light.view_dir, light.diffuse_luminance);
 
 #if defined(_LTCGI)
   ltcgi_acc acc = (ltcgi_acc) 0;
   LTCGI_Contribution(
       acc,
-      i.worldPos,
+      f.worldPos,
       pbr.normal,
       light.view_dir,
       pbr.roughness_perceptual,

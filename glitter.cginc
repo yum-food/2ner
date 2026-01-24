@@ -16,6 +16,7 @@ struct GlitterParams {
     float center_randomization_range;
     float size_randomization_range;
     float existence_chance;
+    float seed;
 #if defined(_GLITTER_ANGLE_LIMIT)
     float angle_limit;
     float angle_limit_transition_width;
@@ -43,8 +44,8 @@ float4 getGlitter(v2f i, f2f f, GlitterParams params, float3 normal) {
     float2 p = uv + glitter_offset_vectors[layer_i] * params.cell_size * 0.5;
 
     float3 cell_id = float3(floor(p / params.cell_size), layer_i);
-    float cell_rand = rand3(cell_id*.0001);
-    float cell_rand2 = rand3((cell_id+1)*.0001);
+    float cell_rand = rand3(cell_id*.0001+params.seed);
+    float cell_rand2 = rand3((cell_id+1)*.0001+params.seed);
     p = glsl_mod(p, params.cell_size);
     p -= params.cell_size * 0.5;
     // Apply center randomization

@@ -74,7 +74,7 @@ float singleBounceAO(float visibility) {
   return visibility; // Simplified version
 }
 
-float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
+float4 YumBRDF(v2f i, f2f f, const YumLighting light, YumPbr pbr) {
   const float3 h = normalize(light.view_dir + light.dir);
   const float LoH = saturate(dot(light.dir, h));
   const float NoL = light.NoL;
@@ -208,7 +208,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
 #endif
 
     UnityGIInput cc_data;
-    cc_data.worldPos = i.worldPos;
+    cc_data.worldPos = f.worldPos;
     cc_data.worldViewDir = light.view_dir;
     cc_data.probeHDR[0] = unity_SpecCube0_HDR;
     cc_data.probeHDR[1] = unity_SpecCube1_HDR;
@@ -229,7 +229,7 @@ float4 YumBRDF(v2f i, const YumLighting light, YumPbr pbr) {
     // Set up data for fallback sampling similar to Unity's system
 
     #ifdef UNITY_SPECCUBE_BOX_PROJECTION
-      cc_reflect_dir = BoxProjectedCubemapDirection(cc_reflect_dir, i.worldPos, /*probe_position=*/0, /*box_min=*/-1, /*box_max=*/1);
+      cc_reflect_dir = BoxProjectedCubemapDirection(cc_reflect_dir, f.worldPos, /*probe_position=*/0, /*box_min=*/-1, /*box_max=*/1);
     #endif
 
     half mip = cc_roughness_perceptual * UNITY_SPECCUBE_LOD_STEPS;

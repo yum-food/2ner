@@ -185,7 +185,6 @@ v2f vert(appdata v) {
     o.uv23.z = 1.0 - o.uv23.z;
   }
 #endif
-  o.worldPos = mul(unity_ObjectToWorld, v.vertex);
   o.objPos = v.vertex;
 
   // These are used to convert normals from tangent space to world space.
@@ -206,16 +205,17 @@ v2f vert(appdata v) {
 
   // Calculate vertex lights
   #ifdef VERTEXLIGHT_ON
+    float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
     #if defined(_WRAPPED_LIGHTING)
       o.vertexLight = Shade4PointLightsWrapped(
         unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
         unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
-        unity_4LightAtten0, o.worldPos, o.normal, _Wrap_NoL_Diffuse_Strength);
+        unity_4LightAtten0, worldPos, o.normal, _Wrap_NoL_Diffuse_Strength);
     #else
       o.vertexLight = Shade4PointLights(
         unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
         unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
-        unity_4LightAtten0, o.worldPos, o.normal);
+        unity_4LightAtten0, worldPos, o.normal);
     #endif
   #else
     o.vertexLight = 0;
@@ -225,7 +225,7 @@ v2f vert(appdata v) {
 }
 
 //ifex _Fur_Enabled==0
-[maxvertexcount(3 * 10)]
+[maxvertexcount(30)]
 void geom(triangle v2f input[3], inout TriangleStream<v2f> stream) {
 #if defined(_FUR)
 #if defined(_FUR_MASK)
@@ -233,31 +233,44 @@ void geom(triangle v2f input[3], inout TriangleStream<v2f> stream) {
 #else
   float fur_mask = 1;
 #endif
+
+  stream.Append(input[0]);
+  stream.Append(input[1]);
+  stream.Append(input[2]);
+  stream.RestartStrip();
+
   [branch]
   if (fur_mask < 0.5) {
-    stream.Append(input[0]);
-    stream.Append(input[1]);
-    stream.Append(input[2]);
-    stream.RestartStrip();
     return;
   }
 
+  float3 gravDirObj = normalize(mul(unity_WorldToObject, float3(0, -1, 0)));
+
+  // Compute gravity direction minus component that would compress this shell.
+  // Could compute average normal but this is probably good enough.
+  float3 gravDirNoRegress = gravDirObj - min(0, input[0].normal * dot(gravDirObj, input[0].normal));
+
+  float3 worldPos = mul(unity_ObjectToWorld, input[0].objPos).xyz;
+  float radius = length(_WorldSpaceCameraPos - worldPos);
+  uint fur_layers = lerp(_Fur_Layers - 3, 5, saturate((radius - _Fur_Min_Dist) / (_Fur_Max_Dist - _Fur_Min_Dist)));
+
   [loop]
-  for (int layer = 0; layer < _Fur_Layers; layer++) {
-    float t = (float) layer / (float) max(_Fur_Layers - 1, 1);
+  for (uint layer = 0; layer < fur_layers; layer++) {
+    float t = (float) layer / (float) max(fur_layers - 4, 1);
+
     float offset = t * _Fur_Thickness;
 
-    [unroll]
-    for (int i = 0; i < 3; i++) {
-      v2f o = input[i];
-      float3 normal_ws = UnityObjectToWorldNormal(o.normal);
-      o.worldPos.xyz += normal_ws * offset;
-      o.objPos.xyz += o.normal * offset;
-      o.pos = UnityWorldToClipPos(o.worldPos);
-      o.vertexLight.w = t;
-      stream.Append(o);
-    }
-    // We do not restart strips. Looks a little nicer.
+    v2f o = input[layer % 3];
+    float3 normal_ws = UnityObjectToWorldNormal(o.normal);
+
+    float3 dir = lerp(o.normal, gravDirNoRegress, t * t * _Fur_Gravity_Strength);
+
+    o.objPos.xyz += dir * offset;
+
+    float3 worldPos = mul(unity_ObjectToWorld, o.objPos).xyz;
+    o.pos = UnityWorldToClipPos(worldPos);
+    o.vertexLight.w = t;
+    stream.Append(o);
   }
 #else
   stream.Append(input[0]);
@@ -291,8 +304,9 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   i.tangent = normalize(i.tangent);
 
   f2f f = (f2f) 0;
+  f.worldPos = mul(unity_ObjectToWorld, i.objPos);
   f.binormal = cross(i.tangent, i.normal);
-  f.eyeVec = i.worldPos - _WorldSpaceCameraPos;
+  f.eyeVec = f.worldPos - _WorldSpaceCameraPos;
   f.viewDir = normalize(f.eyeVec);
   f.tbn = float3x3(
     i.tangent,
@@ -424,7 +438,6 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
   Custom30Output c30_out = (Custom30Output) 0;
 #endif
   i.normal = c30_out.normal;
-  i.worldPos = mul(unity_ObjectToWorld, float4(c30_out.objPos, 1));
   float4 c30_clipPos = UnityObjectToClipPos(i.objPos);
   float4 c30_screenPos = ComputeScreenPos(c30_clipPos);
   i.pos = c30_screenPos;
@@ -535,7 +548,7 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 #if defined(_UNLIT)
   float4 lit = pbr.albedo;
 #else
-  float4 lit = YumBRDF(i, l, pbr);
+  float4 lit = YumBRDF(i, f, l, pbr);
 #endif
 
 #if defined(_HARNACK_TRACING)
