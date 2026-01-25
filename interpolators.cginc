@@ -25,7 +25,7 @@ struct v2f {
 	float4 uv23        : TEXCOORD1;  // just one more uv slot bro please
 	float4 objPos      : TEXCOORD2;
 	float3 normal      : TEXCOORD3;
-	float3 tangent     : TEXCOORD4;
+	float4 tangent     : TEXCOORD4;
   float4 vertexLight : TEXCOORD5; // vertexLight.xyz | furLayer
   UNITY_LIGHTING_COORDS(6,7)
 

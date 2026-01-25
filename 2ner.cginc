@@ -3,8 +3,8 @@
 
 #define HANDLE_SHADOWS_BLENDING_IN_GI
 
-#include "UnityStandardCoreMinimal.cginc"
 #include "UnityCG.cginc"
+#include "UnityStandardCoreMinimal.cginc"
 #include "UnityLightingCommon.cginc"
 #include "AutoLight.cginc"
 
@@ -189,7 +189,7 @@ v2f vert(appdata v) {
 
   // These are used to convert normals from tangent space to world space.
   o.normal = v.normal;
-  o.tangent = v.tangent.xyz;
+  o.tangent = v.tangent;
 
   UNITY_TRANSFER_LIGHTING(o, v.uv1);
   UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
@@ -297,19 +297,19 @@ float4 frag(v2f i, uint facing : SV_IsFrontFace
 
   i.normal *= facing ? 1 : -1;
   i.normal = UnityObjectToWorldNormal(i.normal);
-  i.tangent = UnityObjectToWorldNormal(i.tangent);
+  i.tangent.xyz = UnityObjectToWorldNormal(i.tangent.xyz);
 
   // Not necessarily normalized after interpolation
   i.normal = normalize(i.normal);
-  i.tangent = normalize(i.tangent);
+  i.tangent.xyz = normalize(i.tangent.xyz);
 
   f2f f = (f2f) 0;
   f.worldPos = mul(unity_ObjectToWorld, i.objPos);
-  f.binormal = cross(i.tangent, i.normal);
+  f.binormal = cross(i.normal, i.tangent.xyz) * i.tangent.w;
   f.eyeVec = f.worldPos - _WorldSpaceCameraPos;
   f.viewDir = normalize(f.eyeVec);
   f.tbn = float3x3(
-    i.tangent,
+    i.tangent.xyz,
     f.binormal,
     i.normal
   );

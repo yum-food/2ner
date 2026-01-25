@@ -10,6 +10,9 @@ struct YumPbr {
   float roughness_perceptual;
   float metallic;
   float ao;
+#if defined(_ANISOTROPY)
+  float3 binormal;
+#endif
 };
 
 #endif  // __DATA_INC

@@ -889,6 +889,19 @@ float D_GGX(float roughness, float NoH, const float3 h) {
 	return d;
 }
 
+// t = tangent vector, b = bitangent vector
+float D_GGX_Anisotropic(float at, float ab, float NoH,
+        const float3 h,
+        const float3 t, const float3 b) {
+    float ToH = dot(t, h);
+    float BoH = dot(b, h);
+    float a2 = at * ab;
+    float3 v = float3(ab * ToH, at * BoH, a2 * NoH);
+    float v2 = dot(v, v);
+    float w2 = a2 / v2;
+    return a2 * w2 * w2 * (1.0 / PI);
+}
+
 float F_Schlick(float f0, float VoH) {
 	return f0 + (1.0 - f0) * pow5(1.0 - VoH);
 }
@@ -933,6 +946,14 @@ float V_SmithGGXCorrelated_Fast(float roughness, float NoV, float NoL) {
     // Hammon 2017, "PBR Diffuse Lighting for GGX+Smith Microsurfaces"
     float v = 0.5 / lerp(2.0 * NoL * NoV, NoL + NoV, roughness);
     return v;
+}
+
+float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV,
+        float ToL, float BoL, float NoV, float NoL) {
+    float lambdaV = NoL * length(float3(at * ToV, ab * BoV, NoV));
+    float lambdaL = NoV * length(float3(at * ToL, ab * BoL, NoL));
+    float v = 0.5 / (lambdaV + lambdaL);
+    return saturate(v);
 }
 
 float perceptualRoughnessToRoughness(float perceptualRoughness) {

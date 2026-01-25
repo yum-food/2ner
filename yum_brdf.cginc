@@ -33,8 +33,8 @@ float V_Cloth(float NoV, float NoL) {
   return 1.0 / (4.0 * (NoL + NoV - NoL * NoV));
 }
 
-float3 specularLobe(YumPbr pbr, float3 f0,
-    float3 h, float LoH, float NoH, float NoV, float NoL)
+float3 specularLobe(v2f i, f2f f, YumPbr pbr, YumLighting light,
+    float3 f0, float3 h, float LoH, float NoH, float NoV, float NoL)
 {
 #if defined(_MATERIAL_TYPE_CLOTH)
   float D = D_Charlie(pbr.roughness, NoH);
@@ -49,10 +49,25 @@ float3 specularLobe(YumPbr pbr, float3 f0,
   float f90 = saturate(dot(f0, (50.0 * 0.33)));
   const float3 F = F_Schlick(f0, f90, LoH);
 #endif
-  // Normal distribution function
+
+#if defined(_ANISOTROPY)
+  float anisotropy = _Anisotropy_Strength;
+  // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
+  float3 b = pbr.binormal;
+  float3 t = i.tangent.xyz;
+  float at = max(pbr.roughness * (1.0 + anisotropy), 0.001);
+  float ab = max(pbr.roughness * (1.0 - anisotropy), 0.001);
+  float D = D_GGX_Anisotropic(at, ab, NoH, h, t, b);
+  float ToV = dot(t, light.view_dir);
+  float BoV = dot(b, light.view_dir);
+  float ToL = dot(t, light.dir);
+  float BoL = dot(b, light.dir);
+  float V = V_SmithGGXCorrelated_Anisotropic(at, ab,
+      ToV, BoV, ToL, BoL, NoV, NoL);
+#else
   float D = D_GGX(pbr.roughness, NoH, h);
-  // Geometric shadowing
   float V = V_SmithGGXCorrelated_Fast(pbr.roughness, NoV, NoL);
+#endif
   return (D * V) * F;
 #endif
 }
@@ -118,7 +133,7 @@ float4 YumBRDF(v2f i, f2f f, const YumLighting light, YumPbr pbr) {
     #endif
 
     // Cloth specular BRDF - multiply by PI to match Unity intensities
-    float3 Fr = specularLobe(pbr, float3(0.04, 0.04, 0.04), h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation;
+    float3 Fr = specularLobe(i, f, pbr, light, float3(0.04, 0.04, 0.04), h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation;
 
     #if defined(_MATERIAL_TYPE_CLOTH_SUBSURFACE)
       // No need to multiply by NoL when using subsurface scattering
@@ -163,7 +178,7 @@ float4 YumBRDF(v2f i, f2f f, const YumLighting light, YumPbr pbr) {
     Fd *= light.attenuation * pbr.ao * remainder;
 
     // Multiply by PI to match Unity intensities (same as Filament's implementation)
-    float3 Fr = specularLobe(pbr, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation * remainder;
+    float3 Fr = specularLobe(i, f, pbr, light, f0, h, LoH, NoH, NoV, NoL_wrapped_s) * PI * light.attenuation * remainder;
 
     // Apply energy compensation to specular term
     float3 color = Fd * NoL_wrapped_d + Fr * energy_compensation * NoL_wrapped_s;

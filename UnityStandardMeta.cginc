@@ -101,7 +101,6 @@ float4 frag_meta (v2f_meta i) : SV_Target
     v2f pbr_input;
     pbr_input.uv01 = i.uv01;
     pbr_input.uv23 = i.uv23;
-    pbr_input.worldPos = i.worldPos;
     pbr_input.objPos = float4(i.objPos, 1.0);
     pbr_input.normal = i.normal;
     pbr_input.tangent = i.tangent;
@@ -114,7 +113,7 @@ float4 frag_meta (v2f_meta i) : SV_Target
     f.eyeVec = i.worldPos - _WorldSpaceCameraPos;
     f.viewDir = normalize(f.eyeVec);
     
-    YumPbr pbr = GetYumPbr(pbr_input, f, tangentToWorld);
+    YumPbr pbr = GetYumPbr(pbr_input, f);
 
 #if defined(_CUSTOM30)
 #if defined(_CUSTOM30_BASICCUBE)

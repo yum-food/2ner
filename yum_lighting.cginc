@@ -166,7 +166,14 @@ float GetLodRoughness(float roughness) {
 }
 
 float3 getIndirectSpecular(v2f i, f2f f, YumPbr pbr, float3 view_dir, float diffuse_luminance) {
+#if defined(_ANISOTROPY)
+  float3 aniso_tangent = cross(view_dir, pbr.binormal);
+  float3 aniso_normal = -normalize(cross(aniso_tangent, pbr.binormal));
+  float3 refl_normal = normalize(lerp(pbr.normal, aniso_normal, _Anisotropy_Strength));
+  float3 reflect_dir = reflect(-view_dir, refl_normal);
+#else
   float3 reflect_dir = reflect(-view_dir, pbr.normal);
+#endif
 
   UnityGIInput data;
   data.worldPos = f.worldPos;
@@ -349,7 +356,7 @@ YumLighting GetYumLighting(v2f i, f2f f, YumPbr pbr) {
   light.attenuation = getShadowAttenuation(i, f);
 
 	float3 tangentNormal = mul(f.tbn, pbr.normal);
-	float3x3 tangentToWorld = float3x3(i.tangent, f.binormal, i.normal);
+	float3x3 tangentToWorld = float3x3(i.tangent.xyz, f.binormal, i.normal);
 
 	// Use Bakery-aware irradiance function
 #if defined(LIGHTMAP_ON)

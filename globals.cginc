@@ -132,6 +132,10 @@ float _Clearcoat_Strength;
 float _Clearcoat_Roughness;
 #endif
 
+#if defined(_ANISOTROPY)
+float _Anisotropy_Strength;
+#endif
+
 #if defined(OUTLINE_PASS)
 float _Outlines_Enabled_Dynamic;
 float4 _Outline_Color;

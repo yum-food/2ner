@@ -72,24 +72,32 @@ Shader "yum_food/2ner"
         //endex
 
       //ifex _Metallics_Enabled==0
-      [HideInInspector] m_reflectionOptions("Reflections", Float) = 0
-      [HideInInspector] m_start_Metallic("Metallics", Float) = 0
-        [ThryToggle(_METALLICS)]_Metallics_Enabled("Enable", Float) = 0
-        _Metallic("Metallic", Range(0, 1)) = 0
-        _Smoothness("Smoothness", Range(0, 1)) = 0
-        _MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
-      [HideInInspector] m_end_Metallic("Metallics", Float) = 0
-      //endex
+      [HideInInspector] m_start_Reflections("Reflections", Float) = 0
+        [HideInInspector] m_start_Metallic("Metallics", Float) = 0
+          [ThryToggle(_METALLICS)]_Metallics_Enabled("Enable", Float) = 0
+          _Metallic("Metallic", Range(0, 1)) = 0
+          _Smoothness("Smoothness", Range(0, 1)) = 0
+          _MetallicGlossMap("Metallic gloss map", 2D) = "white" {}
+        [HideInInspector] m_end_Metallic("Metallics", Float) = 0
+        //endex
 
-      //ifex _Clearcoat_Enabled==0
-      [HideInInspector] m_start_Clearcoat("Clearcoat", Float) = 0
-        [ThryToggle(_CLEARCOAT)]_Clearcoat_Enabled("Enable", Float) = 0
-        [ThryToggle(_CLEARCOAT_GEOMETRIC_NORMALS)]_Clearcoat_Geometric_Normals_Enabled("Use geometric normals", Float) = 1
-        _Clearcoat_Mask("Mask", 2D) = "white" {}
-        _Clearcoat_Strength("Strength", Range(0, 10)) = 1
-        _Clearcoat_Roughness("Roughness", Range(0.089, 1)) = 0.089
-      [HideInInspector] m_end_Clearcoat("Clearcoat", Float) = 0
-      //endex
+        //ifex _Clearcoat_Enabled==0
+        [HideInInspector] m_start_Clearcoat("Clearcoat", Float) = 0
+          [ThryToggle(_CLEARCOAT)]_Clearcoat_Enabled("Enable", Float) = 0
+          [ThryToggle(_CLEARCOAT_GEOMETRIC_NORMALS)]_Clearcoat_Geometric_Normals_Enabled("Use geometric normals", Float) = 1
+          _Clearcoat_Mask("Mask", 2D) = "white" {}
+          _Clearcoat_Strength("Strength", Range(0, 10)) = 1
+          _Clearcoat_Roughness("Roughness", Range(0.089, 1)) = 0.089
+        [HideInInspector] m_end_Clearcoat("Clearcoat", Float) = 0
+        //endex
+
+        //ifex _Anisotropy_Enabled==0
+        [HideInInspector] m_start_Anisotropy("Anisotropy", Float) = 0
+          [ThryToggle(_ANISOTROPY)]_Anisotropy_Enabled("Enable", Float) = 0
+          _Anisotropy_Strength("Strength", Range(-1, 1)) = 0
+        [HideInInspector] m_end_Anisotropy("Anisotropy", Float) = 0
+        //endex
+      [HideInInspector] m_end_Reflections("Reflections", Float) = 0
 
       [HideInInspector] m_gimmicks("Gimmicks", Float) = 0
         //ifex _Outlines_Enabled==0

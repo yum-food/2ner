@@ -327,6 +327,10 @@ YumPbr GetYumPbr(v2f i, f2f f) {
   result.emission += glitter_albedo.rgb * glitter_albedo.a * _Glitter_Emission;
 #endif
 
+#if defined(_ANISOTROPY)
+  result.binormal = normalize(cross(result.normal, i.tangent.xyz) * i.tangent.w);
+#endif
+
   return result;
 }
 

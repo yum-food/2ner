@@ -63,6 +63,10 @@
 #pragma shader_feature_local _CLEARCOAT_GEOMETRIC_NORMALS
 //endex
 
+//ifex _Anisotropy_Enabled==0
+#pragma shader_feature_local _ANISOTROPY
+//endex
+
 //ifex _Metallics_Enabled==0
 #pragma shader_feature_local _METALLICS
 //endex
