@@ -208,7 +208,7 @@ float4 YumBRDF(v2f i, f2f f, const YumLighting light, YumPbr pbr) {
 
   float3 indirect_standard = 0;
   {
-    float remainder = 1.0f;
+    float3 remainder = 1.0f;
 
 #if defined(_CLEARCOAT) && (defined(FORWARD_BASE_PASS) || defined(FORWARD_ADD_PASS))
     // Clearcoat indirect specular
@@ -271,12 +271,14 @@ float4 YumBRDF(v2f i, f2f f, const YumLighting light, YumPbr pbr) {
     const float3 dfg = PrefilteredDFG_LUT(pbr.roughness_perceptual, NoV);
     const float3 E = specularDFG(dfg, f0);
 
-    const float3 energy_compensation = energyCompensation(dfg, f0);
     float diffuseAO = pbr.ao;
     float3 diffuseColor = computeDiffuseColor(pbr.albedo, pbr.metallic);
-    float3 Fd = diffuseColor * light.diffuse * (1.0 - E) * pbr.ao * remainder;
 
     float3 Fr = E * light.specular * remainder;
+    remainder = saturate(remainder - Fr);
+
+    float3 Fd = diffuseColor * light.diffuse * pbr.ao * remainder;
+
 
     indirect_standard += Fr + Fd;
   }
